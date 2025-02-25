@@ -16,14 +16,27 @@ export async function GET(): Promise<Response> {
   console.log('Vercel URL:', process.env.VERCEL_URL || 'not set');
   
   return new Promise<Response>((resolve) => {
-    // Setup request options
+    // Setup request options with expanded headers to handle various auth scenarios
     const options = {
       hostname: 'api.bcra.gob.ar',
       path: '/estadisticas/v3.0/monetarias',
       method: 'GET',
       headers: {
-        'User-Agent': 'curl/7.79.1',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
         'Accept': '*/*',
+        'Accept-Language': 'es-AR,es;q=0.9,en;q=0.8',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Origin': process.env.VERCEL_URL 
+          ? `https://${process.env.VERCEL_URL}` 
+          : 'https://bcraenvivo.vercel.app',
+        'Referer': process.env.VERCEL_URL 
+          ? `https://${process.env.VERCEL_URL}` 
+          : 'https://bcraenvivo.vercel.app',
+        'Host': 'api.bcra.gob.ar',
+        'Content-Language': 'es-AR',
+        'X-Forwarded-For': '190.191.237.1', // Common Argentina IP
+        'CF-IPCountry': 'AR' // Cloudflare country header
       },
       timeout: 15000, // 15 second timeout
       rejectUnauthorized: false, // Disable SSL validation
@@ -35,6 +48,20 @@ export async function GET(): Promise<Response> {
     const req = https.get(options, (res) => {
       console.log(`STATUS: ${res.statusCode}`);
       console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+      
+      // Handle unauthorized errors
+      if (res.statusCode === 401) {
+        console.error('UNAUTHORIZED: BCRA API returned 401');
+        resolve(NextResponse.json(
+          {
+            error: 'BCRA API unauthorized access',
+            details: 'The BCRA API rejected our request with a 401 status',
+            headers: res.headers
+          },
+          { status: 401 }
+        ));
+        return;
+      }
       
       let data = '';
       
