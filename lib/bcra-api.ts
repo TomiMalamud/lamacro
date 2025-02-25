@@ -52,20 +52,20 @@ export const VARIABLE_GROUPS = {
  * Fetches BCRA data using our local API proxy
  * This avoids SSL certificate validation issues
  * 
- * IMPORTANT: Using dynamic fetching for Server Components with { cache: 'no-store' }
+ * IMPORTANT: Using dynamic fetching for Server Components and including Argentina-specific headers
  */
 export async function fetchBCRAData(): Promise<BCRAResponse> {
   try {
     let url: string;
+    let origin: string;
     
     // Check if we're in the browser or on the server
     if (typeof window !== 'undefined') {
-      // Client-side: use relative URL which works in both environments
+      // Client-side: use relative URL and window.location
       url = '/api/bcra';
+      origin = window.location.origin;
     } else {
       // Server-side: Next.js's Node.js environment requires absolute URLs
-      // The VERCEL_URL environment variable uses the format project-name-git-branch-username.vercel.app
-      // We need to add https:// to make it a complete URL
       const baseUrl = process.env.VERCEL_URL 
         ? `https://${process.env.VERCEL_URL}`
         : process.env.NODE_ENV === 'production'
@@ -73,12 +73,25 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
           : 'http://localhost:3000';
           
       url = `${baseUrl}/api/bcra`;
+      origin = baseUrl;
     }
     
     console.log('Fetching BCRA data from:', url);
     
+    // Add Argentina-specific headers to our internal API request
+    // This ensures we're matching the same headers pattern the API uses externally
     const response = await fetch(url, { 
       cache: 'no-store',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'es-AR,es;q=0.9,en;q=0.8',
+        'Content-Language': 'es-AR',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'X-Forwarded-For': '190.191.237.1', // Common Argentina IP
+        'CF-IPCountry': 'AR', // Cloudflare country header
+        'Origin': origin,
+        'Referer': origin,
+      }
     });
     
     if (!response.ok) {
@@ -94,7 +107,6 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
   }
 }
 
-// Rest of your API functions...
 export function groupVariablesByCategory(variables: BCRAVariable[]): Record<string, BCRAVariable[]> {
   return variables.reduce((acc, variable) => {
     const category = variable.categoria;
