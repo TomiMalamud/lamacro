@@ -74,8 +74,8 @@ export default async function BCRADashboard() {
               </span>
             </div>
 
-            <h1 className="text-4xl font-bold tracking-tight">BCRA en Vivo</h1>
-            <p className="text-[#232D4F] mt-2">
+            <h1 className="text-4xl font-bold font-mono tracking-tight bg-gradient-to-r from-primary via-purple-500 to-blue-500 text-transparent bg-clip-text animate-gradient bg-size-200%">BCRA en Vivo</h1>
+            <p className="text-primary mt-2">
               Visualización de variables monetarias del Banco Central de la
               República Argentina. Utilizando la API de BCRA.
             </p>
@@ -211,7 +211,7 @@ export default async function BCRADashboard() {
       <TooltipProvider>
         <div className="container mx-auto py-8">
           <header className="mb-8 text-center">
-            <h1 className="text-3xl font-bold mb-2">BCRA en Vivo</h1>
+            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-purple-500 to-blue-500 text-transparent bg-clip-text animate-gradient bg-size-200%">BCRA en Vivo</h1>
             <p className="text-muted-foreground">
               Visualización de variables monetarias del Banco Central de la
               República Argentina

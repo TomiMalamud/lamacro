@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
     darkMode: ["class"],
@@ -9,6 +10,22 @@ export default {
   ],
   theme: {
   	extend: {
+  		keyframes: {
+  			gradient: {
+  				'0%': { backgroundPosition: '0% 50%' },
+  				'50%': { backgroundPosition: '100% 50%' },
+  				'100%': { backgroundPosition: '0% 50%' },
+  			},
+  		},
+  		animation: {
+  			gradient: 'gradient 6s ease infinite',
+  		},
+  		backgroundSize: {
+  			'auto': 'auto',
+  			'cover': 'cover',
+  			'contain': 'contain',
+  			'200%': '200%',
+  		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -58,5 +75,5 @@ export default {
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;
