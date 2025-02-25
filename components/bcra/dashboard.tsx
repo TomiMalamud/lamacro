@@ -1,6 +1,6 @@
 import { VariableCard } from "@/components/bcra/variable-card";
 import { fetchBCRAData, formatDate, formatNumber } from "@/lib/bcra-api";
-import { AlertCircle, Clock } from "lucide-react";
+import { AlertCircle, Clock, RefreshCcw } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -14,11 +14,23 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "../ui/tooltip";
+import { Button } from "../ui/button";
 
 async function BCRADashboard() {
   try {
     const response = await fetchBCRAData();
+    
+    // Make sure we have valid data
+    if (!response || !response.results || !Array.isArray(response.results)) {
+      throw new Error("Invalid data received from API: results array missing");
+    }
+    
     const variables = response.results;
+    
+    // Check if we have any variables
+    if (variables.length === 0) {
+      throw new Error("API returned empty data set");
+    }
 
     // Filter variables by ID for each category
     const variablesCambiarias = variables.filter((v) =>
@@ -188,7 +200,7 @@ async function BCRADashboard() {
       </TooltipProvider>
     );
   } catch (error) {
-    // Simple error UI
+    // Enhanced error UI with more detail and refresh button
     return (
       <TooltipProvider>
         <div className="container mx-auto py-8">
@@ -200,17 +212,26 @@ async function BCRADashboard() {
             </p>
           </header>
 
-          <div className="bg-red-50 border-red-200 text-red-700 rounded-lg border p-6 my-6 flex items-center gap-4">
-            <AlertCircle className="h-6 w-6" />
-            <div>
+          <div className="bg-red-50 border-red-200 text-red-700 rounded-lg border p-6 my-6 flex flex-col md:flex-row items-start md:items-center gap-4">
+            <AlertCircle className="h-6 w-6 flex-shrink-0" />
+            <div className="flex-grow">
               <h3 className="font-medium text-lg">Error al cargar datos</h3>
               <p>
-                No se pudieron cargar los datos del BCRA. Por favor, intente
-                nuevamente más tarde.
+                No se pudieron cargar los datos del BCRA. Es posible que el API tenga restricciones de ubicación geográfica o IP.
               </p>
               <p className="text-xs text-red-500 mt-2">
                 {error instanceof Error ? error.message : "Error desconocido"}
               </p>
+            </div>
+            <div className="flex-shrink-0 mt-4 md:mt-0">
+              <Button 
+                variant="outline" 
+                className="border-red-200 text-red-700 hover:bg-red-100"
+                onClick={() => window.location.reload()}
+              >
+                <RefreshCcw className="mr-2 h-4 w-4" />
+                Reintentar
+              </Button>
             </div>
           </div>
         </div>

@@ -16,27 +16,32 @@ export async function GET(): Promise<Response> {
   console.log('Vercel URL:', process.env.VERCEL_URL || 'not set');
   
   return new Promise<Response>((resolve) => {
+    // Normalize the origin for headers regardless of environment
+    const origin = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'https://bcraenvivo.vercel.app';
+    
     // Setup request options with expanded headers to handle various auth scenarios
     const options = {
       hostname: 'api.bcra.gob.ar',
       path: '/estadisticas/v3.0/monetarias',
       method: 'GET',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36',
-        'Accept': '*/*',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'es-AR,es;q=0.9,en;q=0.8',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Origin': process.env.VERCEL_URL 
-          ? `https://${process.env.VERCEL_URL}` 
-          : 'https://bcraenvivo.vercel.app',
-        'Referer': process.env.VERCEL_URL 
-          ? `https://${process.env.VERCEL_URL}` 
-          : 'https://bcraenvivo.vercel.app',
+        'Origin': origin,
+        'Referer': origin,
         'Host': 'api.bcra.gob.ar',
         'Content-Language': 'es-AR',
         'X-Forwarded-For': '190.191.237.1', // Common Argentina IP
-        'CF-IPCountry': 'AR' // Cloudflare country header
+        'CF-IPCountry': 'AR', // Cloudflare country header
+        'Pragma': 'no-cache',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'cross-site'
       },
       timeout: 15000, // 15 second timeout
       rejectUnauthorized: false, // Disable SSL validation
@@ -55,7 +60,7 @@ export async function GET(): Promise<Response> {
         resolve(NextResponse.json(
           {
             error: 'BCRA API unauthorized access',
-            details: 'The BCRA API rejected our request with a 401 status',
+            details: 'The BCRA API rejected our request with a 401 status. This could be due to geolocation or IP restrictions.',
             headers: res.headers
           },
           { status: 401 }
