@@ -1,9 +1,8 @@
-// Add the dynamic export to ensure this is rendered dynamically
+// Make this component dynamically rendered each time
 export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
 
 import { VariableCard } from "@/components/bcra/variable-card";
-import { fetchBCRAData, formatDate, formatNumber } from "@/lib/bcra-api";
+import { formatDate, formatNumber } from "@/lib/bcra-api";
 import { AlertCircle, Clock } from "lucide-react";
 import {
   Card,
@@ -18,10 +17,13 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "../ui/tooltip";
+import { fetchBCRADirect } from "@/lib/direct-bcra";
 
-async function BCRADashboard() {
+// Mark this component as an async server component
+export default async function BCRADashboard() {
   try {
-    const response = await fetchBCRAData();
+    // Use the direct fetch function instead of going through the API route
+    const response = await fetchBCRADirect();
     
     // Make sure we have valid data
     if (!response || !response.results || !Array.isArray(response.results)) {
@@ -203,7 +205,8 @@ async function BCRADashboard() {
       </TooltipProvider>
     );
   } catch (error) {
-    // Simplified error UI without refresh button
+    console.error("Dashboard error:", error);
+    
     return (
       <TooltipProvider>
         <div className="container mx-auto py-8">
@@ -232,5 +235,3 @@ async function BCRADashboard() {
     );
   }
 }
-
-export default BCRADashboard;
