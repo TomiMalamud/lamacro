@@ -58,12 +58,18 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
     
     // Check if we're in the browser or on the server
     if (typeof window !== 'undefined') {
-      // Client-side: use the window.location.origin
-      url = `${window.location.origin}/api/bcra`;
+      // Client-side: use relative URL which works in both environments
+      url = '/api/bcra';
     } else {
       // Server-side: Next.js's Node.js environment requires absolute URLs
-      // Use a hardcoded localhost URL when running on the server
-      url = 'http://localhost:3000/api/bcra';
+      // Use environment variables for production, fallback to hardcoded URLs
+      const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}`
+        : process.env.NODE_ENV === 'production'
+          ? 'https://bcraenvivo.vercel.app'
+          : 'http://localhost:3000';
+          
+      url = `${baseUrl}/api/bcra`;
     }
     
     console.log('Fetching BCRA data from:', url);

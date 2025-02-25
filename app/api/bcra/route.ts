@@ -3,6 +3,8 @@ import https from 'https';
 
 // Disable Next.js's defaults for API routes
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 
 /**
  * Handler for GET requests to this API route
@@ -10,16 +12,27 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(): Promise<Response> {
   console.log('API route handler called - starting request to BCRA');
+  console.log('Environment:', process.env.NODE_ENV);
+  console.log('Vercel URL:', process.env.VERCEL_URL || 'not set');
   
   return new Promise<Response>((resolve) => {
-    // Use https.get for simplicity - same as our working script
-    https.get('https://api.bcra.gob.ar/estadisticas/v3.0/monetarias', {
+    // Setup request options
+    const options = {
+      hostname: 'api.bcra.gob.ar',
+      path: '/estadisticas/v3.0/monetarias',
+      method: 'GET',
       headers: {
         'User-Agent': 'curl/7.79.1',
         'Accept': '*/*',
       },
+      timeout: 15000, // 15 second timeout
       rejectUnauthorized: false, // Disable SSL validation
-    }, (res) => {
+    };
+    
+    console.log('Sending request to BCRA API with options:', JSON.stringify(options));
+    
+    // Use https.get with the configured options
+    const req = https.get(options, (res) => {
       console.log(`STATUS: ${res.statusCode}`);
       console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
       
@@ -59,7 +72,23 @@ export async function GET(): Promise<Response> {
           ));
         }
       });
-    }).on('error', (error) => {
+      
+      // Handle response errors
+      res.on('error', (error) => {
+        console.error('Response error:', error);
+        
+        resolve(NextResponse.json(
+          { 
+            error: 'Error in BCRA API response', 
+            details: error instanceof Error ? error.message : String(error)
+          },
+          { status: 500 }
+        ));
+      });
+    });
+    
+    // Handle request errors
+    req.on('error', (error) => {
       console.error('Request error:', error);
       
       resolve(NextResponse.json(
@@ -69,8 +98,12 @@ export async function GET(): Promise<Response> {
         },
         { status: 500 }
       ));
-    }).on('timeout', () => {
+    });
+    
+    // Handle request timeout
+    req.on('timeout', () => {
       console.error('Request timed out');
+      req.destroy();
       
       resolve(NextResponse.json(
         { 
@@ -79,7 +112,7 @@ export async function GET(): Promise<Response> {
         },
         { status: 504 }
       ));
-    }).setTimeout(10000); // 10 second timeout
+    });
     
     console.log('Request sent to BCRA API');
   });
