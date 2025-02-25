@@ -1,6 +1,10 @@
+// Add the dynamic export to ensure this is rendered dynamically
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 import { VariableCard } from "@/components/bcra/variable-card";
 import { fetchBCRAData, formatDate, formatNumber } from "@/lib/bcra-api";
-import { AlertCircle, Clock, RefreshCcw } from "lucide-react";
+import { AlertCircle, Clock } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -14,7 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from "../ui/tooltip";
-import { Button } from "../ui/button";
 
 async function BCRADashboard() {
   try {
@@ -200,7 +203,7 @@ async function BCRADashboard() {
       </TooltipProvider>
     );
   } catch (error) {
-    // Enhanced error UI with more detail and refresh button
+    // Simplified error UI without refresh button
     return (
       <TooltipProvider>
         <div className="container mx-auto py-8">
@@ -222,16 +225,6 @@ async function BCRADashboard() {
               <p className="text-xs text-red-500 mt-2">
                 {error instanceof Error ? error.message : "Error desconocido"}
               </p>
-            </div>
-            <div className="flex-shrink-0 mt-4 md:mt-0">
-              <Button 
-                variant="outline" 
-                className="border-red-200 text-red-700 hover:bg-red-100"
-                onClick={() => window.location.reload()}
-              >
-                <RefreshCcw className="mr-2 h-4 w-4" />
-                Reintentar
-              </Button>
             </div>
           </div>
         </div>

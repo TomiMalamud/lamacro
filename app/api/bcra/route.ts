@@ -4,7 +4,6 @@ import https from 'https';
 // Disable Next.js's defaults for API routes
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
-export const revalidate = 0;
 
 /**
  * Handler for GET requests to this API route

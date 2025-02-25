@@ -51,6 +51,8 @@ export const VARIABLE_GROUPS = {
 /**
  * Fetches BCRA data using our local API proxy
  * This avoids SSL certificate validation issues
+ * 
+ * IMPORTANT: Using dynamic fetching for Server Components with { cache: 'no-store' }
  */
 export async function fetchBCRAData(): Promise<BCRAResponse> {
   try {
@@ -77,15 +79,10 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
     
     const response = await fetch(url, { 
       cache: 'no-store',
-      headers: {
-        'Accept': 'application/json',
-      },
     });
     
     if (!response.ok) {
       console.error(`Error fetching BCRA data: ${response.status} ${response.statusText}`);
-      
-      // No longer use mock data as fallback - properly throw errors instead
       throw new Error(`Error fetching BCRA data: ${response.status}`);
     }
     
@@ -93,14 +90,11 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
     return data;
   } catch (error) {
     console.error('Error fetching BCRA data:', error);
-    // No longer use mock data as fallback in production - let errors propagate
     throw error;
   }
 }
 
-/**
- * Groups variables by category
- */
+// Rest of your API functions...
 export function groupVariablesByCategory(variables: BCRAVariable[]): Record<string, BCRAVariable[]> {
   return variables.reduce((acc, variable) => {
     const category = variable.categoria;
@@ -112,13 +106,9 @@ export function groupVariablesByCategory(variables: BCRAVariable[]): Record<stri
   }, {} as Record<string, BCRAVariable[]>);
 }
 
-/**
- * Groups variables by custom groups defined in VARIABLE_GROUPS
- */
 export function groupVariablesByCustomGroups(variables: BCRAVariable[]): Record<string, BCRAVariable[]> {
   const result: Record<string, BCRAVariable[]> = {};
 
-  // Create entries for each group
   Object.entries(VARIABLE_GROUPS).forEach(([groupName, ids]) => {
     result[groupName] = variables.filter(v => ids.includes(v.idVariable));
   });
@@ -126,64 +116,48 @@ export function groupVariablesByCustomGroups(variables: BCRAVariable[]): Record<
   return result;
 }
 
-/**
- * Determines the appropriate visualization type for a variable based on its properties
- */
 export function getVisualizationType(variable: BCRAVariable): VisualizationType {
   const description = variable.descripcion.toLowerCase();
   
-  // Check if it's one of our key indicators
   if (VARIABLE_GROUPS.KEY_METRICS.includes(variable.idVariable)) {
     return VisualizationType.KEY_INDICATOR;
   }
   
-  // Percentage checks
   if (description.includes('(%)') || description.includes('percent')) {
     return VisualizationType.PERCENTAGE;
   }
   
-  // Interest rates
   if (description.includes('rate') && description.includes('interest')) {
     return VisualizationType.INTEREST_RATE;
   }
   
-  // Exchange rates
   if (description.includes('exchange rate') || description.includes('currency')) {
     return VisualizationType.EXCHANGE_RATE;
   }
   
-  // Monetary effects
   if (description.includes('monetary effect')) {
     return VisualizationType.MONETARY_EFFECT;
   }
   
-  // Daily changes
   if (description.includes('daily change')) {
     return VisualizationType.DAILY_CHANGE;
   }
   
-  // Balances
   if (description.includes('balance')) {
     return VisualizationType.BALANCE;
   }
   
-  // Monetary values (in pesos/dollars)
   if (description.includes('in million') || description.includes('pesos') || description.includes('dollars') || description.includes('ars') || description.includes('usd')) {
     return VisualizationType.MONETARY;
   }
   
-  // Time series check based on category
   if (TIME_SERIES_CATEGORIES.includes(variable.categoria)) {
     return VisualizationType.TIME_SERIES;
   }
   
-  // Default fallback
   return VisualizationType.DEFAULT;
 }
 
-/**
- * Formats a number with thousand separators and specified decimal places
- */
 export function formatNumber(value: number, decimals = 2): string {
   return new Intl.NumberFormat('es-AR', {
     minimumFractionDigits: decimals,
@@ -191,9 +165,6 @@ export function formatNumber(value: number, decimals = 2): string {
   }).format(value);
 }
 
-/**
- * Formats a monetary value with the appropriate currency symbol
- */
 export function formatMonetaryValue(value: number, description: string): string {
   const isInMillions = description.toLowerCase().includes('(in million') || 
                         description.toLowerCase().includes('million');
@@ -204,7 +175,6 @@ export function formatMonetaryValue(value: number, description: string): string 
   
   let formattedValue = '';
   
-  // Handle scaling
   if (isInMillions) {
     if (value > 1000000) {
       formattedValue = `${formatNumber(value / 1000000, 2)} B`; // Billions
@@ -217,7 +187,6 @@ export function formatMonetaryValue(value: number, description: string): string 
     formattedValue = formatNumber(value, 2);
   }
   
-  // Add currency symbol
   if (isPesos) {
     return `$${formattedValue}`;
   } else if (isDollars) {
@@ -227,26 +196,17 @@ export function formatMonetaryValue(value: number, description: string): string 
   return formattedValue;
 }
 
-/**
- * Formats a date string to a more readable format (DD/MM/YYYY)
- */
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat('es-AR').format(date);
 }
 
-/**
- * Gets the trend indicator (positive/negative/neutral) for a value
- * based on its context
- */
 export function getTrendIndicator(variable: BCRAVariable): 'positive' | 'negative' | 'neutral' {
   const description = variable.descripcion.toLowerCase();
   const valor = variable.valor;
   
-  // Default behavior: most values above 0 are positive, below 0 are negative
   let isPositiveDirection = true;
   
-  // Exceptions: some metrics are better when decreasing
   if (
     description.includes('inflation') ||
     (description.includes('rate') && !description.includes('reserves'))
@@ -261,4 +221,4 @@ export function getTrendIndicator(variable: BCRAVariable): 'positive' | 'negativ
   }
   
   return 'neutral';
-} 
+}
