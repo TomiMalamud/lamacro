@@ -12,15 +12,15 @@ import {
 } from "@/components/ui/card";
 import { formatDate, formatMonetaryValue } from "@/lib/bcra-api";
 import { fetchBCRADirect, fetchVariableTimeSeries } from "@/lib/direct-bcra";
+import { format, subMonths } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { subMonths, format } from 'date-fns';
 
 // Page component for variable details
 export default async function VariableDetailPage({
-  params,
+  params
 }: {
   params: Promise<{ id: string }>;
 }) {
@@ -74,21 +74,23 @@ function VariableDetailSkeleton() {
 async function VariableDetail({ id }: { id: number }) {
   try {
     // Set default date range for initial data (3 months)
-    const desde = format(subMonths(new Date(), 3), 'yyyy-MM-dd');
-    const hasta = format(new Date(), 'yyyy-MM-dd');
-    
+    const desde = format(subMonths(new Date(), 3), "yyyy-MM-dd");
+    const hasta = format(new Date(), "yyyy-MM-dd");
+
     // Fetch time series data for the variable with date range
     const timeSeriesData = await fetchVariableTimeSeries(id, desde, hasta);
-    
+
     // Also fetch the full list to get the variable description
     const allVariablesData = await fetchBCRADirect();
-    
+
     // Find the variable in the full list to get its description
-    const variableInfo = allVariablesData.results.find(v => v.idVariable === id);
-    
+    const variableInfo = allVariablesData.results.find(
+      (v) => v.idVariable === id
+    );
+
     // Get description or use fallback
     const variableDescription = variableInfo?.descripcion || `Variable #${id}`;
-    
+
     // Get the most recent data point for the header
     const latestDataPoint = timeSeriesData.results[0];
 
@@ -102,21 +104,16 @@ async function VariableDetail({ id }: { id: number }) {
           {variableDescription}
         </h1>
 
-        <Card>
+        <Card className="dark:bg-[#1C1C1E]">
           <CardHeader>
-            <CardTitle>
-              {variableDescription}
-            </CardTitle>
+            <CardTitle>{variableDescription}</CardTitle>
             <CardDescription>
               Última actualización: {formatDate(latestDataPoint.fecha)}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {formatMonetaryValue(
-                latestDataPoint.valor,
-                variableDescription
-              )}
+              {formatMonetaryValue(latestDataPoint.valor, variableDescription)}
             </div>
           </CardContent>
         </Card>
@@ -125,9 +122,9 @@ async function VariableDetail({ id }: { id: number }) {
           <h2 className="text-2xl font-semibold mb-4">Serie Histórica</h2>
           <Card className="p-4">
             {/* Pass initial data and variableId to the chart component */}
-            <VariableTimeSeriesChart 
-              initialData={timeSeriesData.results} 
-              variableId={id} 
+            <VariableTimeSeriesChart
+              initialData={timeSeriesData.results}
+              variableId={id}
             />
           </Card>
         </div>

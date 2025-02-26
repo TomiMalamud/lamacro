@@ -97,7 +97,7 @@ export function VariableCard({ variable, className }: VariableCardProps) {
 
   return (
     <Card
-      className={`${className} cursor-pointer transition-all group`}
+      className={`${className} cursor-pointer transition-all group dark:bg-[#1C1C1E]`}
       onClick={handleCardClick}
     >
       <CardHeader className="pb-2">
@@ -144,7 +144,10 @@ export function VariableCard({ variable, className }: VariableCardProps) {
 
         <div className="text-xs flex items-center gap-2 text-primary mt-4">
           Ver detalle
-          <ArrowRight size={16} className="group-hover:translate-x-1 transition-all" />
+          <ArrowRight
+            size={16}
+            className="group-hover:translate-x-1 transition-all"
+          />
         </div>
       </CardContent>
     </Card>

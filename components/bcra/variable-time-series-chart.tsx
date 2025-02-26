@@ -22,7 +22,6 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  Tooltip,
   XAxis,
   YAxis
 } from "recharts";
@@ -356,12 +355,11 @@ export function VariableTimeSeriesChart({
                   tickFormatter={(value) => formatNumber(value, 0)}
                   tick={{ fontSize: 12 }}
                 />
-                <Tooltip
-                  formatter={(value: number) => [
-                    formatNumber(value, 2),
-                    "Valor"
-                  ]}
+                <ChartTooltip
+                  formatter={(value: number) => [formatNumber(value, 2)]}
                   labelFormatter={(label) => formatDate(label as string)}
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="dot" />}
                 />
                 <Line
                   dataKey="valor"
