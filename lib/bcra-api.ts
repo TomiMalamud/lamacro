@@ -181,9 +181,9 @@ export function formatMonetaryValue(value: number, description: string): string 
   const isInMillions = description.toLowerCase().includes('(in million') || 
                         description.toLowerCase().includes('million');
   const isPesos = description.toLowerCase().includes('pesos') || 
-                  description.toLowerCase().includes('ars');
-  const isDollars = description.toLowerCase().includes('dollars') || 
-                   description.toLowerCase().includes('usd');
+                  description.toLowerCase().includes('ars') || 
+                  description.toLowerCase().includes('$');
+  const isDollars = description.toLowerCase().includes('dollars')
   
   let formattedValue = '';
   

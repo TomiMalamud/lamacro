@@ -74,7 +74,7 @@ export default async function BCRADashboard() {
               </span>
             </div>
 
-            <h1 className="text-4xl font-bold font-mono tracking-tight bg-gradient-to-r from-primary via-purple-500 to-blue-500 text-transparent bg-clip-text animate-gradient bg-size-200%">BCRA en Vivo</h1>
+            <h1 className="text-4xl font-bold text-primary tracking-tight">BCRA en Vivo</h1>
             <p className="text-primary mt-2">
               Visualización de variables monetarias del Banco Central de la
               República Argentina. Utilizando la API de BCRA.
@@ -83,7 +83,7 @@ export default async function BCRADashboard() {
 
           {/* Variables Cambiarias Section */}
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold mb-4">
+            <h2 className="text-2xl font-semibold mb-4 text-primary">
               Variables Cambiarias
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -95,7 +95,7 @@ export default async function BCRADashboard() {
 
           {/* Variables Monetarias Section */}
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold mb-4">
+            <h2 className="text-2xl font-semibold mb-4 text-primary">
               Variables Monetarias
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -178,7 +178,7 @@ export default async function BCRADashboard() {
 
           {/* Inflación Section */}
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold mb-4">Inflación</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-primary">Inflación</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {variablesInflacion.map((variable) => (
                 <VariableCard key={variable.idVariable} variable={variable} />
@@ -211,7 +211,7 @@ export default async function BCRADashboard() {
       <TooltipProvider>
         <div className="container mx-auto py-8">
           <header className="mb-8 text-center">
-            <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-purple-500 to-blue-500 text-transparent bg-clip-text animate-gradient bg-size-200%">BCRA en Vivo</h1>
+            <h1 className="text-3xl font-bold mb-2">BCRA en Vivo</h1>
             <p className="text-muted-foreground">
               Visualización de variables monetarias del Banco Central de la
               República Argentina
