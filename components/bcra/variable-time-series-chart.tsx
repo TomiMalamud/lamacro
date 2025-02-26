@@ -331,7 +331,7 @@ export function VariableTimeSeriesChart({
                 <Bar
                   dataKey="valor"
                   name="Valor"
-                  fill="hsl(222 37% 22%)"
+                  fill="hsl(var(--primary))"
                   barSize={20}
                 />
               </BarChart>

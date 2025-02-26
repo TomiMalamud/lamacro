@@ -87,8 +87,6 @@ export default async function BCRADashboard() {
                 República Argentina. Utilizando la API de BCRA.
               </p>
             </div>
-
-            {/* Add theme toggle here */}
             <ThemeToggle />
           </header>
 
@@ -199,8 +197,8 @@ export default async function BCRADashboard() {
           </section>
 
           {/* Use the client component for remaining variables */}
-          <RemainingVariablesSection 
-            variables={remainingVariables} 
+          <RemainingVariablesSection
+            variables={remainingVariables}
             totalCount={remainingVariables.length}
           />
         </div>
