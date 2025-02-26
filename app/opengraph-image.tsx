@@ -16,7 +16,7 @@ export default async function Image() {
       <div
         style={{
           fontSize: 128,
-          background: 'linear-gradient(to bottom, #2563eb, #4f46e5)',
+          background: 'linear-gradient(to bottom, #1e3a5f, #444)',
           width: '100%',
           height: '100%',
           display: 'flex',
@@ -57,7 +57,7 @@ export default async function Image() {
             padding: 20,
           }}
         >
-          {['Tasas', 'Reservas', 'Préstamos', 'Depósitos', 'Tipo de Cambio'].map((text) => (
+          {['Variables Monetarias', 'Variables Cambiarias', 'Inflación'].map((text) => (
             <div
               key={text}
               style={{
