@@ -13,7 +13,7 @@ const BCRADashboard = dynamic(() => import('@/components/bcra/dashboard'), {
 
 export default function Home() {
   return (
-    <main className="min-h-screen mx-auto">
+    <main className="min-h-screen mx-auto px-6 sm:px-16">
       <BCRADashboard />
     </main>
   );

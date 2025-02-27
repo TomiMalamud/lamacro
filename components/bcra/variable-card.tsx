@@ -8,6 +8,12 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip";
+import {
   BCRAVariable,
   formatDate,
   formatMonetaryValue,
@@ -22,10 +28,27 @@ import { useRouter } from "next/navigation";
 interface VariableCardProps {
   variable: BCRAVariable;
   className?: string;
+  // New props for rate pair display
+  ratePair?: boolean;
+  secondVariable?: BCRAVariable;
 }
 
-export function VariableCard({ variable, className }: VariableCardProps) {
+export function VariableCard({
+  variable,
+  className,
+  ratePair = false,
+  secondVariable
+}: VariableCardProps) {
   const router = useRouter();
+
+  // If this is a rate pair card, render the specialized view
+  if (ratePair && secondVariable) {
+    return (
+      <RatePairCard tna={variable} tea={secondVariable} className={className} />
+    );
+  }
+
+  // Regular variable card rendering continues here...
 
   // Get the visualization type for this variable
   const visualizationType = getVisualizationType(variable);
@@ -97,7 +120,7 @@ export function VariableCard({ variable, className }: VariableCardProps) {
 
   return (
     <Card
-      className={`${className} cursor-pointer transition-all group dark:bg-[#1C1C1E]`}
+      className={`${className} cursor-pointer hover:shadow-sm transition-all group dark:bg-[#1C1C1E] animate-fade-in`}
       onClick={handleCardClick}
     >
       <CardHeader className="pb-2">
@@ -153,3 +176,80 @@ export function VariableCard({ variable, className }: VariableCardProps) {
     </Card>
   );
 }
+
+// Rate Pair Card section - defining router inside the component
+const RatePairCard = ({
+  tna,
+  tea,
+  className
+}: {
+  tna: BCRAVariable;
+  tea: BCRAVariable;
+  className?: string;
+}) => {
+  const router = useRouter();
+
+  // Extract title from TNA description
+  const title = tna.descripcion
+    .split("(")[0]
+    .trim()
+    .replace(/, TNA/g, "")
+    .replace(/,TNA/g, "");
+
+  // Handle click to navigate to detail page
+  const handleCardClick = () => {
+    router.push(`/variable/${tna.idVariable}`);
+  };
+
+  return (
+    <TooltipProvider>
+      <Card
+        className={`${
+          className || ""
+        } h-full dark:bg-[#1C1C1E] hover:shadow-sm cursor-pointer transition-all animate-fade-in`}
+        onClick={handleCardClick}
+      >
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          <CardDescription>{formatDate(tna.fecha)}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-x-8 flex items-center">
+            <div>
+              <div className="text-sm font-medium">
+                TNA
+                <Tooltip>
+                  <TooltipTrigger className="ml-1 cursor-help text-muted-foreground">
+                    (?)
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Tasa Nominal Anual</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="text-2xl font-bold">
+                {formatNumber(tna.valor, 2)}%
+              </div>
+            </div>
+            <div>
+              <div className="text-sm font-medium">
+                TEA
+                <Tooltip>
+                  <TooltipTrigger className="ml-1 cursor-help text-muted-foreground">
+                    (?)
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Tasa Efectiva Anual</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="text-2xl font-bold">
+                {formatNumber(tea.valor, 2)}%
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </TooltipProvider>
+  );
+};

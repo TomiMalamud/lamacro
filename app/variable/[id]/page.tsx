@@ -1,16 +1,10 @@
 // Make this component dynamically rendered each time
 export const dynamic = "force-dynamic";
 
-import { VariableTimeSeriesChart } from "@/components/bcra/variable-time-series-chart";
+import { VariableDetailClient } from "@/components/bcra/variable-detail-client";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { formatDate, formatMonetaryValue } from "@/lib/bcra-api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "@/lib/bcra-api";
 import { fetchBCRADirect, fetchVariableTimeSeries } from "@/lib/direct-bcra";
 import { format, subMonths } from "date-fns";
 import { ArrowLeft } from "lucide-react";
@@ -35,9 +29,9 @@ export default async function VariableDetailPage({
 
   return (
     <div className="container mx-auto py-8">
-      <div className="mb-6">
+      <div className="mb-6 sm:px-12 px-2">
         <Link href="/" passHref>
-          <Button variant="ghost" className="gap-2">
+          <Button variant="link" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Volver al Dashboard
           </Button>
@@ -70,7 +64,6 @@ function VariableDetailSkeleton() {
   );
 }
 
-// Component to fetch and display variable details
 async function VariableDetail({ id }: { id: number }) {
   try {
     // Set default date range for initial data (3 months)
@@ -99,35 +92,21 @@ async function VariableDetail({ id }: { id: number }) {
     }
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 sm:px-16 px-6">
         <h1 className="text-3xl font-bold text-primary">
           {variableDescription}
         </h1>
+        <p className="text-sm text-muted-foreground">
+          Última actualización: {formatDate(latestDataPoint.fecha)}
+        </p>
 
-        <Card className="dark:bg-[#1C1C1E]">
-          <CardHeader>
-            <CardTitle>{variableDescription}</CardTitle>
-            <CardDescription>
-              Última actualización: {formatDate(latestDataPoint.fecha)}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">
-              {formatMonetaryValue(latestDataPoint.valor, variableDescription)}
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-4">Serie Histórica</h2>
-          <Card className="p-4">
-            {/* Pass initial data and variableId to the chart component */}
-            <VariableTimeSeriesChart
-              initialData={timeSeriesData.results}
-              variableId={id}
-            />
-          </Card>
-        </div>
+        {/* Use client component for dynamic percentage change */}
+        <VariableDetailClient
+          initialValue={latestDataPoint.valor}
+          variableDescription={variableDescription}
+          initialData={timeSeriesData.results}
+          variableId={id}
+        />
       </div>
     );
   } catch (error) {

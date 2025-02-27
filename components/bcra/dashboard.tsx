@@ -3,21 +3,10 @@ export const dynamic = "force-dynamic";
 
 import { VariableCard } from "@/components/bcra/variable-card";
 import { ThemeToggle } from "@/components/theme-toggle";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { formatDate, formatNumber } from "@/lib/bcra-api";
 import { fetchBCRADirect } from "@/lib/direct-bcra";
 import { AlertCircle, Clock } from "lucide-react";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
+  TooltipProvider
 } from "../ui/tooltip";
 
 // Import the client component from a separate file
@@ -110,65 +99,28 @@ export default async function BCRADashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {monetariaPairs.map((pair, index) => {
                 if (pair.length === 2) {
-                  // Extract the TNA and TEA variables
+                  // Use the enhanced VariableCard with rate pair support
                   const [tna, tea] = pair;
-                  return (
-                    <Card key={index} className="h-full dark:bg-[#1C1C1E]">
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          {tna?.descripcion
-                            .split("(")[0]
-                            .trim()
-                            .replace(/, TNA/g, "")
-                            .replace(/,TNA/g, "")}
-                        </CardTitle>
-                        <CardDescription>
-                          {formatDate(tna?.fecha || "")}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-x-8 flex items-center">
-                          <div>
-                            <div className="text-sm font-medium">
-                              TNA
-                              <Tooltip>
-                                <TooltipTrigger className="ml-1 cursor-help text-muted-foreground">
-                                  (?)
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Tasa Nominal Anual</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                            <div className="text-2xl font-bold">
-                              {formatNumber(tna?.valor || 0, 2)}%
-                            </div>
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium">
-                              TEA
-                              <Tooltip>
-                                <TooltipTrigger className="ml-1 cursor-help text-muted-foreground">
-                                  (?)
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Tasa Efectiva Anual</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </div>
-                            <div className="text-2xl font-bold">
-                              {formatNumber(tea?.valor || 0, 2)}%
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
+                  // Make sure both variables are defined before rendering
+                  if (tna && tea) {
+                    return (
+                      <VariableCard
+                        key={`pair-${index}`}
+                        variable={tna}
+                        secondVariable={tea}
+                        ratePair={true}
+                        className="h-full"
+                      />
+                    );
+                  }
                 }
 
                 // Fallback for incomplete pairs
                 return (
-                  <div key={index} className="grid grid-cols-1 gap-4">
+                  <div
+                    key={`fallback-${index}`}
+                    className="grid grid-cols-1 gap-4"
+                  >
                     {pair.map(
                       (variable) =>
                         variable && (
