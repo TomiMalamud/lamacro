@@ -5,12 +5,10 @@ import { VariableCard } from "@/components/bcra/variable-card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { fetchBCRADirect } from "@/lib/direct-bcra";
 import { AlertCircle, Clock } from "lucide-react";
-import {
-  TooltipProvider
-} from "../ui/tooltip";
+import { TooltipProvider } from "../ui/tooltip";
 
 // Import the client component from a separate file
-import RemainingVariablesSection from "@/components/bcra/remaining-variables-section";
+import AllVariablesSection from "@/components/bcra/all-variables-section";
 
 // Mark this component as an async server component
 export default async function BCRADashboard() {
@@ -48,12 +46,6 @@ export default async function BCRADashboard() {
 
     const variablesInflacion = variables.filter((v) =>
       [27, 28, 29].includes(v.idVariable)
-    );
-
-    // All variables that are not in the specific categories
-    const usedVariableIds = [1, 4, 160, 161, 136, 137, 139, 140, 27, 28, 29];
-    const remainingVariables = variables.filter(
-      (v) => !usedVariableIds.includes(v.idVariable)
     );
 
     return (
@@ -149,9 +141,9 @@ export default async function BCRADashboard() {
           </section>
 
           {/* Use the client component for remaining variables */}
-          <RemainingVariablesSection
-            variables={remainingVariables}
-            totalCount={remainingVariables.length}
+          <AllVariablesSection
+            variables={variables}
+            totalCount={variables.length}
           />
         </div>
       </TooltipProvider>

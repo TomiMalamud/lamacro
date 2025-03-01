@@ -58,12 +58,10 @@ export function VariableCard({
 
   // Format value based on visualization type
   let formattedValue = "";
-  let subtitle = "";
 
   switch (visualizationType) {
     case VisualizationType.PERCENTAGE:
       formattedValue = `${formatNumber(variable.valor, 2)}%`;
-      subtitle = "Porcentaje";
       break;
 
     case VisualizationType.MONETARY:
@@ -71,19 +69,14 @@ export function VariableCard({
         variable.valor,
         variable.descripcion
       );
-      subtitle = variable.descripcion.toLowerCase().includes("dollar")
-        ? "USD"
-        : "ARS";
       break;
 
     case VisualizationType.EXCHANGE_RATE:
       formattedValue = `$${formatNumber(variable.valor, 2)}`;
-      subtitle = "Tipo de Cambio";
       break;
 
     case VisualizationType.INTEREST_RATE:
       formattedValue = `${formatNumber(variable.valor, 2)}%`;
-      subtitle = "Tasa de Interés";
       break;
 
     case VisualizationType.DAILY_CHANGE:
@@ -92,7 +85,6 @@ export function VariableCard({
         variable.valor >= 0
           ? `+${formatNumber(variable.valor, 2)}`
           : formatNumber(variable.valor, 2);
-      subtitle = "Cambio Diario";
       break;
 
     default:
@@ -160,10 +152,6 @@ export function VariableCard({
             </>
           )}
         </div>
-
-        {subtitle && (
-          <div className="text-xs text-muted-foreground mt-1">{subtitle}</div>
-        )}
 
         <div className="text-xs flex items-center gap-2 text-primary mt-4">
           Ver detalle
