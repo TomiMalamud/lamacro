@@ -11,10 +11,12 @@ export const fetchCache = 'force-no-store';
  */
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
   console.log('API route handler called - starting request to BCRA Deudores Historicas API');
-  console.log('ID:', params.id);
+  
+  const id = (await params).id;
+  console.log('ID:', id);
   
   return new Promise<Response>((resolve) => {
     // Normalize the origin for headers regardless of environment
@@ -25,7 +27,7 @@ export async function GET(
     // Setup request options with expanded headers to handle various auth scenarios
     const options = {
       hostname: 'api.bcra.gob.ar',
-      path: `/centraldedeudores/v1.0/Deudas/Historicas/${params.id}`,
+      path: `/centraldedeudores/v1.0/Deudas/Historicas/${id}`,
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
