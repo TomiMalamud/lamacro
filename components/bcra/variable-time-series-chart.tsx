@@ -405,7 +405,7 @@ export function VariableTimeSeriesChart({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2 bg-white dark:bg-[#1C1C1E] rounded-lg p-4">
+      <div className="flex flex-wrap items-center dark:bg-[#1C1C1E] bg-white justify-between gap-2 rounded-lg p-4">
         <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2">
           {/* Calendar date picker */}
           <div className="w-full sm:w-auto">

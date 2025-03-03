@@ -47,6 +47,7 @@ export function SearchForm() {
           type="text"
           placeholder="Ej: 20123456789"
           maxLength={11}
+          autoFocus
         />
         <p className="text-xs text-muted-foreground">
           Ingresa los 11 dígitos sin guiones ni espacios

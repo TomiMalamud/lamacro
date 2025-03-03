@@ -112,7 +112,7 @@ export function VariableCard({
 
   return (
     <Card
-      className={`${className} cursor-pointer hover:shadow-sm transition-all group dark:bg-[#1C1C1E] animate-fade-in`}
+      className={`${className} cursor-pointer hover:shadow-sm transition-all group animate-fade-in`}
       onClick={handleCardClick}
     >
       <CardHeader className="pb-2">
@@ -194,7 +194,7 @@ const RatePairCard = ({
       <Card
         className={`${
           className || ""
-        } h-full dark:bg-[#1C1C1E] hover:shadow-sm cursor-pointer transition-all animate-fade-in`}
+        } h-full hover:shadow-sm cursor-pointer transition-all animate-fade-in`}
         onClick={handleCardClick}
       >
         <CardHeader className="pb-2">

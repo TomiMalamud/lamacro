@@ -14,13 +14,13 @@ export function Navigation() {
           <div className="flex items-center">
             <Link
               href="/"
-              className="px-4 py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent rounded-md"
             >
               Variables
             </Link>
             <Link
               href="/debts/search"
-              className="px-4 py-2 text-sm font-medium transition-colors hover:text-primary"
+              className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent rounded-md"
             >
               Central de Deudores
             </Link>

@@ -68,7 +68,6 @@ export default async function BCRADashboard() {
                 República Argentina. Utilizando la API de BCRA.
               </p>
             </div>
-            <ThemeToggle />
           </header>
 
           {/* Variables Cambiarias Section */}
