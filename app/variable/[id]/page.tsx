@@ -1,5 +1,5 @@
-// Make this component dynamically rendered each time
-export const dynamic = "force-dynamic";
+// Remove force-dynamic and implement proper caching
+export const revalidate = 3600; // Revalidate every hour
 
 import { VariableDetailClient } from "@/components/bcra/variable-detail-client";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export default async function VariableDetailPage({
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6 sm:px-12 px-2">
-        <Link href="/" passHref>
+        <Link href="/" passHref prefetch={true}>
           <Button variant="link" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Volver al Dashboard
@@ -70,11 +70,11 @@ async function VariableDetail({ id }: { id: number }) {
     const desde = format(subMonths(new Date(), 3), "yyyy-MM-dd");
     const hasta = format(new Date(), "yyyy-MM-dd");
 
-    // Fetch time series data for the variable with date range
-    const timeSeriesData = await fetchVariableTimeSeries(id, desde, hasta);
-
-    // Also fetch the full list to get the variable description
-    const allVariablesData = await fetchBCRADirect();
+    // Fetch data in parallel
+    const [timeSeriesData, allVariablesData] = await Promise.all([
+      fetchVariableTimeSeries(id, desde, hasta),
+      fetchBCRADirect()
+    ]);
 
     // Find the variable in the full list to get its description
     const variableInfo = allVariablesData.results.find(
@@ -100,13 +100,32 @@ async function VariableDetail({ id }: { id: number }) {
           Última actualización: {formatDate(latestDataPoint.fecha)}
         </p>
 
-        {/* Use client component for dynamic percentage change */}
         <VariableDetailClient
           initialValue={latestDataPoint.valor}
           variableDescription={variableDescription}
           initialData={timeSeriesData.results}
           variableId={id}
         />
+
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>¿Qué significa esta variable?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Link
+              href={`https://chat.openai.com/?q=${encodeURIComponent(
+                `Explicá la variable "${variableDescription}" del Banco Central de la República Argentina (BCRA). Qué significa que actualmente tenga un valor de ${latestDataPoint.valor}?`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="secondary" className="gap-2">
+                Preguntar a ChatGPT
+                <ArrowLeft className="h-4 w-4 rotate-[135deg]" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     );
   } catch (error) {

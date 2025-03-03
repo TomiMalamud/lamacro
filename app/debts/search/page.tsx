@@ -52,11 +52,19 @@ export default function DebtSearchPage() {
                 público y proveedores de servicios de crédito entre particulares
                 a través de plataformas.
               </p>
-              <p className="text-sm">
+              <p className="text-sm my-2">
                 La información se actualiza mensualmente y contiene datos sobre
                 la situación de la deuda, montos, días de atraso,
                 refinanciaciones y otros detalles relevantes.
               </p>
+              <a
+                className="text-blue-500 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://www.bcra.gob.ar/BCRAyVos/Preguntas_frecuentes.asp#Central-de-deudores"
+              >
+                Preguntas Frecuentes sobre la Central de Deudores
+              </a>
             </CardContent>
           </Card>
         </div>

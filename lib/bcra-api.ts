@@ -75,9 +75,7 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
       url = `${baseUrl}/api/bcra`;
       origin = baseUrl;
     }
-    
-    console.log('Fetching BCRA data from:', url);
-    
+        
     // Add Argentina-specific headers to our internal API request
     // This ensures we're matching the same headers pattern the API uses externally
     const response = await fetch(url, { 
