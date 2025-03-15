@@ -133,7 +133,7 @@ export function getVisualizationType(variable: BCRAVariable): VisualizationType 
     return VisualizationType.KEY_INDICATOR;
   }
   
-  if (description.includes('(%)') || description.includes('percent')) {
+  if (description.includes('%') || description.includes('percent')) {
     return VisualizationType.PERCENTAGE;
   }
   
@@ -157,7 +157,7 @@ export function getVisualizationType(variable: BCRAVariable): VisualizationType 
     return VisualizationType.BALANCE;
   }
   
-  if (description.includes('in million') || description.includes('pesos') || description.includes('dollars') || description.includes('ars') || description.includes('usd')) {
+  if (description.includes('in million') || description.includes('pesos') || description.includes('dollars') || description.includes('ars') || description.includes('usd') || description.includes('dólares') || description.includes('millones')) {
     return VisualizationType.MONETARY;
   }
   
