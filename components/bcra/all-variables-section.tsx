@@ -3,26 +3,33 @@
 import { useState } from 'react';
 import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; 
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { BCRAVariable } from "@/lib/bcra-api";
+
+// Helper function to normalize text (remove accents)
+const normalizeText = (text: string) => {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+};
 
 interface AllVariablesSectionProps {
   variables: BCRAVariable[];
   totalCount: number;
+  searchTerm: string;
 }
 
 export default function AllVariablesSection({ 
   variables, 
-  totalCount 
+  totalCount,
+  searchTerm 
 }: AllVariablesSectionProps) {
   const [showAll, setShowAll] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter variables based on search term
-  const filteredVariables = variables.filter((variable) =>
-    variable.descripcion?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter variables based on search term with accent-insensitive comparison
+  const filteredVariables = variables.filter((variable) => {
+    const normalizedDescription = normalizeText(variable.descripcion || "");
+    const normalizedSearch = normalizeText(searchTerm);
+    return normalizedDescription.includes(normalizedSearch);
+  });
 
   // Show only 10 variables initially or all if showAll is true, applied to filtered results
   const displayedVariables = showAll 
@@ -34,17 +41,6 @@ export default function AllVariablesSection({
       <h2 className="text-2xl font-semibold mb-4">
         Todas las variables ({totalCount})
       </h2>
-
-      {/* Add search input */}
-      <div className="mb-6">
-        <Input
-          type="search"
-          placeholder="Buscar variables..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-md"
-        />
-      </div>
 
       {filteredVariables.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

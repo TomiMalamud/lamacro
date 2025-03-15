@@ -5,7 +5,7 @@ export function Navigation() {
   return (
     <nav className="border-b bg-background">
       <div className="container mx-auto flex h-16 items-center px-4">
-        <div className="mr-4 flex">
+        <div className="mr-4 flex hidden sm:block">
           <Link href="/" className="flex items-center">
             <span className="text-lg font-bold">BCRA en Vivo</span>
           </Link>

@@ -503,7 +503,7 @@ export function VariableTimeSeriesChart({
           </div>
 
           {/* View Type Toggle */}
-          <div className="flex items-center gap-2 ml-auto mt-2 sm:mt-0">
+          <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto mt-2 sm:mt-0">
             <ToggleGroup
               type="single"
               value={viewMode}
@@ -565,6 +565,7 @@ export function VariableTimeSeriesChart({
             size="sm"
             onClick={exportToCSV}
             disabled={exportLoading || !chartData.length}
+            className="hidden sm:flex"
           >
             {exportLoading ? (
               "Exportando..."
