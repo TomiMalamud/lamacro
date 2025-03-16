@@ -4,7 +4,7 @@ export function Footer() {
       <div className="container-wrapper">
         <div className="container py-4 pl-0 sm:pl-16">
           <div className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Desarrollado por{" "}
+            Creado por{" "}
             <a
               href={"https://x.com/tomasmalamud"}
               target="_blank"

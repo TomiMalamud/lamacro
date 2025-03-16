@@ -8,12 +8,6 @@ import {
   CardTitle
 } from "@/components/ui/card";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "@/components/ui/tooltip";
-import {
   BCRAVariable,
   formatDate,
   formatMonetaryValue,
@@ -22,6 +16,11 @@ import {
   getVisualizationType,
   VisualizationType
 } from "@/lib/bcra-api";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
 import { ArrowDown, ArrowRight, ArrowUp, Minus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -190,54 +189,64 @@ const RatePairCard = ({
   };
 
   return (
-    <TooltipProvider>
-      <Card
-        className={`${
-          className || ""
-        } h-full hover:shadow-sm cursor-pointer transition-all animate-fade-in`}
-        onClick={handleCardClick}
-      >
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          <CardDescription>{formatDate(tna.fecha)}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-x-8 flex items-center">
-            <div>
-              <div className="text-sm font-medium">
-                TNA
-                <Tooltip>
-                  <TooltipTrigger className="ml-1 cursor-help text-muted-foreground">
-                    (?)
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Tasa Nominal Anual</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className="text-2xl font-bold">
-                {formatNumber(tna.valor, 2)}%
-              </div>
+    <Card
+      className={`${
+        className || ""
+      } h-full hover:shadow-sm cursor-pointer transition-all animate-fade-in`}
+      onClick={handleCardClick}
+    >
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardDescription>Últ. act: {formatDate(tna.fecha)}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-x-8 flex items-center">
+          <div>
+            <div className="text-sm font-medium">
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <span 
+                    className="ml-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    TNA
+                    <sup>?</sup>
+                  </span>
+                </PopoverTrigger>
+                <PopoverContent className="text-sm">
+                  <p>Tasa Nominal Anual: sin considerar capitalizaciones</p>
+                </PopoverContent>
+              </Popover>
             </div>
-            <div>
-              <div className="text-sm font-medium">
-                TEA
-                <Tooltip>
-                  <TooltipTrigger className="ml-1 cursor-help text-muted-foreground">
-                    (?)
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Tasa Efectiva Anual</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <div className="text-2xl font-bold">
-                {formatNumber(tea.valor, 2)}%
-              </div>
+            <div className="text-2xl font-bold">
+              {formatNumber(tna.valor, 2)}%
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </TooltipProvider>
+          <div>
+            <div className="text-sm font-medium">
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <span 
+                    className="ml-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    TEA
+                    <sup>?</sup>
+                  </span>
+                </PopoverTrigger>
+                <PopoverContent className="text-sm">
+                  <p>Tasa Efectiva Anual: considera interés compuesto</p>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="text-2xl font-bold">
+              {formatNumber(tea.valor, 2)}%
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

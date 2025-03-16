@@ -22,6 +22,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // Define types based on the API schema
 interface DeudaEntidad {
@@ -346,7 +347,11 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
         <CardTitle>Deudas Actuales</CardTitle>
         <CardDescription>
           Período: {formatPeriod(deudaData.results.periodos[0].periodo)}. Monto
-          expresado en <span className="font-bold">miles de pesos</span>. Situación &quot;normal&quot; es estar al día.
+          expresado en {" "}
+          <Popover>
+            <PopoverTrigger><span className="font-bold">miles de pesos<sup>?</sup></span></PopoverTrigger>
+            <PopoverContent className="text-sm">Por ejemplo: si dice 100 son $100.000 ARS</PopoverContent>
+          </Popover>. Situación &quot;normal&quot; es estar al día.
         </CardDescription>
       </CardHeader>
       <CardContent>

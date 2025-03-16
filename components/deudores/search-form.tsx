@@ -45,7 +45,7 @@ export function SearchForm() {
           value={id}
           onChange={(e) => setId(e.target.value)}
           type="text"
-          placeholder="Ej: 20123456789"
+          placeholder="Ej: 30703088534"
           maxLength={11}
           autoFocus
         />
