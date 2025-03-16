@@ -1,26 +1,27 @@
 import { HistorialChart } from "@/components/deudores/debt-charts";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Info } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 // Define types based on the API schema
 interface DeudaEntidad {
@@ -118,7 +119,7 @@ function formatCurrency(amount: number | null): string {
     style: "currency",
     currency: "ARS",
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    maximumFractionDigits: 0,
   }).format(amount);
 }
 
@@ -148,7 +149,7 @@ function formatPeriod(periodString: string | null): string {
     "Septiembre",
     "Octubre",
     "Noviembre",
-    "Diciembre"
+    "Diciembre",
   ];
 
   return `${monthNames[month - 1]} ${year}`;
@@ -200,7 +201,7 @@ function getSituacionColor(situacion: number | null): string {
 
 // Generate metadata for the page
 export async function generateMetadata({
-  params
+  params,
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
@@ -209,7 +210,11 @@ export async function generateMetadata({
   const id: string = resolvedParams.id;
   return {
     title: `Deudas CUIT/CUIL ${id}`,
-    description: `Información de deudas registradas en el BCRA para el CUIT/CUIL ${id}`
+    description: `Información de deudas registradas en el BCRA para el CUIT/CUIL ${id}`,
+    other: {
+      // Disable telephone detection
+      "format-detection": "telephone=no",
+    },
   };
 }
 
@@ -232,9 +237,9 @@ async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      cache: "no-store"
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -270,9 +275,9 @@ async function fetchHistorial(id: string): Promise<HistorialResponse | null> {
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      cache: "no-store"
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -308,9 +313,9 @@ async function fetchCheques(id: string): Promise<ChequeResponse | null> {
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      cache: "no-store"
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -328,7 +333,7 @@ async function fetchCheques(id: string): Promise<ChequeResponse | null> {
 }
 
 // Add dynamic configuration for the route segment
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 // Create separate components for each section
@@ -340,7 +345,8 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
       <CardHeader>
         <CardTitle>Deudas Actuales</CardTitle>
         <CardDescription>
-          Período: {formatPeriod(deudaData.results.periodos[0].periodo)}. Monto expresado en <span className="font-bold">miles de pesos</span>.
+          Período: {formatPeriod(deudaData.results.periodos[0].periodo)}. Monto
+          expresado en <span className="font-bold">miles de pesos</span>.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -369,9 +375,7 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
                     </span>
                   </TableCell>
                   <TableCell>{formatCurrency(entidad.monto)}</TableCell>
-                  <TableCell>
-                    {entidad.diasAtrasoPago ?? "N/A"}
-                  </TableCell>
+                  <TableCell>{entidad.diasAtrasoPago ?? "N/A"}</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {entidad.refinanciaciones && (
@@ -418,7 +422,7 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
 
 // Wrap the main component with async
 export default async function DebtorPage({
-  params
+  params,
 }: {
   params: Promise<{ id: string }>;
 }) {
@@ -430,7 +434,7 @@ export default async function DebtorPage({
   const [deudaData, historialData, chequesData] = await Promise.all([
     fetchDeudas(id),
     fetchHistorial(id),
-    fetchCheques(id)
+    fetchCheques(id),
   ]);
 
   // If no data is found, show 404
@@ -458,8 +462,27 @@ export default async function DebtorPage({
         </div>
         <h1 className="text-3xl font-bold mb-2">Central de Deudores</h1>
         <h2 className="text-xl text-slate-700 dark:text-slate-300">
-          CUIT: {id.toString()} - {denominacion}
+          <span className="hidden md:inline">
+            CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`} -{" "}
+            {denominacion}
+          </span>
+          <span className="md:hidden">
+            CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`}
+            <br />
+            {denominacion}
+          </span>
         </h2>
+        <Alert className="mt-4 block md:hidden">
+          <Info className="mr-2 size-4" />
+          <AlertTitle className="font-bold mb-2">
+            Página diseñada para computadoras
+          </AlertTitle>
+          <AlertDescription>
+            Todavía el diseño para celulares no está listo, así que la mejor
+            experiencia la vas a tener entrando desde la computadora. Los datos
+            se muestran correctamente en el celular también.
+          </AlertDescription>
+        </Alert>
       </div>
 
       <div className="grid gap-6">
@@ -561,12 +584,12 @@ export default async function DebtorPage({
               <CardFooter className="text-sm text-muted-foreground mt-4">
                 Estas consultas se realizan sobre la Central de cheques
                 rechazados, conformada por datos recibidos diariamente de los
-                bancos, que se publican sin alteraciones de acuerdo con los plazos
-                dispuestos en el inciso 4 del artículo 26 de la Ley 25.326 de
-                Protección de los Datos Personales y con el criterio establecido
-                en el punto 1.3. de la Sección 1 del Texto ordenado Centrales de
-                Información. Su difusión no implica conformidad por parte de este
-                Banco Central.
+                bancos, que se publican sin alteraciones de acuerdo con los
+                plazos dispuestos en el inciso 4 del artículo 26 de la Ley
+                25.326 de Protección de los Datos Personales y con el criterio
+                establecido en el punto 1.3. de la Sección 1 del Texto ordenado
+                Centrales de Información. Su difusión no implica conformidad por
+                parte de este Banco Central.
               </CardFooter>
             </CardContent>
           </Card>
