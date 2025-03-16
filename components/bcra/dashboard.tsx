@@ -32,7 +32,7 @@ export default function BCRADashboard() {
             <div className="text-center">
               <h1 className="text-3xl font-bold mb-2">BCRA en Vivo</h1>
               <p className="text-muted-foreground">
-                Visualización de variables monetarias del Banco Central de la República Argentina
+                Visualización de variables económicas, monetarias y cambiarias del Banco Central de la República Argentina.
               </p>
             </div>
           </header>
