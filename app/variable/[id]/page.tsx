@@ -114,7 +114,7 @@ async function VariableDetail({ id }: { id: number }) {
           <CardContent>
             <Link
               href={`https://chat.openai.com/?q=${encodeURIComponent(
-                `Explicá la variable "${variableDescription}" del Banco Central de la República Argentina (BCRA). Qué significa que actualmente tenga un valor de ${latestDataPoint.valor}?`
+                `Explicá la variable "${variableDescription.replace(/%/g, 'porcentaje')}" del Banco Central de la República Argentina (BCRA). Qué significa que actualmente tenga un valor de ${latestDataPoint.valor}?`
               )}`}
               target="_blank"
               rel="noopener noreferrer"
