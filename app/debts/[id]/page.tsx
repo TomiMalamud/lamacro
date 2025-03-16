@@ -22,7 +22,11 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // Define types based on the API schema
 interface DeudaEntidad {
@@ -206,7 +210,6 @@ export async function generateMetadata({
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  // Need to await params as it's a Promise in Next.js 15
   const resolvedParams = await params;
   const id: string = resolvedParams.id;
   return {
@@ -347,11 +350,37 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
         <CardTitle>Deudas Actuales</CardTitle>
         <CardDescription>
           Período: {formatPeriod(deudaData.results.periodos[0].periodo)}. Monto
-          expresado en {" "}
+          expresado en{" "}
           <Popover>
-            <PopoverTrigger><span className="font-bold">miles de pesos<sup>?</sup></span></PopoverTrigger>
-            <PopoverContent className="text-sm">Por ejemplo: si dice 100 son $100.000 ARS</PopoverContent>
-          </Popover>. Situación &quot;normal&quot; es estar al día.
+            <PopoverTrigger>
+              <span className="font-bold">
+                miles de pesos<sup>?</sup>
+              </span>
+            </PopoverTrigger>
+            <PopoverContent className="text-sm">
+              Por ejemplo: si dice 100 son $100.000 ARS
+            </PopoverContent>
+          </Popover>
+          .
+          <span className="block">
+            La deuda incluye los consumos realizados con tarjeta de crédito. La
+            situación &quot;normal&quot; {" "}
+            <Popover>
+              <PopoverTrigger className="font-bold">
+                es estar al día.<sup>?</sup>
+              </PopoverTrigger>
+              <PopoverContent className="text-sm">
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Normal: Atraso en el pago que no supere los 31 días. (o sea, al día)</li>
+                  <li>Riesgo bajo: Atraso en el pago de más de 31 y hasta 90 días desde el vencimiento.</li>
+                  <li>Riesgo medio: Atraso en el pago de más de 90 y hasta 180 días.</li>
+                  <li>Riesgo alto: Atraso en el pago de más de 180 días hasta un año.</li>
+                  <li>Irrecuperable: Atrasos superiores a un año.</li>                  
+                </ul>
+                <a className="text-blue-500 hover:text-blue-600" href="https://www.bcra.gob.ar/BCRAyVos/Preg-Frec-Qué-significa-cada-situación-en-la-Central-de-deudores-considerando-sólo-la-mora.asp" target="_blank" rel="noopener noreferrer">Fuente</a>
+              </PopoverContent>
+            </Popover>
+          </span>
         </CardDescription>
       </CardHeader>
       <CardContent>
