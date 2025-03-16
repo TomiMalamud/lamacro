@@ -340,7 +340,7 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
       <CardHeader>
         <CardTitle>Deudas Actuales</CardTitle>
         <CardDescription>
-          Período: {formatPeriod(deudaData.results.periodos[0].periodo)}
+          Período: {formatPeriod(deudaData.results.periodos[0].periodo)}. Monto expresado en <span className="font-bold">miles de pesos</span>.
         </CardDescription>
       </CardHeader>
       <CardContent>
