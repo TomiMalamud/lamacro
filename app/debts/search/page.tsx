@@ -14,6 +14,10 @@ export const metadata: Metadata = {
     "Buscar información de deudas registradas en el BCRA por CUIT/CUIL"
 };
 
+// Mark this page as static to improve performance
+export const dynamic = "force-static";
+export const revalidate = false;
+
 export default function DebtSearchPage() {
   return (
     <main className="container mx-auto py-8 px-4">

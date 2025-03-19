@@ -1,4 +1,5 @@
 import { HistorialChart } from "@/components/deudores/debt-charts";
+import { SearchForm } from "@/components/deudores/search-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
@@ -8,6 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -20,13 +26,7 @@ import {
 import { ChevronLeft, Info } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 // Define types based on the API schema
 interface DeudaEntidad {
@@ -224,26 +224,15 @@ export async function generateMetadata({
 
 async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
   try {
-    // Create a URL that works in both server and client environments
-    let url: string;
-
-    // Check if we're in a browser environment
-    if (typeof window !== "undefined") {
-      // Client-side: Use relative URL which will be resolved against the current origin
-      url = `/api/bcra/deudores/${id}`;
-    } else {
-      // Server-side: Use absolute URL with environment variable or default
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-      url = `${baseUrl}/api/bcra/deudores/${id}`;
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const url = `${baseUrl}/api/bcra/deudores/${id}`;
 
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      cache: "no-store",
+      next: { tags: [`deudores-${id}`] }
     });
 
     if (!response.ok) {
@@ -262,26 +251,15 @@ async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
 
 async function fetchHistorial(id: string): Promise<HistorialResponse | null> {
   try {
-    // Create a URL that works in both server and client environments
-    let url: string;
-
-    // Check if we're in a browser environment
-    if (typeof window !== "undefined") {
-      // Client-side: Use relative URL which will be resolved against the current origin
-      url = `/api/bcra/deudores/historicas/${id}`;
-    } else {
-      // Server-side: Use absolute URL with environment variable or default
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-      url = `${baseUrl}/api/bcra/deudores/historicas/${id}`;
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const url = `${baseUrl}/api/bcra/deudores/historicas/${id}`;
 
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      cache: "no-store",
+      next: { tags: [`historicas-${id}`] }
     });
 
     if (!response.ok) {
@@ -300,26 +278,15 @@ async function fetchHistorial(id: string): Promise<HistorialResponse | null> {
 
 async function fetchCheques(id: string): Promise<ChequeResponse | null> {
   try {
-    // Create a URL that works in both server and client environments
-    let url: string;
-
-    // Check if we're in a browser environment
-    if (typeof window !== "undefined") {
-      // Client-side: Use relative URL which will be resolved against the current origin
-      url = `/api/bcra/deudores/cheques/${id}`;
-    } else {
-      // Server-side: Use absolute URL with environment variable or default
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-      url = `${baseUrl}/api/bcra/deudores/cheques/${id}`;
-    }
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const url = `${baseUrl}/api/bcra/deudores/cheques/${id}`;
 
     const response = await fetch(url, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      cache: "no-store",
+      next: { tags: [`cheques-${id}`] }
     });
 
     if (!response.ok) {
@@ -335,10 +302,6 @@ async function fetchCheques(id: string): Promise<ChequeResponse | null> {
     return null;
   }
 }
-
-// Add dynamic configuration for the route segment
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 // Create separate components for each section
 function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
@@ -375,7 +338,7 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
                   <li>Riesgo bajo: Atraso en el pago de más de 31 y hasta 90 días desde el vencimiento.</li>
                   <li>Riesgo medio: Atraso en el pago de más de 90 y hasta 180 días.</li>
                   <li>Riesgo alto: Atraso en el pago de más de 180 días hasta un año.</li>
-                  <li>Irrecuperable: Atrasos superiores a un año.</li>                  
+                  <li>Irrecuperable: Atrasos superiores a un año.</li>
                 </ul>
                 <a className="text-blue-500 hover:text-blue-600" href="https://www.bcra.gob.ar/BCRAyVos/Preg-Frec-Qué-significa-cada-situación-en-la-Central-de-deudores-considerando-sólo-la-mora.asp" target="_blank" rel="noopener noreferrer">Fuente</a>
               </PopoverContent>
@@ -454,16 +417,8 @@ function DebtSection({ deudaData }: { deudaData: DeudaResponse | null }) {
   );
 }
 
-// Wrap the main component with async
-export default async function DebtorPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  // Need to await params as it's a Promise in Next.js 15
-  const resolvedParams = await params;
-  const id: string = resolvedParams.id;
-
+// Wrap the fetch in a separate component
+async function DebtorData({ id }: { id: string }) {
   // Fetch data in parallel using Promise.all
   const [deudaData, historialData, chequesData] = await Promise.all([
     fetchDeudas(id),
@@ -471,19 +426,11 @@ export default async function DebtorPage({
     fetchCheques(id),
   ]);
 
-  // If no data is found, show 404
-  if (!deudaData && !historialData && !chequesData) {
-    notFound();
-  }
-
-  const denominacion =
-    deudaData?.results?.denominacion ||
-    historialData?.results?.denominacion ||
-    chequesData?.results?.denominacion ||
-    "No disponible";
+  // If no data is found, show a friendly error message instead of 404
+  const hasData = deudaData || historialData || chequesData;
 
   return (
-    <main className="min-h-screen mx-auto p-6 sm:px-16">
+    <>
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
           <Link
@@ -495,36 +442,76 @@ export default async function DebtorPage({
           </Link>
         </div>
         <h1 className="text-3xl font-bold mb-2">Central de Deudores</h1>
-        <h2 className="text-xl text-slate-700 dark:text-slate-300">
-          <span className="hidden md:inline">
-            CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`} -{" "}
-            {denominacion}
-          </span>
-          <span className="md:hidden">
+        {hasData ? (
+          <h2 className="text-xl text-slate-700 dark:text-slate-300">
+            <span className="hidden md:inline">
+              CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`} -
+              <span className="animate-fade-in">
+                {" "}
+                {deudaData?.results?.denominacion ||
+                  historialData?.results?.denominacion ||
+                  chequesData?.results?.denominacion ||
+                  "No disponible"}
+              </span>
+            </span>
+            <span className="md:hidden">
+              CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`}
+              <br />
+              {deudaData?.results?.denominacion ||
+                historialData?.results?.denominacion ||
+                chequesData?.results?.denominacion ||
+                "No disponible"}
+            </span>
+          </h2>
+        ) : (
+          <h2 className="text-xl text-slate-700 dark:text-slate-300">
             CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`}
-            <br />
-            {denominacion}
-          </span>
-        </h2>
-        <Alert className="mt-4 block md:hidden">
-          <Info className="mr-2 size-4" />
-          <AlertTitle className="font-bold mb-2">
-            Página diseñada para computadoras
-          </AlertTitle>
-          <AlertDescription>
-            Todavía el diseño para celulares no está listo, así que la mejor
-            experiencia la vas a tener entrando desde la computadora. Los datos
-            se muestran correctamente en el celular también.
-          </AlertDescription>
-        </Alert>
+          </h2>
+        )}
+        {hasData && (
+          <Alert className="mt-4 block md:hidden">
+            <Info className="mr-2 size-4" />
+            <AlertTitle className="font-bold mb-2">
+              Página diseñada para computadoras
+            </AlertTitle>
+            <AlertDescription>
+              Todavía el diseño para celulares no está listo, así que la mejor
+              experiencia la vas a tener entrando desde la computadora. Los datos
+              se muestran correctamente en el celular también.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
-      <div className="grid gap-6">
-        <Suspense fallback={<DebtSectionSkeleton />}>
+      {!hasData ? (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-amber-600">CUIT/CUIL no encontrado</CardTitle>
+            <CardDescription>
+              No se encontraron registros para este número en la Central de Deudores del BCRA
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div>
+                <p className="mb-2">Posibles razones:</p>
+                <ul className="list-disc pl-6 space-y-1">
+                  <li>El CUIT/CUIL ingresado no existe o es incorrecto</li>
+                  <li>La persona o entidad no tiene deudas registradas en el sistema financiero</li>
+                </ul>
+              </div>
+              <div className="border-t">
+                <div className="max-w-md mt-6">
+                  <SearchForm initialValue={id} />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6">
           <DebtSection deudaData={deudaData} />
-        </Suspense>
 
-        <Suspense fallback={<ChequesSkeletonSection />}>
           {/* Cheques section */}
           <Card>
             <CardHeader>
@@ -627,245 +614,289 @@ export default async function DebtorPage({
               </CardFooter>
             </CardContent>
           </Card>
-        </Suspense>
 
-        <Suspense fallback={<HistorialChartSkeleton />}>
           {historialData &&
             historialData.results.periodos &&
             historialData.results.periodos.length > 0 && (
               <HistorialChart periodos={historialData.results.periodos} />
             )}
-        </Suspense>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Consultas Adicionales</h2>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Facturas y Créditos</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Link
-                  href={`https://epyme.cajadevalores.com.ar/comportamientodepago`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  Facturas de Crédito Electrónicas MiPyMEs
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Información de la Caja de Valores (BYMA)
-                </p>
-              </div>
-              <div>
-                <Link
-                  href={`https://servicioswww.anses.gob.ar/YHConsBCRASitio/ConsultaBCRA/InicioConsulta?cuil=${id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  Créditos ANSES
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Información de ANSES
-                </p>
-              </div>
-              <div>
-                <Link
-                  href={`https://extranet.hipotecario.com.ar/procrear/entidades/situacionBCRA?cuil=${id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  ProCreAr
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Información del Programa de Crédito Argentino
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Deudas Provinciales</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Link
-                  href={`http://www.arba.gov.ar/Aplicaciones/EstadoDeuda.asp?cuit=${id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  ARBA
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Agencia de Recaudación de Buenos Aires
-                </p>
-              </div>
-              <div>
-                <Link
-                  href="https://www.rentascordoba.gob.ar/gestiones/consulta/situacion-fiscal"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  Rentas Córdoba
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Información de rentas de Córdoba
-                </p>
-              </div>
-              <div>
-                <Link
-                  href={`http://www.dgrcorrientes.gov.ar/rentascorrientes/jsp/servicios/introConsultaBCRA.jsp?cuit=${id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  Rentas de Corrientes
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Información de rentas de Corrientes
-                </p>
-              </div>
-              <div>
-                <Link
-                  href="https://www.dgrsalta.gov.ar/Inicio"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  Rentas de Salta
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Información de rentas de Salta
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Otros Registros</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div>
-                <Link
-                  href="https://rdam.mjus.gba.gob.ar/solicitudCertificado"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline block"
-                >
-                  Registro de Deudores Alimentarios Morosos
-                </Link>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Provincia de Buenos Aires (RDAM)
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         </div>
+      )}
 
-        <div className="text-sm text-muted-foreground mb-8">
+      {hasData && (
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">Consultas Adicionales</h2>
+
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Facturas y Créditos</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Link
+                    href={`https://epyme.cajadevalores.com.ar/comportamientodepago`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    Facturas de Crédito Electrónicas MiPyMEs
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Información de la Caja de Valores (BYMA)
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href={`https://servicioswww.anses.gob.ar/YHConsBCRASitio/ConsultaBCRA/InicioConsulta?cuil=${id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    Créditos ANSES
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Información de ANSES
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href={`https://extranet.hipotecario.com.ar/procrear/entidades/situacionBCRA?cuil=${id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    ProCreAr
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Información del Programa de Crédito Argentino
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Deudas Provinciales</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Link
+                    href={`http://www.arba.gov.ar/Aplicaciones/EstadoDeuda.asp?cuit=${id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    ARBA
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Agencia de Recaudación de Buenos Aires
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href="https://www.rentascordoba.gob.ar/gestiones/consulta/situacion-fiscal"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    Rentas Córdoba
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Información de rentas de Córdoba
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href={`http://www.dgrcorrientes.gov.ar/rentascorrientes/jsp/servicios/introConsultaBCRA.jsp?cuit=${id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    Rentas de Corrientes
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Información de rentas de Corrientes
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href="https://www.dgrsalta.gov.ar/Inicio"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    Rentas de Salta
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Información de rentas de Salta
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Otros Registros</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <Link
+                    href="https://rdam.mjus.gba.gob.ar/solicitudCertificado"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline block"
+                  >
+                    Registro de Deudores Alimentarios Morosos
+                  </Link>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Provincia de Buenos Aires (RDAM)
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-sm text-muted-foreground mb-8">
+            <p>
+              El BCRA no tiene responsabilidad alguna por los datos difundidos en
+              los enlaces anteriores. La información corresponde a las respectivas
+              entidades mencionadas.
+            </p>
+          </div>
+
+          <h2 className="text-xl font-semibold mb-4">Información Adicional</h2>
+
+          <h3 className="font-semibold mt-4">1. Denominación del deudor</h3>
           <p>
-            El BCRA no tiene responsabilidad alguna por los datos difundidos en
-            los enlaces anteriores. La información corresponde a las respectivas
-            entidades mencionadas.
+            Nombre o razón social de la persona humana o jurídica que figura en el
+            padrón de la Agencia de Recaudación y Control Aduanero (ARCA) o bien
+            la que fuera registrada por la entidad informante.
           </p>
+
+          <h3 className="font-semibold mt-4">2. Entidad</h3>
+          <p>Denominación de la entidad informante.</p>
+
+          <h3 className="font-semibold mt-4">3. Situación</h3>
+          <p>
+            Indica la clasificación del deudor informada por la entidad. Para más
+            información, acceder al{" "}
+            <Link
+              className="text-blue-500 hover:underline"
+              href="https://www.bcra.gob.ar/Pdfs/Texord/t-cladeu.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Texto ordenado de las normas sobre Clasificación de deudores
+            </Link>
+            .
+          </p>
+
+          <ul className="list-disc pl-6 mt-2 space-y-2">
+            <li>
+              <strong>Situación 1:</strong> En situación normal | Cartera
+              comercial y Cartera para consumo o vivienda
+            </li>
+            <li>
+              <strong>Situación 2:</strong> Con seguimiento especial | Cartera
+              comercial y Riesgo bajo | Cartera para consumo o vivienda
+            </li>
+            <li>
+              <strong>Situación 3:</strong> Con problemas | Cartera comercial y
+              Riesgo medio | Cartera para consumo o vivienda
+            </li>
+            <li>
+              <strong>Situación 4:</strong> Con alto riesgo de insolvencia |
+              Cartera comercial y Riesgo alto | Cartera para consumo o vivienda
+            </li>
+            <li>
+              <strong>Situación 5:</strong> Irrecuperable | Cartera comercial y
+              Cartera para consumo o vivienda
+            </li>
+          </ul>
+
+          <h3 className="font-semibold mt-4">5. Monto</h3>
+          <p>Información en miles de pesos.</p>
+
+          <h3 className="font-semibold mt-4">
+            6. Días atraso y 7. Observaciones
+          </h3>
+          <p>
+            Según lo determinado en el punto 8. del apartado B del{" "}
+            <Link
+              className="text-blue-500 hover:underline"
+              href="https://www.bcra.gob.ar/Pdfs/Texord/t-RI-DSF.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Texto ordenado del &quot;Régimen Informativo Contable Mensual -
+              Deudores del Sistema Financiero&quot;
+            </Link>
+            . Para deudores de cartera de consumo o vivienda en situación distinta
+            a la normal, se informan los días de atraso en casos de
+            refinanciaciones, recategorización obligatoria o situación jurídica.
+            La leyenda (N/A) indica &quot;No Aplicable&quot;.
+          </p>
+
+          <h3 className="font-semibold mt-4">
+            8. Protección de Datos Personales
+          </h3>
+          <p>
+            Los deudores se identifican según la Ley 25.326 de Protección de los
+            Datos Personales:
+          </p>
+          <ul className="list-disc pl-6 mt-2">
+            <li>Información sometida a revisión (artículo 16, inciso 6)</li>
+            <li>
+              Información sometida a proceso judicial (artículo 38, inciso 3)
+            </li>
+          </ul>
         </div>
+      )}
+    </>
+  );
+}
 
-        <h2 className="text-xl font-semibold mb-4">Información Adicional</h2>
+// Wrap the main component with async
+export default async function DebtorPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // Need to await params as it's a Promise in Next.js 15
+  const resolvedParams = await params;
+  const id: string = resolvedParams.id;
 
-        <h3 className="font-semibold mt-4">1. Denominación del deudor</h3>
-        <p>
-          Nombre o razón social de la persona humana o jurídica que figura en el
-          padrón de la Agencia de Recaudación y Control Aduanero (ARCA) o bien
-          la que fuera registrada por la entidad informante.
-        </p>
-
-        <h3 className="font-semibold mt-4">2. Entidad</h3>
-        <p>Denominación de la entidad informante.</p>
-
-        <h3 className="font-semibold mt-4">3. Situación</h3>
-        <p>
-          Indica la clasificación del deudor informada por la entidad. Para más
-          información, acceder al{" "}
-          <Link
-            className="text-blue-500 hover:underline"
-            href="https://www.bcra.gob.ar/Pdfs/Texord/t-cladeu.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Texto ordenado de las normas sobre Clasificación de deudores
-          </Link>
-          .
-        </p>
-
-        <ul className="list-disc pl-6 mt-2 space-y-2">
-          <li>
-            <strong>Situación 1:</strong> En situación normal | Cartera
-            comercial y Cartera para consumo o vivienda
-          </li>
-          <li>
-            <strong>Situación 2:</strong> Con seguimiento especial | Cartera
-            comercial y Riesgo bajo | Cartera para consumo o vivienda
-          </li>
-          <li>
-            <strong>Situación 3:</strong> Con problemas | Cartera comercial y
-            Riesgo medio | Cartera para consumo o vivienda
-          </li>
-          <li>
-            <strong>Situación 4:</strong> Con alto riesgo de insolvencia |
-            Cartera comercial y Riesgo alto | Cartera para consumo o vivienda
-          </li>
-          <li>
-            <strong>Situación 5:</strong> Irrecuperable | Cartera comercial y
-            Cartera para consumo o vivienda
-          </li>
-        </ul>
-
-        <h3 className="font-semibold mt-4">5. Monto</h3>
-        <p>Información en miles de pesos.</p>
-
-        <h3 className="font-semibold mt-4">
-          6. Días atraso y 7. Observaciones
-        </h3>
-        <p>
-          Según lo determinado en el punto 8. del apartado B del{" "}
-          <Link
-            className="text-blue-500 hover:underline"
-            href="https://www.bcra.gob.ar/Pdfs/Texord/t-RI-DSF.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Texto ordenado del &quot;Régimen Informativo Contable Mensual -
-            Deudores del Sistema Financiero&quot;
-          </Link>
-          . Para deudores de cartera de consumo o vivienda en situación distinta
-          a la normal, se informan los días de atraso en casos de
-          refinanciaciones, recategorización obligatoria o situación jurídica.
-          La leyenda (N/A) indica &quot;No Aplicable&quot;.
-        </p>
-
-        <h3 className="font-semibold mt-4">
-          8. Protección de Datos Personales
-        </h3>
-        <p>
-          Los deudores se identifican según la Ley 25.326 de Protección de los
-          Datos Personales:
-        </p>
-        <ul className="list-disc pl-6 mt-2">
-          <li>Información sometida a revisión (artículo 16, inciso 6)</li>
-          <li>
-            Información sometida a proceso judicial (artículo 38, inciso 3)
-          </li>
-        </ul>
-      </div>
+  return (
+    <main className="min-h-screen mx-auto p-6 sm:px-16">
+      <Suspense fallback={
+        <>
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Link
+                href="/debts/search"
+                className="inline-flex items-center text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+              >
+                <ChevronLeft className="mr-1" size={16} />
+                Volver a búsqueda
+              </Link>
+            </div>
+            <h1 className="text-3xl font-bold mb-2">Central de Deudores</h1>
+            <h2 className="text-xl text-slate-700 dark:text-slate-300">
+              <span>
+                CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`}
+              </span>
+            </h2>
+          </div>
+          <div className="grid gap-6">
+            <DebtSectionSkeleton />
+            <ChequesSkeletonSection />
+            <HistorialChartSkeleton />
+          </div>
+        </>
+      }>
+        <DebtorData id={id} />
+      </Suspense>
     </main>
   );
 }
