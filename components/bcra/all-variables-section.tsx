@@ -8,7 +8,12 @@ import { BCRAVariable } from "@/lib/bcra-api";
 
 // Helper function to normalize text (remove accents)
 const normalizeText = (text: string) => {
-  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, ' '); // Replace multiple spaces with a single space
 };
 
 interface AllVariablesSectionProps {
@@ -31,10 +36,10 @@ export default function AllVariablesSection({
     return normalizedDescription.includes(normalizedSearch);
   });
 
-  // Show only 10 variables initially or all if showAll is true, applied to filtered results
+  // Show only 3 variables initially or all if showAll is true, applied to filtered results
   const displayedVariables = showAll 
     ? filteredVariables 
-    : filteredVariables.slice(0, 10);
+    : filteredVariables.slice(0, 3);
 
   return (
     <section className="mt-12">
@@ -43,12 +48,13 @@ export default function AllVariablesSection({
       </h2>
 
       {filteredVariables.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {displayedVariables.map((variable: BCRAVariable) => (
             <VariableCard
               key={variable.idVariable}
               variable={variable}
               className="h-full"
+              disableTrend={true}
             />
           ))}
         </div>
@@ -58,8 +64,8 @@ export default function AllVariablesSection({
         </p>
       )}
       
-      {/* Show more/less button - only show if we have more than 10 filtered variables */}
-      {filteredVariables.length > 10 && (
+      {/* Show more/less button - only show if we have more than 3 filtered variables */}
+      {filteredVariables.length > 3 && (
         <div className="flex justify-center mt-6">
           <Button 
             variant="outline" 
@@ -73,7 +79,7 @@ export default function AllVariablesSection({
               </>
             ) : (
               <>
-                <span>Mostrar {filteredVariables.length - 10} más</span>
+                <span>Mostrar {filteredVariables.length - 3} más</span>
                 <ChevronDown className="h-4 w-4" />
               </>
             )}

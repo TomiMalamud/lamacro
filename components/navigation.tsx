@@ -5,8 +5,8 @@ export function Navigation() {
   return (
     <nav className="border-b bg-background">
       <div className="container mx-auto flex h-16 items-center px-4">
-        <div className="mr-4 flex hidden sm:block">
-          <Link href="/" className="flex items-center">
+        <div className="mr-4 hidden sm:block">
+          <Link href="/" className="flex items-center" prefetch={true}>
             <span className="text-lg font-bold">BCRA en Vivo</span>
           </Link>
         </div>
@@ -15,12 +15,14 @@ export function Navigation() {
             <Link
               href="/"
               className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent rounded-md"
+              prefetch={true}
             >
-              Variables
+              Estadísticas
             </Link>
             <Link
               href="/debts/search"
               className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent rounded-md"
+              prefetch={true}
             >
               Central de Deudores
             </Link>

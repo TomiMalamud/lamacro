@@ -1,16 +1,14 @@
 "use client";
 
 import {
-    BCRAVariable,
-    formatMonetaryValue,
-    formatNumber
+  BCRAVariable,
+  formatNumber
 } from "@/lib/bcra-api";
 import { useState } from "react";
 import { VariableTimeSeriesChart } from "./variable-time-series-chart";
 
 export function VariableDetailClient({
   initialValue,
-  variableDescription,
   initialData,
   variableId
 }: {
@@ -25,7 +23,7 @@ export function VariableDetailClient({
     <>
       <div className="flex items-center gap-3">
         <div className="text-3xl font-bold">
-          {formatMonetaryValue(initialValue, variableDescription)}
+          {formatNumber(initialValue)}
         </div>
         {percentChange !== null && (
           <span>

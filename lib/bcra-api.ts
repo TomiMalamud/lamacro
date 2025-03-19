@@ -19,20 +19,6 @@ export type BCRAData = {
   data: BCRAVariable[];
 };
 
-// Enhanced visual categorization
-export enum VisualizationType {
-  KEY_INDICATOR = 'key_indicator',        // Simple number display
-  PERCENTAGE = 'percentage',              // Percentage-based data
-  MONETARY = 'monetary',                  // Monetary values (in pesos/dollars)
-  EXCHANGE_RATE = 'exchange_rate',        // Exchange rates
-  INTEREST_RATE = 'interest_rate',        // Interest rates
-  BALANCE = 'balance',                    // Balance information
-  TIME_SERIES = 'time_series',            // Variables that make sense in a time context
-  MONETARY_EFFECT = 'monetary_effect',    // Effects on monetary base
-  DAILY_CHANGE = 'daily_change',          // Daily change metrics
-  DEFAULT = 'default'                     // Default fallback
-}
-
 // Define which categories should use time series visualization
 const TIME_SERIES_CATEGORIES = [
   'Principales Variables'
@@ -58,7 +44,7 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
   try {
     let url: string;
     let origin: string;
-    
+
     // Check if we're in the browser or on the server
     if (typeof window !== 'undefined') {
       // Client-side: use relative URL and window.location
@@ -66,19 +52,19 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
       origin = window.location.origin;
     } else {
       // Server-side: Next.js's Node.js environment requires absolute URLs
-      const baseUrl = process.env.VERCEL_URL 
+      const baseUrl = process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
         : process.env.NODE_ENV === 'production'
           ? 'https://bcraenvivo.vercel.app'
           : 'http://localhost:3000';
-          
+
       url = `${baseUrl}/api/bcra`;
       origin = baseUrl;
     }
-        
+
     // Add Argentina-specific headers to our internal API request
     // This ensures we're matching the same headers pattern the API uses externally
-    const response = await fetch(url, { 
+    const response = await fetch(url, {
       cache: 'no-store',
       headers: {
         'Accept': 'application/json, text/plain, */*',
@@ -91,12 +77,12 @@ export async function fetchBCRAData(): Promise<BCRAResponse> {
         'Referer': origin,
       }
     });
-    
+
     if (!response.ok) {
       console.error(`Error fetching BCRA data: ${response.status} ${response.statusText}`);
       throw new Error(`Error fetching BCRA data: ${response.status}`);
     }
-    
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -126,109 +112,16 @@ export function groupVariablesByCustomGroups(variables: BCRAVariable[]): Record<
   return result;
 }
 
-export function getVisualizationType(variable: BCRAVariable): VisualizationType {
-  const description = variable.descripcion.toLowerCase();
-  
-  if (VARIABLE_GROUPS.KEY_METRICS.includes(variable.idVariable)) {
-    return VisualizationType.KEY_INDICATOR;
-  }
-  
-  if (description.includes('%') || description.includes('percent')) {
-    return VisualizationType.PERCENTAGE;
-  }
-  
-  if (description.includes('rate') && description.includes('interest')) {
-    return VisualizationType.INTEREST_RATE;
-  }
-  
-  if (description.includes('exchange rate') || description.includes('currency')) {
-    return VisualizationType.EXCHANGE_RATE;
-  }
-  
-  if (description.includes('monetary effect')) {
-    return VisualizationType.MONETARY_EFFECT;
-  }
-  
-  if (description.includes('daily change')) {
-    return VisualizationType.DAILY_CHANGE;
-  }
-  
-  if (description.includes('balance')) {
-    return VisualizationType.BALANCE;
-  }
-  
-  if (description.includes('in million') || description.includes('pesos') || description.includes('dollars') || description.includes('ars') || description.includes('usd') || description.includes('dólares') || description.includes('millones')) {
-    return VisualizationType.MONETARY;
-  }
-  
-  if (TIME_SERIES_CATEGORIES.includes(variable.categoria)) {
-    return VisualizationType.TIME_SERIES;
-  }
-  
-  return VisualizationType.DEFAULT;
-}
-
-export function formatNumber(value: number, decimals = 2): string {
+export function formatNumber(value: number, decimals?: number): string {
   return new Intl.NumberFormat('es-AR', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
+    ...(decimals !== undefined && {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    })
   }).format(value);
-}
-
-export function formatMonetaryValue(value: number, description: string): string {
-  const isInMillions = description.toLowerCase().includes('(in million') || 
-                        description.toLowerCase().includes('million');
-  const isPesos = description.toLowerCase().includes('pesos') || 
-                  description.toLowerCase().includes('ars') || 
-                  description.toLowerCase().includes('$');
-  const isDollars = description.toLowerCase().includes('dollars')
-  
-  let formattedValue = '';
-  
-  if (isInMillions) {
-    if (value > 1000000) {
-      formattedValue = `${formatNumber(value / 1000000, 2)} B`; // Billions
-    } else if (value > 1000) {
-      formattedValue = `${formatNumber(value / 1000, 2)} MM`; // Millions
-    } else {
-      formattedValue = `${formatNumber(value, 2)} M`; // Millions
-    }
-  } else {
-    formattedValue = formatNumber(value, 2);
-  }
-  
-  if (isPesos) {
-    return `$${formattedValue}`;
-  } else if (isDollars) {
-    return `US$${formattedValue}`;
-  }
-  
-  return formattedValue;
 }
 
 export function formatDate(dateString: string): string {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat('es-AR').format(date);
-}
-
-export function getTrendIndicator(variable: BCRAVariable): 'positive' | 'negative' | 'neutral' {
-  const description = variable.descripcion.toLowerCase();
-  const valor = variable.valor;
-  
-  let isPositiveDirection = true;
-  
-  if (
-    description.includes('inflation') ||
-    (description.includes('rate') && !description.includes('reserves'))
-  ) {
-    isPositiveDirection = false;
-  }
-  
-  if (valor > 0) {
-    return isPositiveDirection ? 'positive' : 'negative';
-  } else if (valor < 0) {
-    return isPositiveDirection ? 'negative' : 'positive';
-  }
-  
-  return 'neutral';
 }

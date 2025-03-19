@@ -28,7 +28,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(nextTheme)}
-      className="relative rounded-md w-8 h-8 flex items-center justify-center p-1.5 hover:bg-gray-200 dark:hover:bg-[#313131] hover:scale-105 transition-all duration-200 group"
+      className="relative rounded-md w-8 h-8 flex items-center justify-center p-1.5 hover:bg-gray-200 dark:hover:bg-[#313131] transition-all duration-200 group"
       aria-label={`Switch to ${nextTheme} mode`}
       title={`Switch to ${nextTheme} mode`}
     >
@@ -37,7 +37,7 @@ export function ThemeToggle() {
       <div className="relative w-4 h-4">
         {/* Moon icon for dark mode */}
         <div
-          className={`absolute inset-0 transition-transform duration-200 ${
+          className={`absolute inset-0 transition-transform duration-200 hover:rotate-12 ${
             currentTheme === "dark"
               ? "rotate-0 opacity-100"
               : "rotate-90 opacity-0"
@@ -48,7 +48,7 @@ export function ThemeToggle() {
 
         {/* Sun icon for light mode */}
         <div
-          className={`absolute inset-0 transition-transform duration-200 ${
+          className={`absolute inset-0 transition-transform duration-200 hover:rotate-12 ${
             currentTheme === "dark"
               ? "-rotate-90 opacity-0"
               : "rotate-0 opacity-100"

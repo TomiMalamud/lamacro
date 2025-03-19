@@ -12,6 +12,23 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+// Generate static params for the most commonly accessed variables
+export async function generateStaticParams() {
+  return [
+    { id: '1' },   // Common exchange rate
+    { id: '4' },   // Another exchange rate
+    { id: '27' },  // Inflation
+    { id: '28' },  // Inflation
+    { id: '29' },  // Inflation
+    { id: '160' }, // Monetary
+    { id: '161' }, // Monetary
+    { id: '136' }, // Monetary
+    { id: '137' }, // Monetary
+    { id: '139' }, // Monetary
+    { id: '140' }  // Monetary
+  ];
+}
+
 // Page component for variable details
 export default async function VariableDetailPage({
   params
@@ -94,7 +111,7 @@ async function VariableDetail({ id }: { id: number }) {
     return (
       <div className="space-y-4 sm:px-16 px-6">
         <h1 className="text-3xl font-bold text-primary">
-          {variableDescription}
+          {variableDescription.replace('n.a.', 'TNA').replace('e.a.', 'TEA')}
         </h1>
         <p className="text-sm text-muted-foreground">
           Última actualización: {formatDate(latestDataPoint.fecha)}
@@ -130,7 +147,7 @@ async function VariableDetail({ id }: { id: number }) {
     );
   } catch (error) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6  sm:px-16 px-6">
         <h1 className="text-3xl font-bold font-mono tracking-tight">
           Variable #{id}
         </h1>
@@ -142,8 +159,7 @@ async function VariableDetail({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <p className="text-red-600">
-              No se pudieron cargar los datos para esta variable. Es posible que
-              el API tenga restricciones de ubicación geográfica o IP.
+              No se pudieron cargar los datos para esta variable. Puede que no exista.
             </p>
             <p className="text-xs text-red-500 mt-2">
               {error instanceof Error ? error.message : "Error desconocido"}

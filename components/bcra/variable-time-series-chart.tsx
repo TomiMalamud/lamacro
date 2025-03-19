@@ -90,7 +90,7 @@ export function VariableTimeSeriesChart({
   const [comparisonData, setComparisonData] = useState<BCRAVariable[]>([]);
   const [exportLoading, setExportLoading] = useState(false);
   const [percentChange, setPercentChange] = useState<number | null>(null);
-  
+
   useEffect(() => {
     if (onPercentChangeUpdate) {
       onPercentChangeUpdate(percentChange);
@@ -101,13 +101,13 @@ export function VariableTimeSeriesChart({
   useEffect(() => {
     const fetchData = async () => {
       if (!dateRange?.from || !dateRange?.to) return;
-  
+
       setIsLoading(true);
       try {
         // Format dates for API query
         const desde = format(startOfDay(dateRange.from), "yyyy-MM-dd");
         const hasta = format(endOfDay(dateRange.to), "yyyy-MM-dd");
-  
+
         // Call API with parameters
         const response = await fetchVariableTimeSeries(
           variableId,
@@ -117,14 +117,14 @@ export function VariableTimeSeriesChart({
         if (response && response.results) {
           const newData = response.results;
           setData(newData);
-          
+
           // Calculate percentage change for custom range
           if (newData.length > 1) {
             // Sort data by date (newest first)
             const sortedData = [...newData].sort(
               (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
             );
-  
+
             const firstValue = sortedData[sortedData.length - 1].valor; // Oldest value
             const lastValue = sortedData[0].valor; // Most recent value
             const change = lastValue - firstValue;
@@ -141,7 +141,7 @@ export function VariableTimeSeriesChart({
         setIsLoading(false);
       }
     };
-  
+
     // Only fetch if in custom mode and dateRange is defined
     if (timeRange === "custom" && dateRange?.from && dateRange?.to) {
       fetchData();
@@ -152,12 +152,12 @@ export function VariableTimeSeriesChart({
   useEffect(() => {
     const fetchRangeData = async () => {
       if (timeRange === "custom") return;
-  
+
       setIsLoading(true);
       try {
         let desde: Date;
         const hasta = new Date();
-  
+
         // Calculate desde based on timeRange
         switch (timeRange) {
           case "1m":
@@ -177,11 +177,11 @@ export function VariableTimeSeriesChart({
             desde = new Date(2000, 0, 1); // Far back date
             break;
         }
-  
+
         // Format dates for API query
         const desdeStr = format(startOfDay(desde), "yyyy-MM-dd");
         const hastaStr = format(endOfDay(hasta), "yyyy-MM-dd");
-  
+
         // Call API with parameters
         const response = await fetchVariableTimeSeries(
           variableId,
@@ -191,14 +191,14 @@ export function VariableTimeSeriesChart({
         if (response && response.results) {
           const newData = response.results;
           setData(newData);
-  
+
           // Calculate percentage change for the current time range
           if (newData.length > 1) {
             // Sort data by date (newest first)
             const sortedData = [...newData].sort(
               (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
             );
-  
+
             const firstValue = sortedData[sortedData.length - 1].valor; // Oldest value
             const lastValue = sortedData[0].valor; // Most recent value
             const change = lastValue - firstValue;
@@ -207,7 +207,7 @@ export function VariableTimeSeriesChart({
           } else {
             setPercentChange(null);
           }
-  
+
           // Set default chart type based on time range
           if (timeRange === "1y" || timeRange === "all") {
             setChartType("line");
@@ -222,7 +222,7 @@ export function VariableTimeSeriesChart({
         setIsLoading(false);
       }
     };
-  
+
     fetchRangeData();
   }, [timeRange, variableId]);
 
@@ -306,9 +306,9 @@ export function VariableTimeSeriesChart({
     return chartData.map((item, index) => {
       const prevItem =
         processedComparisonData[
-          index >= processedComparisonData.length
-            ? processedComparisonData.length - 1
-            : index
+        index >= processedComparisonData.length
+          ? processedComparisonData.length - 1
+          : index
         ];
       return {
         ...item,
@@ -372,14 +372,14 @@ export function VariableTimeSeriesChart({
         headers.join(","),
         ...combinedChartData.map((row) => {
           const date = formatDate(row.fecha);
-          const currentValue = formatNumber(row.valor, 2).replace(",", ".");
+          const currentValue = formatNumber(row.valor).replace(",", ".");
 
           return showComparison && row.prevValor !== undefined
             ? [
-                date,
-                currentValue,
-                formatNumber(row.prevValor, 2).replace(",", ".")
-              ].join(",")
+              date,
+              currentValue,
+              formatNumber(row.prevValor).replace(",", ".")
+            ].join(",")
             : [date, currentValue].join(",");
         })
       ].join("\n");
@@ -622,7 +622,7 @@ export function VariableTimeSeriesChart({
                             name === "valor"
                               ? " Valor actual"
                               : " Período anterior";
-                          return [`${formatNumber(value, 2)}`, label];
+                          return [`${formatNumber(value)}`, label];
                         }}
                         labelFormatter={(label) => formatDate(label as string)}
                         cursor={false}
@@ -684,7 +684,7 @@ export function VariableTimeSeriesChart({
                             name === "valor"
                               ? " Valor actual"
                               : " Período anterior";
-                          return [`${formatNumber(value, 2)}`, label];
+                          return [`${formatNumber(value)}`, label];
                         }}
                         labelFormatter={(label) => formatDate(label as string)}
                         cursor={false}
@@ -748,16 +748,15 @@ export function VariableTimeSeriesChart({
                         <TableRow key={row.fecha}>
                           <TableCell>{formatDate(row.fecha)}</TableCell>
                           <TableCell className="text-right font-medium">
-                            {formatNumber(row.valor, 2)}
+                            {formatNumber(row.valor)}
                           </TableCell>
                           {showComparison && (
                             <TableCell className="text-right text-muted-foreground">
                               {(row as ChartDataWithComparison).prevValor !==
-                              undefined
+                                undefined
                                 ? formatNumber(
-                                    (row as ChartDataWithComparison).prevValor!,
-                                    2
-                                  )
+                                  (row as ChartDataWithComparison).prevValor!
+                                )
                                 : "-"}
                             </TableCell>
                           )}
