@@ -175,6 +175,9 @@ export default function BCRADashboard() {
               <p className="text-muted-foreground">
                 La tendencia de las variables se calcula con los últimos 30-60 días según la variable.
               </p>
+              <p className="text-muted-foreground">
+                Tocá en una variable para ver detalles.
+              </p>
             </div>
           </div>
         </div>

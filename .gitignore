@@ -42,3 +42,4 @@ next-env.d.ts
 
 # api docs
 api_docs/*
+.env*.local
