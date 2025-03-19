@@ -19,11 +19,6 @@ export type BCRAData = {
   data: BCRAVariable[];
 };
 
-// Define which categories should use time series visualization
-const TIME_SERIES_CATEGORIES = [
-  'Principales Variables'
-];
-
 // Variable groups for dashboard organization
 export const VARIABLE_GROUPS = {
   KEY_METRICS: [1, 4, 5, 6, 15, 27, 28, 29], // Selected key metrics
