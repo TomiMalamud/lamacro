@@ -5,8 +5,13 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   BCRAVariable,
   formatDate,
@@ -14,13 +19,8 @@ import {
   formatNumber,
   getTrendIndicator,
   getVisualizationType,
-  VisualizationType
+  VisualizationType,
 } from "@/lib/bcra-api";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover";
 import { ArrowDown, ArrowRight, ArrowUp, Minus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -36,7 +36,7 @@ export function VariableCard({
   variable,
   className,
   ratePair = false,
-  secondVariable
+  secondVariable,
 }: VariableCardProps) {
   const router = useRouter();
 
@@ -168,7 +168,7 @@ export function VariableCard({
 const RatePairCard = ({
   tna,
   tea,
-  className
+  className,
 }: {
   tna: BCRAVariable;
   tea: BCRAVariable;
@@ -203,13 +203,9 @@ const RatePairCard = ({
         <div className="space-x-8 flex items-center">
           <div>
             <div className="text-sm font-medium">
-              
               <Popover>
                 <PopoverTrigger asChild>
-                  <span 
-                    className="ml-1"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  <span className="ml-1" onClick={(e) => e.stopPropagation()}>
                     TNA
                     <sup>?</sup>
                   </span>
@@ -225,13 +221,9 @@ const RatePairCard = ({
           </div>
           <div>
             <div className="text-sm font-medium">
-              
               <Popover>
                 <PopoverTrigger asChild>
-                  <span 
-                    className="ml-1"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  <span className="ml-1" onClick={(e) => e.stopPropagation()}>
                     TEA
                     <sup>?</sup>
                   </span>
