@@ -23,6 +23,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
+import { formatCurrency } from "@/lib/utils";
 
 const chartConfig = {
   situacion1: {
@@ -55,14 +56,6 @@ const chartConfig = {
   }
 } satisfies ChartConfig;
 
-// Helper function for currency formatting
-function formatCurrency(amount: number | null): string {
-  if (amount === null) return "N/A";
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS"
-  }).format(amount);
-}
 
 // Format period from YYYYMM to a more readable format (e.g., "Diciembre 2024")
 function formatPeriod(periodString: string | null): string {

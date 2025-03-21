@@ -29,6 +29,7 @@ import {
   CalendarIcon,
   Download,
   LineChartIcon,
+  Loader,
   TableIcon
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -580,8 +581,8 @@ export function VariableTimeSeriesChart({
       </div>
 
       {isLoading ? (
-        <div className="h-[200px] w-full flex items-center justify-center">
-          <p>Cargando datos...</p>
+        <div className="h-[350px] w-full flex items-center justify-center">
+          <Loader className="h-4 w-4 animate-spin" />
         </div>
       ) : (
         <Tabs defaultValue="visualization" className="w-full">
@@ -593,10 +594,11 @@ export function VariableTimeSeriesChart({
                 </p>
                 <ChartContainer
                   config={chartConfig}
-                  className="w-full h-[350px]"
+                  className="w-full h-[350px] aspect-auto"
                 >
                   {chartType === "bar" ? (
-                    <BarChart data={combinedChartData}>
+                    <BarChart data={combinedChartData} accessibilityLayer
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis
                         dataKey="fecha"
@@ -604,8 +606,7 @@ export function VariableTimeSeriesChart({
                           const d = new Date(date);
                           return `${d.getDate()}/${d.getMonth() + 1}/${d
                             .getFullYear()
-                            .toString()
-                            .substr(2, 2)}`;
+                            .toString()}`;
                         }}
                         minTickGap={30}
                         tick={{ fontSize: 12 }}

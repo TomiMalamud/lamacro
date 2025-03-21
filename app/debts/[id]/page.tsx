@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -114,16 +115,6 @@ interface ChequeResponse {
   results: ChequeRechazado;
 }
 
-// Helper function to format currency
-function formatCurrency(amount: number | null): string {
-  if (amount === null) return "N/A";
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 // Helper function to format date
 function formatDate(dateString: string | null): string {

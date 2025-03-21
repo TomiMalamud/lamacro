@@ -1,4 +1,3 @@
-
 import {
     Card,
     CardContent,
@@ -19,16 +18,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { formatCurrency } from "@/lib/utils";
 
-function formatCurrency(amount: number | null): string {
-    if (amount === null) return "N/A";
-    return new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(amount);
-}
 
 interface DeudaEntidad {
     entidad: string | null;
@@ -60,63 +51,7 @@ interface DeudaResponse {
     results: Deuda;
 }
 
-interface HistorialEntidad {
-    entidad: string | null;
-    situacion: number | null;
-    monto: number | null;
-    enRevision: boolean;
-    procesoJud: boolean;
-}
 
-interface HistorialPeriodo {
-    periodo: string | null;
-    entidades: HistorialEntidad[] | null;
-}
-
-interface HistorialDeuda {
-    identificacion: number;
-    denominacion: string | null;
-    periodos: HistorialPeriodo[] | null;
-}
-
-interface HistorialResponse {
-    status: number;
-    results: HistorialDeuda;
-}
-
-interface ChequeDetalle {
-    nroCheque: number;
-    fechaRechazo: string;
-    monto: number;
-    fechaPago: string | null;
-    fechaPagoMulta: string | null;
-    estadoMulta: string | null;
-    ctaPersonal: boolean;
-    denomJuridica: string | null;
-    enRevision: boolean;
-    procesoJud: boolean;
-}
-
-interface ChequeEntidad {
-    entidad: number | null;
-    detalle: ChequeDetalle[] | null;
-}
-
-interface ChequeCausal {
-    causal: string | null;
-    entidades: ChequeEntidad[] | null;
-}
-
-interface ChequeRechazado {
-    identificacion: number;
-    denominacion: string | null;
-    causales: ChequeCausal[] | null;
-}
-
-interface ChequeResponse {
-    status: number;
-    results: ChequeRechazado;
-}
 function formatPeriod(periodString: string | null): string {
     if (!periodString || periodString.length !== 6) return periodString || "N/A";
 
@@ -239,8 +174,15 @@ export default function DebtSection({ deudaData }: { deudaData: DeudaResponse | 
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {deudaData.results.periodos[0].entidades?.map(
-                            (entidad, entIndex) => (
+                        {deudaData.results.periodos[0].entidades
+                            ?.slice() // Create a copy to avoid mutating original array
+                            .sort((a, b) => {
+                                // Handle null values
+                                if (a.monto === null) return 1;
+                                if (b.monto === null) return -1;
+                                return b.monto - a.monto;
+                            })
+                            .map((entidad, entIndex) => (
                                 <TableRow key={entIndex}>
                                     <TableCell>{entidad.entidad}</TableCell>
                                     <TableCell>
@@ -289,8 +231,7 @@ export default function DebtSection({ deudaData }: { deudaData: DeudaResponse | 
                                         </div>
                                     </TableCell>
                                 </TableRow>
-                            )
-                        )}
+                            ))}
                     </TableBody>
                 </Table>
             </CardContent>

@@ -10,6 +10,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { formatCurrency } from "@/lib/utils";
 
 // Reuse the same interfaces from debt-table.tsx
 interface DeudaEntidad {
@@ -40,17 +41,6 @@ interface Deuda {
 interface DeudaResponse {
     status: number;
     results: Deuda;
-}
-
-// Helper functions
-function formatCurrency(amount: number | null): string {
-    if (amount === null) return "N/A";
-    return new Intl.NumberFormat("es-AR", {
-        style: "currency",
-        currency: "ARS",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(amount);
 }
 
 function formatPeriod(periodString: string | null): string {
@@ -132,7 +122,7 @@ export default function DebtMobileSection({ deudaData }: { deudaData: DeudaRespo
                             </Popover>
                         </div>
                         <div className="flex items-center gap-1">
-                            La situación "normal"
+                            La situación &quot;normal&quot;
                             <Popover>
                                 <PopoverTrigger className="font-bold">
                                     es estar al día<sup>?</sup>

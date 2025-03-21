@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Check, Copy } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 function useClipboard() {
   const [copied, setCopied] = useState(false);
@@ -107,12 +107,18 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
     };
   }, [isDialogOpen, timeLeft]);
 
+  const handleNavigate = useCallback(() => {
+    window.open(href, "_blank");
+    setIsDialogOpen(false);
+    setTimeLeft(5); // Reset for next time
+  }, [href]);
+
   // Handle auto-navigation when countdown reaches zero
   useEffect(() => {
     if (timeLeft === 0) {
       handleNavigate();
     }
-  }, [timeLeft]);
+  }, [timeLeft, handleNavigate]);
 
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!id) return;
@@ -126,12 +132,6 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
       setTimeLeft(5);
       setIsDialogOpen(true);
     }
-  };
-
-  const handleNavigate = () => {
-    window.open(href, "_blank");
-    setIsDialogOpen(false);
-    setTimeLeft(5); // Reset for next time
   };
 
   return (
