@@ -1,8 +1,8 @@
+import { ClipboardLink } from "@/components/deudores/copy-link";
 import { HistorialChart } from "@/components/deudores/debt-chart";
 import DebtMobile from "@/components/deudores/debt-mobile";
 import DebtSection from "@/components/deudores/debt-table";
 import { SearchForm } from "@/components/deudores/search-form";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, Info } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -281,7 +281,7 @@ async function DebtorData({ id }: { id: string }) {
           <h2 className="text-xl text-slate-700 dark:text-slate-300">
             CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`}
           </h2>
-        )}        
+        )}
       </div>
 
       {!hasData ? (
@@ -439,45 +439,25 @@ async function DebtorData({ id }: { id: string }) {
                 <CardTitle className="text-lg">Facturas y Créditos</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Link
-                    href={`https://epyme.cajadevalores.com.ar/comportamientodepago`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    Facturas de Crédito Electrónicas MiPyMEs
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Información de la Caja de Valores (BYMA)
-                  </p>
-                </div>
-                <div>
-                  <Link
-                    href={`https://servicioswww.anses.gob.ar/YHConsBCRASitio/ConsultaBCRA/InicioConsulta?cuil=${id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    Créditos ANSES
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Información de ANSES
-                  </p>
-                </div>
-                <div>
-                  <Link
-                    href={`https://extranet.hipotecario.com.ar/procrear/entidades/situacionBCRA?cuil=${id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    ProCreAr
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Información del Programa de Crédito Argentino
-                  </p>
-                </div>
+                <ClipboardLink
+                  href="https://epyme.cajadevalores.com.ar/comportamientodepago"
+                  id={id}
+                  description="Información de la Caja de Valores (BYMA)"
+                >
+                  Facturas de Crédito Electrónicas MiPyMEs
+                </ClipboardLink>
+                <ClipboardLink
+                  href={`https://servicioswww.anses.gob.ar/YHConsBCRASitio/ConsultaBCRA/InicioConsulta?cuil=${id}`}
+                  description="Información de ANSES"
+                >
+                  Créditos ANSES
+                </ClipboardLink>
+                <ClipboardLink
+                  href={`https://extranet.hipotecario.com.ar/procrear/entidades/situacionBCRA?cuil=${id}`}
+                  description="Información del Programa de Crédito Argentino"
+                >
+                  ProCreAr
+                </ClipboardLink>
               </CardContent>
             </Card>
 
@@ -486,58 +466,32 @@ async function DebtorData({ id }: { id: string }) {
                 <CardTitle className="text-lg">Deudas Provinciales</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Link
-                    href={`http://www.arba.gov.ar/Aplicaciones/EstadoDeuda.asp?cuit=${id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    ARBA
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Agencia de Recaudación de Buenos Aires
-                  </p>
-                </div>
-                <div>
-                  <Link
-                    href="https://www.rentascordoba.gob.ar/gestiones/consulta/situacion-fiscal"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    Rentas Córdoba
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Información de rentas de Córdoba
-                  </p>
-                </div>
-                <div>
-                  <Link
-                    href={`http://www.dgrcorrientes.gov.ar/rentascorrientes/jsp/servicios/introConsultaBCRA.jsp?cuit=${id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    Rentas de Corrientes
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Información de rentas de Corrientes
-                  </p>
-                </div>
-                <div>
-                  <Link
-                    href="https://www.dgrsalta.gov.ar/Inicio"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    Rentas de Salta
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Información de rentas de Salta
-                  </p>
-                </div>
+                <ClipboardLink
+                  href={`http://www.arba.gov.ar/Aplicaciones/EstadoDeuda.asp?cuit=${id}`}
+                  description="Agencia de Recaudación de Buenos Aires"
+                >
+                  ARBA
+                </ClipboardLink>
+                <ClipboardLink
+                  href="https://www.rentascordoba.gob.ar/gestiones/consulta/situacion-fiscal"
+                  id={id}
+                  description="Información de rentas de Córdoba"
+                >
+                  Rentas Córdoba
+                </ClipboardLink>
+                <ClipboardLink
+                  href={`http://www.dgrcorrientes.gov.ar/rentascorrientes/jsp/servicios/introConsultaBCRA.jsp?cuit=${id}`}
+                  description="Información de rentas de Corrientes"
+                >
+                  Rentas de Corrientes
+                </ClipboardLink>
+                <ClipboardLink
+                  href="https://www.dgrsalta.gov.ar/Inicio"
+                  id={id}
+                  description="Información de rentas de Salta"
+                >
+                  Rentas de Salta
+                </ClipboardLink>
               </CardContent>
             </Card>
 
@@ -545,20 +499,28 @@ async function DebtorData({ id }: { id: string }) {
               <CardHeader>
                 <CardTitle className="text-lg">Otros Registros</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div>
-                  <Link
-                    href="https://rdam.mjus.gba.gob.ar/solicitudCertificado"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline block"
-                  >
-                    Registro de Deudores Alimentarios Morosos
-                  </Link>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Provincia de Buenos Aires (RDAM)
-                  </p>
-                </div>
+              <CardContent className="space-y-4">
+                <ClipboardLink
+                  href="https://rdam.mjus.gba.gob.ar/solicitudCertificado"
+                  id={id}
+                  description="Provincia de Buenos Aires (RDAM)"
+                >
+                  Registro de Deudores Alimentarios Morosos
+                </ClipboardLink>
+                <ClipboardLink
+                  href="https://seti.afip.gob.ar/padron-puc-constancia-internet/ConsultaConstanciaAction.do"
+                  id={id}
+                  description="Agencia Federal de Ingresos Públicos"
+                >
+                  Constancia de Inscripción en ARCA
+                </ClipboardLink>
+                <ClipboardLink
+                  href="https://central-deudores.inaes.gob.ar/cdeudores/"
+                  id={id}
+                  description="Instituto Nacional de Asociativismo y Economía Social"
+                >
+                  INAES. Servicios de Crédito Cooperativo y/o Ayuda Económica Mutual
+                </ClipboardLink>
               </CardContent>
             </Card>
           </div>
