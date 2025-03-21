@@ -29,9 +29,6 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_AR",
     url: "https://bcra.tmalamud.com",
-    title: "BCRA en Vivo - Visualización de Datos del Banco Central",
-    description:
-      "Visualización interactiva de variables monetarias y financieras del Banco Central de la República Argentina (BCRA) actualizadas diariamente.",
     siteName: "BCRA en Vivo",
     images: [
       {
