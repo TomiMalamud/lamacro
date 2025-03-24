@@ -1,7 +1,49 @@
-// lib/direct-bcra.ts
-
 import https, { RequestOptions } from "https";
-import { BCRAResponse } from "./bcra-api";
+
+// Type definitions for BCRA API responses
+export interface BCRAVariable {
+  idVariable: number;
+  descripcion: string;
+  categoria: string;
+  fecha: string;
+  valor: number;
+}
+
+export interface BCRAResponse {
+  status: number;
+  results: BCRAVariable[];
+}
+
+// Loading and error states
+export type BCRAData = {
+  loading: boolean;
+  error: string | null;
+  data: BCRAVariable[];
+};
+
+// Variable groups for dashboard organization
+export const VARIABLE_GROUPS = {
+  KEY_METRICS: [1, 4, 5, 6, 15, 27, 28, 29], // Selected key metrics
+  INTEREST_RATES: [6, 7, 8, 9, 10, 11, 12, 13, 14, 34, 35, 40, 41, 160, 161, 162],
+  EXCHANGE_RATES: [4, 5, 84],
+  INFLATION: [27, 28, 29, 30, 31, 32],
+  RESERVES: [1, 74, 75, 76, 77],
+  MONETARY_BASE: [15, 16, 17, 18, 19, 46, 64, 71, 72, 73]
+};
+
+export function formatNumber(value: number, decimals?: number): string {
+  return new Intl.NumberFormat('es-AR', {
+    ...(decimals !== undefined && {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    })
+  }).format(value);
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('es-AR').format(date);
+}
 
 // Add caching constants at the top of the file
 const CACHE_TTL = 43200 * 1000; // 12 hours in milliseconds

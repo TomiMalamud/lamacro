@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { BCRAVariable, formatDate, formatNumber } from "@/lib/bcra-api";
-import { fetchVariableTimeSeries } from "@/lib/direct-bcra";
+import { BCRAVariable, formatDate, formatNumber } from "@/lib/bcra-fetch";
+import { fetchVariableTimeSeries } from "@/lib/bcra-fetch";
 import { cn } from "@/lib/utils";
 import { endOfDay, format, startOfDay, subMonths, subYears } from "date-fns";
 import { es } from "date-fns/locale";

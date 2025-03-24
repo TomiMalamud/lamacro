@@ -4,8 +4,8 @@ export const revalidate = 3600; // Revalidate every hour
 import { VariableDetailClient } from "@/components/bcra/variable-detail-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate } from "@/lib/bcra-api";
-import { fetchBCRADirect, fetchVariableTimeSeries } from "@/lib/direct-bcra";
+import { formatDate } from "@/lib/bcra-fetch";
+import { fetchBCRADirect, fetchVariableTimeSeries } from "@/lib/bcra-fetch";
 import { format, subMonths } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";

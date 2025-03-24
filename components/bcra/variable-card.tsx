@@ -11,8 +11,8 @@ import {
   BCRAVariable,
   formatDate,
   formatNumber,
-} from "@/lib/bcra-api";
-import { fetchVariableTimeSeries } from "@/lib/direct-bcra";
+} from "@/lib/bcra-fetch";
+import { fetchVariableTimeSeries } from "@/lib/bcra-fetch";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";

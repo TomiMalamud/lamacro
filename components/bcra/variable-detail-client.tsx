@@ -3,7 +3,7 @@
 import {
   BCRAVariable,
   formatNumber
-} from "@/lib/bcra-api";
+} from "@/lib/bcra-fetch";
 import { useState } from "react";
 import { VariableTimeSeriesChart } from "./variable-time-series-chart";
 

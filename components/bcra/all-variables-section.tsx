@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { BCRAVariable } from "@/lib/bcra-api";
+import { BCRAVariable } from "@/lib/bcra-fetch";
 
 // Helper function to normalize text (remove accents)
 const normalizeText = (text: string) => {
