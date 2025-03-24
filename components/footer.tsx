@@ -1,9 +1,11 @@
+import { ThemeToggle } from "./theme-toggle";
+
 export function Footer() {
   return (
     <footer className="border-dashed border-t py-6 md:py-0">
       <div className="container-wrapper">
-        <div className="container py-4 pl-0 sm:pl-16">
-          <div className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
+        <div className="container py-4 px-6 sm:px-16 flex items-center justify-between">
+          <div className="text-balance text-sm leading-loose text-muted-foreground md:text-left">
             Creado por{" "}
             <a
               href={"https://x.com/tomasmalamud"}
@@ -24,6 +26,7 @@ export function Footer() {
             </a>
             .
           </div>
+          <ThemeToggle />
         </div>
       </div>
     </footer>

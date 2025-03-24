@@ -34,7 +34,7 @@ export function ThemeToggle() {
     >
       <span className="sr-only">Toggle theme</span>
 
-      <div className="relative w-4 h-4">
+      <div className="relative w-5 h-5">
         {/* Moon icon for dark mode */}
         <div
           className={`absolute inset-0 transition-transform duration-200 hover:rotate-12 ${
@@ -43,7 +43,7 @@ export function ThemeToggle() {
               : "rotate-90 opacity-0"
           }`}
         >
-          <Moon size={16} />
+          <Moon size={20} />
         </div>
 
         {/* Sun icon for light mode */}
@@ -54,7 +54,7 @@ export function ThemeToggle() {
               : "rotate-0 opacity-100"
           }`}
         >
-          <Sun size={16} />
+          <Sun size={20} />
         </div>
       </div>
     </button>

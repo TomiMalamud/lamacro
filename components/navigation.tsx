@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeToggle } from "./theme-toggle";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "./ui/navigation-menu";
 
 export function Navigation() {
   return (
@@ -10,27 +11,46 @@ export function Navigation() {
             <span className="text-lg font-bold">BCRA en Vivo</span>
           </Link>
         </div>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="flex items-center">
-            <Link
-              href="/"
-              className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent rounded-md"
-              prefetch={true}
-            >
-              Estadísticas
-            </Link>
-            <Link
-              href="/debts/search"
-              className="px-4 py-2 text-sm font-medium transition-colors hover:bg-accent rounded-md"
-              prefetch={true}
-            >
-              Central de Deudores
-            </Link>
-          </div>
-          <div className="flex items-center">
-            <ThemeToggle />
-          </div>
-        </div>
+        <NavigationMenu className="ml-2 overflow-x-auto">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <Link
+                href="/"
+                prefetch={true}
+                legacyBehavior
+                passHref
+              >
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Estadísticas
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link
+                href="/debts/search"
+                prefetch={true}
+                legacyBehavior
+                passHref
+              >
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Central de Deudores
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link
+                href="/inflation"
+                prefetch={true}
+                legacyBehavior
+                passHref
+              >
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Calculadora de Inflación
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
     </nav>
   );

@@ -4,8 +4,7 @@ import AllVariablesSection from "@/components/bcra/all-variables-section";
 import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BCRAVariable, formatDate, formatNumber } from "@/lib/bcra-fetch";
-import { fetchBCRADirect } from "@/lib/bcra-fetch";
+import { BCRAVariable, fetchBCRADirect, formatDate, formatNumber } from "@/lib/bcra-fetch";
 import { AlertCircle, Clock, Download, Loader, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 
