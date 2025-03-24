@@ -1,8 +1,8 @@
-import { ClipboardLink } from "@/components/deudores/copy-link";
-import { HistorialChart } from "@/components/deudores/debt-chart";
-import DebtMobile from "@/components/deudores/debt-mobile";
-import DebtSection from "@/components/deudores/debt-table";
-import { SearchForm } from "@/components/deudores/search-form";
+import { ClipboardLink } from "@/components/debts/copy-link";
+import { HistorialChart } from "@/components/debts/debt-chart";
+import DebtMobile from "@/components/debts/debt-mobile";
+import DebtSection from "@/components/debts/debt-table";
+import { SearchForm } from "@/components/debts/search-form";
 import {
   Card,
   CardContent,

@@ -1,4 +1,4 @@
-import { SearchForm } from "@/components/deudores/search-form";
+import { SearchForm } from "@/components/debts/search-form";
 import {
   Card,
   CardContent,
