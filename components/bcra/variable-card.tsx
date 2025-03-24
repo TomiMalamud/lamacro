@@ -8,20 +8,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  BCRAVariable,
-  formatDate,
-  formatNumber,
-} from "@/lib/bcra-fetch";
-import { fetchVariableTimeSeries } from "@/lib/bcra-fetch";
-import { Minus, TrendingDown, TrendingUp } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  BCRAVariable,
+  fetchVariableTimeSeries,
+  formatDate,
+  formatNumber,
+} from "@/lib/bcra-fetch";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 // Global cache for trend data
 const trendCache: {
