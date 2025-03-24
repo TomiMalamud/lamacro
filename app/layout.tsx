@@ -5,7 +5,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "./providers";
-
+import { Toaster } from "@/components/ui/toaster";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"]
@@ -84,6 +84,7 @@ export default function RootLayout({
             <Navigation />
             {children}
             <Footer />
+            <Toaster />
           </ThemeProvider>
         </PostHogProvider>
       </body>
