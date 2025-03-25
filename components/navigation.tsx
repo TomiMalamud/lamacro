@@ -38,7 +38,7 @@ export function Navigation() {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link
-                href="/inflation"
+                href="/inflation-calculator"
                 prefetch={true}
                 legacyBehavior
                 passHref
