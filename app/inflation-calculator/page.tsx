@@ -4,8 +4,9 @@ import { InflationForm } from "@/components/inflation/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Share } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 function useClipboard() {
   const [copied, setCopied] = useState(false);
@@ -42,7 +43,6 @@ function useClipboard() {
         input.setSelectionRange(0, text.length);
         
         // Copy
-        // @ts-ignore - Required fallback for iOS Safari
         const success = document.execCommand('copy');
         
         // Cleanup
@@ -60,7 +60,6 @@ function useClipboard() {
       document.body.appendChild(textArea);
       textArea.select();
       
-      // @ts-ignore - Required fallback for iOS Safari
       const success = document.execCommand('copy');
       document.body.removeChild(textArea);
       
@@ -76,11 +75,10 @@ function useClipboard() {
   return { copied, copyText };
 }
 
-export default function InflationCalculatorPage() {
+function InflationCalculatorContent() {
   const searchParams = useSearchParams();
   const { copyText } = useClipboard();
   const { toast } = useToast()
-
 
   // Parse URL parameters with fallbacks
   const startMonth = searchParams.get("startMonth") ? parseInt(searchParams.get("startMonth")!) : undefined;
@@ -103,13 +101,15 @@ export default function InflationCalculatorPage() {
             defaultEndYear={endYear}
           />
         </CardContent>
-        <CardFooter className="flex justify-center">
+        <CardFooter className="flex justify-center pb-4">
+
           <Button
             onClick={async () => {
               const success = await copyText(window.location.href);
               if (success) {
                 toast({
                   title: "¡URL copiada al portapapeles!",
+                  description: "Compartí el cálculo con tus amigos y familiares.",
                 });
               } else {
                 toast({
@@ -121,10 +121,19 @@ export default function InflationCalculatorPage() {
             }}
             variant="outline"
           >
+            <Share size={16} className="mr-2" />
             Compartí el cálculo
           </Button>
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function InflationCalculatorPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <InflationCalculatorContent />
+    </Suspense>
   );
 }
