@@ -82,7 +82,7 @@ export function InflationForm({
 
   // Generate year options (from current year to 2000, descending)
   const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: currentYear - 1999 }, (_, i) => ({
+  const yearOptions = Array.from({ length: currentYear - 1991 }, (_, i) => ({
     value: currentYear - i,
     label: (currentYear - i).toString(),
   }));
@@ -92,7 +92,7 @@ export function InflationForm({
       <div className="flex flex-col items-center gap-4 text-lg">
         {/* First row */}
         <div className="flex flex-col md:flex-row items-center gap-2">
-          <span>Si compré algo a</span>
+          <span className="text-muted-foreground">Si compré algo a</span>
           <div className="relative w-48">
             <span className="absolute left-2 top-1/2 -translate-y-1/2">$</span>
             <Input
@@ -101,7 +101,7 @@ export function InflationForm({
               step="10"
               value={startValue}
               onChange={(e) => setStartValue(parseFloat(e.target.value))}
-              className="pl-8 bg-white dark:bg-black"
+              className="pl-8 bg-white dark:bg-black font-medium"
               required
               tabIndex={0}
               aria-label="Valor inicial"
@@ -111,7 +111,7 @@ export function InflationForm({
 
         {/* Second row */}
         <div className="flex flex-col md:flex-row items-center gap-2">
-          <span>en</span>
+          <span className="text-muted-foreground">en</span>
           <div className="flex gap-2">
             <Popover open={openStartMonth} onOpenChange={setOpenStartMonth}>
               <PopoverTrigger asChild>
@@ -216,7 +216,7 @@ export function InflationForm({
 
         {/* Third row */}
         <div className="flex flex-col md:flex-row items-center gap-2">
-          <span>entonces en</span>
+          <span className="text-muted-foreground">entonces en</span>
           <div className="flex gap-2">
             <Popover open={openEndMonth} onOpenChange={setOpenEndMonth}>
               <PopoverTrigger asChild>
@@ -321,7 +321,7 @@ export function InflationForm({
 
         {result && (
           <div className="border-t flex flex-col md:flex-row pt-4 items-center gap-2 font-medium">
-            <span>ese mismo ítem valdría</span>
+            <span className="text-muted-foreground">ese mismo ítem valdría</span>
             <span className="text-xl font-bold">
               {new Intl.NumberFormat('es-AR', {
                 style: 'currency',

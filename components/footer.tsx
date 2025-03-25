@@ -13,7 +13,7 @@ export function Footer() {
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
-              Tomas Malamud
+              Tomás Malamud
             </a>
             . Código disponible en{" "}
             <a
