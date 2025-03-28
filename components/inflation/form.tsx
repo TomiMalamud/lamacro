@@ -31,6 +31,7 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import InflationCalculator, { getMonthName, InflationResult as InflationResultType } from "./calculator";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface InflationFormProps {
   defaultStartMonth?: number;
@@ -54,14 +55,14 @@ function ResponsiveSelect({ value, onValueChange, options, placeholder, isMobile
   if (isMobile) {
     return (
       <Select value={value.toString()} onValueChange={(val) => onValueChange(parseInt(val))}>
-        <SelectTrigger className="w-32">
+        <SelectTrigger className="w-32 dark:bg-black">
           <SelectValue placeholder={placeholder}>
             {options.find((opt) => opt.value === value)?.label}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem key={option.value} value={option.value.toString()}>
+            <SelectItem key={option.value} value={option.value.toString()} className="py-2 text-lg">
               {option.label}
             </SelectItem>
           ))}
@@ -138,6 +139,70 @@ export function InflationForm({
   const [endYear, setEndYear] = useState<number>(defaultEndYear);
   const [result, setResult] = useState<InflationResultType | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  // Generate year options (from current year to 1992, descending)
+  const yearOptions = Array.from({ length: currentYear - 1991 }, (_, i) => ({
+    value: currentYear - i,
+    label: (currentYear - i).toString(),
+  }));
+
+  const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+    value: i + 1,
+    label: getMonthName(i + 1),
+  }));
+
+  const isDateInFuture = (year: number, month: number) => {
+    return year > currentYear || (year === currentYear && month > currentMonth);
+  };
+
+  const validateDates = () => {
+    if (isDateInFuture(endYear, endMonth)) {
+      setError("La fecha final no puede ser en el futuro");
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
+  const getValidMonthOptions = (year: number) => {
+    let months = monthOptions; // Use the predefined monthOptions
+    if (year === currentYear) {
+      months = months.filter(month => month.value <= currentMonth);
+    }
+    return months;
+  };
+
+  // Adjust start date if it's after end date
+  useEffect(() => {
+    const startDate = new Date(startYear, startMonth - 1);
+    const endDate = new Date(endYear, endMonth - 1);
+
+    if (startDate > endDate) {
+      setStartYear(endYear);
+      setStartMonth(endMonth);
+    }
+  }, [endYear, endMonth]);
+
+  // Calculate results whenever any input changes
+  useEffect(() => {
+    if (validateDates()) {
+      const calculationResult = InflationCalculator({
+        startMonth,
+        startYear,
+        startValue,
+        endMonth,
+        endYear
+      });
+      setResult(calculationResult);
+    } else {
+      setResult(null);
+    }
+  }, [startMonth, startYear, startValue, endMonth, endYear]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -160,36 +225,16 @@ export function InflationForm({
     router.replace(`/inflation-calculator?${params.toString()}`);
   }, [startMonth, startYear, startValue, endMonth, endYear, router, searchParams]);
 
-  // Calculate results whenever any input changes
-  useEffect(() => {
-    const calculationResult = InflationCalculator({
-      startMonth,
-      startYear,
-      startValue,
-      endMonth,
-      endYear
-    });
-    setResult(calculationResult);
-  }, [startMonth, startYear, startValue, endMonth, endYear]);
-
-  // Generate month options
-  const monthOptions = Array.from({ length: 12 }, (_, i) => ({
-    value: i + 1,
-    label: getMonthName(i + 1),
-  }));
-
-  // Generate year options (from current year to 2000, descending)
-  const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: currentYear - 1991 }, (_, i) => ({
-    value: currentYear - i,
-    label: (currentYear - i).toString(),
-  }));
-
   return (
     <>
       <Card>
         <CardContent className="p-4 text-center">
           <div className="space-y-6">
+            {error && (
+              <div className="text-red-500 font-medium text-sm">
+                {error}
+              </div>
+            )}
             <div className="flex flex-col items-center gap-4 text-lg">
               {/* First row */}
               <div className="flex flex-col md:flex-row items-center gap-2">
@@ -217,7 +262,7 @@ export function InflationForm({
                   <ResponsiveSelect
                     value={startMonth}
                     onValueChange={setStartMonth}
-                    options={monthOptions}
+                    options={getValidMonthOptions(startYear)}
                     placeholder="Mes"
                     isMobile={isMobile}
                   />
@@ -238,7 +283,7 @@ export function InflationForm({
                   <ResponsiveSelect
                     value={endMonth}
                     onValueChange={setEndMonth}
-                    options={monthOptions}
+                    options={getValidMonthOptions(endYear)}
                     placeholder="Mes"
                     isMobile={isMobile}
                   />
@@ -252,7 +297,7 @@ export function InflationForm({
                 </div>
               </div>
 
-              {result && (
+              {result && result.totalIncrement > 0 && (
                 <div className="border-t flex flex-col md:flex-row pt-4 items-center gap-2 font-medium">
                   <span className="text-muted-foreground">ese mismo ítem valdría</span>
                   <span className="text-xl font-bold">
@@ -265,18 +310,28 @@ export function InflationForm({
               )}
             </div>
 
-            {result && (
+            {result && result.totalIncrement <= 0 && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertTitle className="font-bold">
+                  La fecha inicial debe ser anterior a la final
+                </AlertTitle>
+              </Alert>
+            )}
+
+            {result && result.totalIncrement > 0 && (
               <div className="mt-8">
                 <InflationResult {...result} />
               </div>
             )}
           </div>
         </CardContent>
+        {result && result.totalIncrement > 0 && (
         <CardFooter className="flex justify-center pb-4">
           <ShareCalculationDialog />
         </CardFooter>
+        )}
       </Card>
-      {result && (
+      {result && result.totalIncrement > 0 && (
         <InflationChart
           startMonth={startMonth}
           startYear={startYear}
