@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -31,7 +32,6 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import InflationCalculator, { getMonthName, InflationResult as InflationResultType } from "./calculator";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface InflationFormProps {
   defaultStartMonth?: number;
@@ -140,7 +140,7 @@ export function InflationForm({
   const [result, setResult] = useState<InflationResultType | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
@@ -326,9 +326,9 @@ export function InflationForm({
           </div>
         </CardContent>
         {result && result.totalIncrement > 0 && (
-        <CardFooter className="flex justify-center pb-4">
-          <ShareCalculationDialog />
-        </CardFooter>
+          <CardFooter className="flex justify-center pb-4">
+            <ShareCalculationDialog />
+          </CardFooter>
         )}
       </Card>
       {result && result.totalIncrement > 0 && (
