@@ -1,9 +1,8 @@
 "use client";
 
 import { InflationForm } from "@/components/inflation/form";
-import { ShareCalculationDialog } from "@/components/share-calculation-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -21,21 +20,13 @@ function InflationCalculatorContent() {
   return (
     <div className="container mx-auto text-center py-8 px-4 md:px-16">
       <h1 className="text-3xl font-bold mb-6">Calculadora de Inflación</h1>
-
-      <Card>
-        <CardContent className="p-4 text-center">
-          <InflationForm
-            defaultStartMonth={startMonth}
-            defaultStartYear={startYear}
-            defaultStartValue={startValue}
-            defaultEndMonth={endMonth}
-            defaultEndYear={endYear}
-          />
-        </CardContent>
-        <CardFooter className="flex justify-center pb-4">
-          <ShareCalculationDialog />
-        </CardFooter>
-      </Card>
+      <InflationForm
+        defaultStartMonth={startMonth}
+        defaultStartYear={startYear}
+        defaultStartValue={startValue}
+        defaultEndMonth={endMonth}
+        defaultEndYear={endYear}
+      />
       <Card className="mt-4">
         <CardHeader>
           <CardTitle>Fuente</CardTitle>
