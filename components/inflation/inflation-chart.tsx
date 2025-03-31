@@ -111,10 +111,24 @@ export function InflationChart({
           cursor={false}
           content={<ChartTooltipContent indicator="line" />}
         />
+        <defs>
+              <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-value)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-value)"
+                  stopOpacity={0.1}
+            />
+          </linearGradient>
+        </defs>
         <Area
           dataKey="value"
           type="natural"
-          fill="var(--color-value)"
+          fill="url(#fillValue)"
           fillOpacity={0.4}
           stroke="var(--color-value)"
         />
