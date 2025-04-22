@@ -37,7 +37,6 @@ export function CarryTradeClient({
 
   return (
     <div className="space-y-8">
-
       {/* Section 0: Best Options Summary */}
       <div className="grid gap-4 md:grid-cols-2">
         {bestCarryBond && (
