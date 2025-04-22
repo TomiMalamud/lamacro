@@ -18,30 +18,30 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | BCRA en Vivo",
-    default: "BCRA en Vivo - Visualización de Datos del Banco Central"
+    template: "%s | La Macro",
+    default: "La Macro - Visualización de Datos del Banco Central"
   },
   description:
     "Visualización interactiva de variables monetarias y financieras del Banco Central de la República Argentina (BCRA) actualizadas diariamente.",
-  authors: [{ name: "BCRA en Vivo Team" }],
-  metadataBase: new URL("https://bcra.tmalamud.com"),
+  authors: [{ name: "La Macro Team" }],
+  metadataBase: new URL("https://lamacro.ar"),
   openGraph: {
     type: "website",
     locale: "es_AR",
-    url: "https://bcra.tmalamud.com",
-    siteName: "BCRA en Vivo",
+    url: "https://lamacro.ar",
+    siteName: "La Macro",
     images: [
       {
         url: "/opengraph-image.jpg",
         width: 1200,
         height: 630,
-        alt: "BCRA en Vivo"
+        alt: "La Macro"
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "BCRA en Vivo - Visualización de Datos del Banco Central",
+    title: "La Macro - Visualización de Datos del Banco Central",
     description:
       "Visualización interactiva de variables monetarias y financieras del Banco Central de la República Argentina (BCRA) actualizadas diariamente.",
     creator: "@tomasmalamud",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
         url: "/twitter-image.jpg",
         width: 1200,
         height: 630,
-        alt: "BCRA en Vivo"
+        alt: "La Macro"
       }
     ]
   }

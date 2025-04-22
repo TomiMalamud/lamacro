@@ -50,10 +50,10 @@ export function ShareCalculationDialog() {
         console.error("Error copying to clipboard:", err);
       }
     } else if (type === "twitter") {
-      const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent("Calculadora de Inflación - BCRA En Vivo")}`;
+      const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent("Calculadora de Inflación - La Macro")}`;
       window.open(twitterUrl, "_blank");
     } else if (type === "whatsapp") {
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent("Calculadora de Inflación - BCRA En Vivo: " + currentUrl)}`;
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent("Calculadora de Inflación - La Macro: " + currentUrl)}`;
       window.open(whatsappUrl, "_blank");
     }
 

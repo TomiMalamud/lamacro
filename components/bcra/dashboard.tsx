@@ -29,7 +29,7 @@ export default function BCRADashboard() {
       <div className="container mx-auto py-8">
         <header className="mb-8 flex justify-between items-start">
           <div className="text-center">
-            <h1 className="text-3xl font-bold mb-2">BCRA en Vivo</h1>
+            <h1 className="text-3xl font-bold mb-2">La Macro</h1>
             <p className="text-muted-foreground">
               Visualización de variables económicas, monetarias y cambiarias del
               Banco Central de la República Argentina.
@@ -165,7 +165,7 @@ export default function BCRADashboard() {
             </div>
             <div className="space-y-2">
               <h1 className="text-4xl font-bold text-primary tracking-tight">
-                BCRA en Vivo
+                La Macro
               </h1>
               <p className="text-primary ">
                 Visualización de variables económicas, monetarias y cambiarias del

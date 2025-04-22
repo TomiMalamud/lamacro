@@ -18,7 +18,7 @@ export async function GET(
     // Normalize the origin for headers regardless of environment
     const origin = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
-      : "https://bcra.tmalamud.com";
+      : "https://lamacro.ar";
 
     // Setup request options with expanded headers to handle various auth scenarios
     const options = {
