@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/formatters";
 import { ChevronLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";

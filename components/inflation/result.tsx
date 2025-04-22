@@ -1,4 +1,4 @@
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/formatters";
 import { InflationResult as InflationResultType } from "./calculator";
 
 export function InflationResult({

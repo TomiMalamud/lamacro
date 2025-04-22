@@ -11,28 +11,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatARS, formatPercent } from "@/lib/formatters"; // Import formatters
 import { cn } from "@/lib/utils";
 import type { ProcessedBondData } from "@/types/carry-trade";
+
 interface CarryTableProps {
   data: ProcessedBondData[];
-  mep: number; 
+  mep: number;
 }
 
 // Helper to format numbers as percentages
-const formatPercent = (value: number | null | undefined, digits = 1): string => {
-  if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
-  return `${(value * 100).toFixed(digits)}%`;
-};
+// const formatPercent = (value: number | null | undefined, digits = 1): string => {
+//   if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
+//   return `${(value * 100).toFixed(digits)}%`;
+// };
 
 // Helper to format currency (ARS)
-const formatARS = (value: number | null | undefined): string => {
-  if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 2,
-  }).format(value);
-}
+// const formatARS = (value: number | null | undefined): string => {
+//   if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
+//   return new Intl.NumberFormat("es-AR", {
+//     style: "currency",
+//     currency: "ARS",
+//     maximumFractionDigits: 2,
+//   }).format(value);
+// }
 
 // Define which carry columns to display dynamically based on CARRY_PRICES in lib
 const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];

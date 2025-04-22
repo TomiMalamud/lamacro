@@ -23,7 +23,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/formatters";
 
 const chartConfig = {
   situacion1: {
