@@ -20,7 +20,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Copy, Share } from "lucide-react";
 import * as React from "react";
@@ -29,7 +29,6 @@ import { FaWhatsapp, FaXTwitter } from "react-icons/fa6";
 export function ShareCalculationDialog() {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  const { toast } = useToast();
 
   const handleShare = async (type: "copy" | "twitter" | "whatsapp") => {
     const currentUrl = window.location.href;
@@ -37,15 +36,12 @@ export function ShareCalculationDialog() {
     if (type === "copy") {
       try {
         await navigator.clipboard.writeText(currentUrl);
-        toast({
-          title: "¡URL copiada al portapapeles!",
+        toast.success("¡URL copiada al portapapeles!", {
           description: "Compartí el cálculo con tus amigos y familiares.",
         });
       } catch (err) {
-        toast({
-          title: "Error al copiar",
+        toast.error("Error al copiar", {
           description: "No se pudo copiar la URL. Por favor, copiala manualmente.",
-          variant: "destructive"
         });
         console.error("Error copying to clipboard:", err);
       }

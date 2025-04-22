@@ -9,7 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Check, Copy } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function useClipboard() {
   const [copied, setCopied] = useState(false);
@@ -36,18 +37,18 @@ function useClipboard() {
         input.style.left = '-9999px';
         input.value = text;
         input.setAttribute('readonly', ''); // Prevent keyboard from showing on mobile
-        
+
         // Add to DOM
         document.body.appendChild(input);
-        
+
         // Select the input
         input.focus();
         input.select();
         input.setSelectionRange(0, text.length);
-        
+
         // Copy
         const success = document.execCommand('copy');
-        
+
         // Cleanup
         document.body.removeChild(input);
 
@@ -62,13 +63,16 @@ function useClipboard() {
       textArea.style.opacity = '0';
       document.body.appendChild(textArea);
       textArea.select();
-      
+
       const success = document.execCommand('copy');
       document.body.removeChild(textArea);
-      
+
       setCopied(success);
       return success;
     } catch (err) {
+      toast.error("Error al copiar", {
+        description: "No se pudo copiar la URL. Por favor, copiala manualmente.",
+      });
       console.warn('Copy failed:', err);
       setCopied(false);
       return false;
@@ -123,10 +127,10 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!id) return;
     e.preventDefault();
-    
+
     // Try to copy first
     const success = await copyText(id);
-    
+
     // Only show dialog if copy was successful or at least attempted
     if (success) {
       setTimeLeft(5);

@@ -156,18 +156,6 @@ export function InflationForm({
     label: getMonthName(i + 1),
   }));
 
-  const isDateInFuture = (year: number, month: number) => {
-    return year > currentYear || (year === currentYear && month > currentMonth);
-  };
-
-  const validateDates = () => {
-    if (isDateInFuture(endYear, endMonth)) {
-      setError("La fecha final no puede ser en el futuro");
-      return false;
-    }
-    setError(null);
-    return true;
-  };
 
   const getValidMonthOptions = (year: number) => {
     let months = monthOptions; // Use the predefined monthOptions
@@ -186,11 +174,20 @@ export function InflationForm({
       setStartYear(endYear);
       setStartMonth(endMonth);
     }
-  }, [endYear, endMonth]);
+  }, [startYear, startMonth, endYear, endMonth]);
 
   // Calculate results whenever any input changes
   useEffect(() => {
-    if (validateDates()) {
+    const canCalculate = (() => {
+      if (endYear > currentYear || (endYear === currentYear && endMonth > currentMonth)) {
+        setError("La fecha final no puede ser en el futuro");
+        return false;
+      }
+      setError(null);
+      return true;
+    })();
+
+    if (canCalculate) {
       const calculationResult = InflationCalculator({
         startMonth,
         startYear,
@@ -202,7 +199,7 @@ export function InflationForm({
     } else {
       setResult(null);
     }
-  }, [startMonth, startYear, startValue, endMonth, endYear]);
+  }, [currentYear, currentMonth, startMonth, startYear, startValue, endMonth, endYear]);
 
   useEffect(() => {
     const checkMobile = () => {
