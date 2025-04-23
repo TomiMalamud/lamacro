@@ -18,6 +18,7 @@ export interface ProcessedBondData extends RawBondData {
   finish_worst: number;
   mep_breakeven: number;
   carry_worst: number;
+  carry_mep: number;
   [key: `carry_${number}`]: number;
 }
 

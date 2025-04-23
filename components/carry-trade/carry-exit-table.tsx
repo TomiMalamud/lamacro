@@ -1,3 +1,4 @@
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -6,23 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatARS, formatPercent } from "@/lib/formatters";
 import type { CarryExitData } from "@/types/carry-trade";
 
 interface CarryExitTableProps {
   data: CarryExitData[];
-}
-
-const formatPercent = (value: number | null | undefined, digits = 1): string => {
-  if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
-  return `${(value * 100).toFixed(digits)}%`;
-};
-const formatARS = (value: number | null | undefined): string => {
-  if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-    maximumFractionDigits: 2,
-  }).format(value);
 }
 
 export function CarryExitTable({ data }: CarryExitTableProps) {
@@ -39,13 +28,20 @@ export function CarryExitTable({ data }: CarryExitTableProps) {
         <TableHeader>
           <TableRow>
             <TableHead>Ticker</TableHead>
-            <TableHead className="text-right">Días Restantes (Salida)</TableHead>
-            <TableHead className="text-right">TEM Salida</TableHead>
-            <TableHead className="text-right">Días Tenencia</TableHead>
+            <TableHead className="text-right">
+              <Popover>
+                <PopoverTrigger>
+                  Días para Salida
+                </PopoverTrigger>
+                <PopoverContent>
+                  Cuántos días faltaban para el vencimiento del bono cuando vendiste.
+                </PopoverContent>
+              </Popover>
+            </TableHead>
             <TableHead className="text-right">Precio Entrada</TableHead>
             <TableHead className="text-right">Precio Salida (Est)</TableHead>
-            <TableHead className="text-right">Rendimiento Directo ARS</TableHead>
-            <TableHead className="text-right">TEA ARS (Est)</TableHead>
+            <TableHead className="text-right">Rendimiento</TableHead>
+            <TableHead className="text-right">TEA</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -53,8 +49,6 @@ export function CarryExitTable({ data }: CarryExitTableProps) {
             <TableRow key={sim.symbol}>
               <TableCell className="font-medium">{sim.symbol}</TableCell>
               <TableCell className="text-right">{sim.days_to_exp}</TableCell>
-              <TableCell className="text-right">{formatPercent(sim.exit_TEM, 2)}</TableCell>
-              <TableCell className="text-right">{sim.days_in}</TableCell>
               <TableCell className="text-right">{formatARS(sim.bond_price_in)}</TableCell>
               <TableCell className="text-right">{formatARS(sim.bond_price_out)}</TableCell>
               <TableCell className="text-right font-mono">{formatPercent(sim.ars_direct_yield, 0)}</TableCell>

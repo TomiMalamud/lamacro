@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatARS, formatPercent } from "@/lib/formatters"; // Import formatters
+import { formatARS, formatPercent } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import type { ProcessedBondData } from "@/types/carry-trade";
 
@@ -20,27 +20,10 @@ interface CarryTableProps {
   mep: number;
 }
 
-// Helper to format numbers as percentages
-// const formatPercent = (value: number | null | undefined, digits = 1): string => {
-//   if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
-//   return `${(value * 100).toFixed(digits)}%`;
-// };
-
-// Helper to format currency (ARS)
-// const formatARS = (value: number | null | undefined): string => {
-//   if (value === null || typeof value === 'undefined' || isNaN(value)) return "-";
-//   return new Intl.NumberFormat("es-AR", {
-//     style: "currency",
-//     currency: "ARS",
-//     maximumFractionDigits: 2,
-//   }).format(value);
-// }
-
-// Define which carry columns to display dynamically based on CARRY_PRICES in lib
 const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];
-const carryColumnKeys = CARRY_PRICES.map(price => `carry_${price}` as const); // Use const assertion
+const carryColumnKeys = CARRY_PRICES.map(price => `carry_${price}` as const);
 
-export function CarryTable({ data }: CarryTableProps) {
+export function CarryTable({ data, mep }: CarryTableProps) {
   return (
     <div className="overflow-x-auto">
       <Table className="min-w-full text-xs sm:text-sm">
@@ -83,14 +66,19 @@ export function CarryTable({ data }: CarryTableProps) {
             <TableHead className="text-right">
               <Popover>
                 <PopoverTrigger>
-                  MEP Breakeven
+                  Carry {mep.toFixed(0)}
                 </PopoverTrigger>
-                <PopoverContent>MEP Breakeven</PopoverContent>
+                <PopoverContent>Carry para MEP al valor actual ({formatARS(mep)})</PopoverContent>
               </Popover>
             </TableHead>
             {/* Dynamic headers for carry columns */}
             {carryColumnKeys.map(colKey => (
-              <TableHead key={colKey} className="text-right">{`Carry ${colKey.split('_')[1]}`}</TableHead>
+              <TableHead key={colKey} className={cn("text-right",
+                colKey === 'carry_1100' || colKey === 'carry_1200' || colKey === 'carry_1300' ? "hidden md:table-cell" : ""
+              )}
+              >
+                {`Carry ${colKey.split('_')[1]}`}
+              </TableHead>
             ))}
             <TableHead className="text-right">
               <Popover>
@@ -109,16 +97,19 @@ export function CarryTable({ data }: CarryTableProps) {
               <TableCell className="text-right">{formatARS(bond.bond_price)}</TableCell>
               <TableCell className="text-right">{bond.days_to_exp}</TableCell>
               <TableCell className="text-right">{formatPercent(bond.tem, 2)}</TableCell>
-              <TableCell className="text-right">{formatARS(bond.mep_breakeven)}</TableCell>
-              {/* Dynamic cells for carry columns */}
+              <TableCell className={cn("text-right font-mono",
+                bond.carry_mep > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+              )}>
+                {formatPercent(bond.carry_mep)}
+              </TableCell>
               {carryColumnKeys.map(colKey => {
-                // Explicitly access the known numeric carry properties
                 const carryValue = bond[colKey];
                 return (
                   <TableCell
                     key={colKey}
                     className={cn("text-right font-mono",
-                      carryValue > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                      carryValue > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400",
+                      colKey === 'carry_1100' || colKey === 'carry_1200' || colKey === 'carry_1300' ? "hidden md:table-cell" : ""
                     )}
                   >
                     {formatPercent(carryValue)}

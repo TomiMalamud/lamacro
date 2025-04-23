@@ -19,13 +19,13 @@ export default function LinksFeed() {
     {
       title: 'Calculadora de Inflación',
       description: 'Mirá cuánto vale hoy tu compra, inversión o deuda del pasado.',
-      icon: DollarSign,
+      icon: Calculator,
       href: '/inflation-calculator',
     },
     {
       title: 'Carry Trade',
       description: 'Fijate cuál es el mejor bono para hacer carry trade. Se actualiza casi a tiempo real. ',
-      icon: Calculator,
+      icon: DollarSign,
       href: '/carry-trade',
     },
     

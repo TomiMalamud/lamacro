@@ -20,11 +20,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     template: "%s | La Macro",
-    default: "La Macro - Visualización de Datos del Banco Central"
+    default: "La Macro - Datos de la Macroeconomía Argentina"
   },
   description:
-    "Visualización interactiva de variables monetarias y financieras del Banco Central de la República Argentina (BCRA) actualizadas diariamente.",
-  authors: [{ name: "La Macro Team" }],
+    "Central de deudores, inflación, reservas, dólar, tasas, y calculadora de carry trade.",
+  authors: [{ name: "Tomas Malamud" }],
   metadataBase: new URL("https://lamacro.ar"),
   openGraph: {
     type: "website",
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "La Macro - Visualización de Datos del Banco Central",
+    title: "La Macro - Datos de la Macroeconomía Argentina",
     description:
-      "Visualización interactiva de variables monetarias y financieras del Banco Central de la República Argentina (BCRA) actualizadas diariamente.",
+      "Central de deudores, inflación, reservas, dólar, tasas, y calculadora de carry trade.",
     creator: "@tomasmalamud",
     images: [
       {

@@ -1,9 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CPI_EST, EST_DATE_STR } from "@/lib/carry-trade-data";
 import { formatARS, formatPercent } from "@/lib/formatters";
 import type { CarryExitData, CarryTradeData } from "@/types/carry-trade";
-import { addDays, format } from "date-fns";
+import { addDays, format, parseISO } from "date-fns";
 import { CarryExitTable } from "./carry-exit-table";
 import { CarryTable } from "./carry-table";
 import { MepBreakevenChart } from "./mep-breakeven-chart";
@@ -90,7 +91,7 @@ export function CarryTradeClient({
         <CardHeader>
           <CardTitle>Simulación de Salida Anticipada (Compresión de Tasa)</CardTitle>
           <CardDescription>
-            Estimación de rendimiento en ARS saliendo antes del vencimiento, asumiendo una convergencia de la TEM a un valor estimado.
+            Estimación de rendimiento en ARS saliendo antes del vencimiento el {format(parseISO(EST_DATE_STR), 'dd/MM/yy')} ({carryExitSimulation[0]?.days_in} días de tenencia), asumiendo una convergencia de la TEM a un valor estimado de {formatPercent(CPI_EST)}.
           </CardDescription>
         </CardHeader>
         <CardContent>

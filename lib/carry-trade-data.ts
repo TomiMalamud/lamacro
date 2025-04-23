@@ -122,6 +122,7 @@ export async function getCarryTradeData(): Promise<CarryTradeData> {
       const finish_worst = Math.round(1400 * Math.pow(1.01, days_to_exp / 30));
       const mep_breakeven = mep * ratio;
       const carry_worst = (ratio * mep / finish_worst) - 1;
+      const carry_mep = ratio - 1; // Calculate carry assuming exit MEP equals current MEP
 
       const carries: Record<string, number> = {};
       CARRY_PRICES.forEach(price => {
@@ -142,6 +143,7 @@ export async function getCarryTradeData(): Promise<CarryTradeData> {
         finish_worst: finish_worst,
         mep_breakeven: mep_breakeven,
         carry_worst: carry_worst,
+        carry_mep: carry_mep,
         ...carries,
       } as ProcessedBondData;
     })
@@ -153,8 +155,8 @@ export async function getCarryTradeData(): Promise<CarryTradeData> {
 
 
 // --- Early Exit Simulation ---
-const CPI_EST = 0.01; // Estimated general monthly interest rate (TEM)
-const EST_DATE_STR = "2025-10-15"; // Exit date assumption
+export const CPI_EST = 0.01; // Estimated general monthly interest rate (TEM)
+export const EST_DATE_STR = "2025-10-15"; // Exit date assumption
 
 export async function getCarryExitSimulation(): Promise<CarryExitData[]> {
   const { carryData } = await getCarryTradeData(); // Reuse fetched & base processed data
