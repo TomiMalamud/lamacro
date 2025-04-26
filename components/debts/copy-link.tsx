@@ -11,76 +11,8 @@ import {
 import { Check, Copy } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useCopyToClipboard } from "usehooks-ts";
 
-function useClipboard() {
-  const [copied, setCopied] = useState(false);
-
-  const copyText = async (text: string) => {
-    if (!text) return false;
-
-    try {
-      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
-        return true;
-      }
-
-      // iOS Safari fallback
-      const isIOS = /ipad|iphone|ipod/.test(
-        window.navigator.userAgent.toLowerCase()
-      );
-
-      if (isIOS) {
-        // Create an off-screen input element
-        const input = document.createElement('input');
-        input.style.position = 'absolute';
-        input.style.left = '-9999px';
-        input.value = text;
-        input.setAttribute('readonly', ''); // Prevent keyboard from showing on mobile
-
-        // Add to DOM
-        document.body.appendChild(input);
-
-        // Select the input
-        input.focus();
-        input.select();
-        input.setSelectionRange(0, text.length);
-
-        // Copy
-        const success = document.execCommand('copy');
-
-        // Cleanup
-        document.body.removeChild(input);
-
-        setCopied(success);
-        return success;
-      }
-
-      // Non-iOS fallback
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.opacity = '0';
-      document.body.appendChild(textArea);
-      textArea.select();
-
-      const success = document.execCommand('copy');
-      document.body.removeChild(textArea);
-
-      setCopied(success);
-      return success;
-    } catch (err) {
-      toast.error("Error al copiar", {
-        description: "No se pudo copiar la URL. Por favor, copiala manualmente.",
-      });
-      console.warn('Copy failed:', err);
-      setCopied(false);
-      return false;
-    }
-  };
-
-  return { copied, copyText };
-}
 
 interface ClipboardLinkProps {
   href: string;
@@ -92,7 +24,8 @@ interface ClipboardLinkProps {
 export function ClipboardLink({ href, id, children, description }: ClipboardLinkProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState(5);
-  const { copied, copyText } = useClipboard();
+  const [, copy] = useCopyToClipboard();
+  const [copied, setCopied] = useState(false);
 
   // Handle countdown
   useEffect(() => {
@@ -114,7 +47,8 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
   const handleNavigate = useCallback(() => {
     window.open(href, "_blank");
     setIsDialogOpen(false);
-    setTimeLeft(5); // Reset for next time
+    setCopied(false);
+    setTimeLeft(5);
   }, [href]);
 
   // Handle auto-navigation when countdown reaches zero
@@ -129,14 +63,25 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
     e.preventDefault();
 
     // Try to copy first
-    const success = await copyText(id);
+    const success = await copy(id);
 
-    // Only show dialog if copy was successful or at least attempted
+    // Show dialog and toast if copy was successful
     if (success) {
+      setCopied(true);
+      toast.success("CUIT/CUIL copiado!");
       setTimeLeft(5);
       setIsDialogOpen(true);
+    } else {
+      toast.error("No se pudo copiar el CUIT/CUIL");
     }
   };
+
+  const handleDialogChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      setCopied(false);
+    }
+  }
 
   return (
     <div>
@@ -153,7 +98,7 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
         <p className="text-sm text-muted-foreground mt-1">{description}</p>
       )}
       {id && (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>CUIT/CUIL copiado!</DialogTitle>
