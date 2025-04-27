@@ -5,7 +5,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import {
   Table,
@@ -13,12 +13,12 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BCRAVariable, formatDate, formatNumber } from "@/lib/bcra-fetch";
-import { fetchVariableTimeSeries } from "@/lib/bcra-fetch";
+import { getVariableDataForRange } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { endOfDay, format, startOfDay, subMonths, subYears } from "date-fns";
 import { es } from "date-fns/locale";
@@ -30,9 +30,9 @@ import {
   Download,
   LineChartIcon,
   Loader,
-  TableIcon
+  TableIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, startTransition } from "react";
 import { DateRange } from "react-day-picker";
 import {
   Bar,
@@ -42,14 +42,15 @@ import {
   LineChart,
   ReferenceLine,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent
+  ChartTooltipContent,
 } from "../ui/chart";
+import { toast } from "sonner";
 
 // Extended interface for chart data with comparison values
 interface ChartDataWithComparison extends BCRAVariable {
@@ -59,12 +60,12 @@ interface ChartDataWithComparison extends BCRAVariable {
 const chartConfig = {
   valor: {
     label: "Valor actual",
-    color: "hsl(222 37% 22%)"
+    color: "hsl(222 37% 22%)",
   },
   prevValor: {
     label: "Período anterior",
-    color: "hsl(0 0% 60%)"
-  }
+    color: "hsl(0 0% 60%)",
+  },
 } satisfies ChartConfig;
 
 interface VariableTimeSeriesChartProps {
@@ -73,11 +74,10 @@ interface VariableTimeSeriesChartProps {
   onPercentChangeUpdate?: (percentChange: number | null) => void;
 }
 
-
 export function VariableTimeSeriesChart({
   initialData,
   variableId,
-  onPercentChangeUpdate
+  onPercentChangeUpdate,
 }: VariableTimeSeriesChartProps) {
   const [timeRange, setTimeRange] = useState<
     "1m" | "3m" | "6m" | "1y" | "all" | "custom"
@@ -91,6 +91,7 @@ export function VariableTimeSeriesChart({
   const [comparisonData, setComparisonData] = useState<BCRAVariable[]>([]);
   const [exportLoading, setExportLoading] = useState(false);
   const [percentChange, setPercentChange] = useState<number | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (onPercentChangeUpdate) {
@@ -98,68 +99,85 @@ export function VariableTimeSeriesChart({
     }
   }, [percentChange, onPercentChangeUpdate]);
 
-  // Fetch data based on date range
+  // Fetch data based on date range using Server Action
   useEffect(() => {
     const fetchData = async () => {
       if (!dateRange?.from || !dateRange?.to) return;
 
       setIsLoading(true);
+      setFetchError(null);
       try {
-        // Format dates for API query
         const desde = format(startOfDay(dateRange.from), "yyyy-MM-dd");
         const hasta = format(endOfDay(dateRange.to), "yyyy-MM-dd");
 
-        // Call API with parameters
-        const response = await fetchVariableTimeSeries(
-          variableId,
-          desde,
-          hasta
-        );
-        if (response && response.results) {
-          const newData = response.results;
-          setData(newData);
+        startTransition(async () => {
+          const result = await getVariableDataForRange(
+            variableId,
+            desde,
+            hasta,
+          );
 
-          // Calculate percentage change for custom range
-          if (newData.length > 1) {
-            // Sort data by date (newest first)
-            const sortedData = [...newData].sort(
-              (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
-            );
-
-            const firstValue = sortedData[sortedData.length - 1].valor; // Oldest value
-            const lastValue = sortedData[0].valor; // Most recent value
-            const change = lastValue - firstValue;
-            const newPercentChange = (change / firstValue) * 100;
-            setPercentChange(newPercentChange);
+          if (result.error) {
+            console.error("Server Action Error (custom range):", result.error);
+            setFetchError(result.error);
+            toast.error("Error al cargar datos", { description: result.error });
+            setData([]);
+            setPercentChange(null);
+          } else if (result.data) {
+            const newData = result.data;
+            setData(newData);
+            if (newData.length > 1) {
+              const sortedData = [...newData].sort(
+                (a, b) =>
+                  new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+              );
+              const firstValue = sortedData[sortedData.length - 1].valor;
+              const lastValue = sortedData[0].valor;
+              const change = lastValue - firstValue;
+              const newPercentChange =
+                firstValue !== 0 ? (change / Math.abs(firstValue)) * 100 : 0;
+              setPercentChange(newPercentChange);
+            } else {
+              setPercentChange(null);
+            }
           } else {
+            setFetchError("Respuesta inesperada del servidor.");
+            toast.error("Error", {
+              description: "Respuesta inesperada del servidor.",
+            });
+            setData([]);
             setPercentChange(null);
           }
-        }
+          setIsLoading(false);
+        });
       } catch (error) {
-        console.error("Error fetching data:", error);
-        setPercentChange(null);
-      } finally {
+        console.error("Client Error (custom range):", error);
+        const message =
+          error instanceof Error ? error.message : "Error desconocido";
+        setFetchError(`Error en cliente: ${message}`);
+        toast.error("Error en cliente", { description: message });
         setIsLoading(false);
+        setData([]);
+        setPercentChange(null);
       }
     };
 
-    // Only fetch if in custom mode and dateRange is defined
     if (timeRange === "custom" && dateRange?.from && dateRange?.to) {
       fetchData();
     }
   }, [timeRange, dateRange, variableId]);
 
-  // Handle predefined time range changes
+  // Handle predefined time range changes using Server Action
   useEffect(() => {
     const fetchRangeData = async () => {
       if (timeRange === "custom") return;
 
       setIsLoading(true);
+      setFetchError(null);
       try {
         let desde: Date;
         const hasta = new Date();
 
-        // Calculate desde based on timeRange
         switch (timeRange) {
           case "1m":
             desde = subMonths(hasta, 1);
@@ -175,59 +193,72 @@ export function VariableTimeSeriesChart({
             break;
           case "all":
           default:
-            desde = new Date(2000, 0, 1); // Far back date
+            desde = new Date(2000, 0, 1);
             break;
         }
 
-        // Format dates for API query
         const desdeStr = format(startOfDay(desde), "yyyy-MM-dd");
         const hastaStr = format(endOfDay(hasta), "yyyy-MM-dd");
 
-        // Call API with parameters
-        const response = await fetchVariableTimeSeries(
-          variableId,
-          desdeStr,
-          hastaStr
-        );
-        if (response && response.results) {
-          const newData = response.results;
-          setData(newData);
+        startTransition(async () => {
+          const result = await getVariableDataForRange(
+            variableId,
+            desdeStr,
+            hastaStr,
+          );
 
-          // Calculate percentage change for the current time range
-          if (newData.length > 1) {
-            // Sort data by date (newest first)
-            const sortedData = [...newData].sort(
-              (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+          if (result.error) {
+            console.error("Server Action Error (preset range):", result.error);
+            setFetchError(result.error);
+            toast.error("Error al cargar datos", { description: result.error });
+            setData([]);
+            setPercentChange(null);
+          } else if (result.data) {
+            const newData = result.data;
+            setData(newData);
+            if (newData.length > 1) {
+              const sortedData = [...newData].sort(
+                (a, b) =>
+                  new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
+              );
+              const firstValue = sortedData[sortedData.length - 1].valor;
+              const lastValue = sortedData[0].valor;
+              const change = lastValue - firstValue;
+              const newPercentChange =
+                firstValue !== 0 ? (change / Math.abs(firstValue)) * 100 : 0;
+              setPercentChange(newPercentChange);
+            } else {
+              setPercentChange(null);
+            }
+            setChartType(
+              timeRange === "1y" || timeRange === "all" ? "line" : "bar",
             );
-
-            const firstValue = sortedData[sortedData.length - 1].valor; // Oldest value
-            const lastValue = sortedData[0].valor; // Most recent value
-            const change = lastValue - firstValue;
-            const newPercentChange = (change / firstValue) * 100;
-            setPercentChange(newPercentChange);
           } else {
+            setFetchError("Respuesta inesperada del servidor.");
+            toast.error("Error", {
+              description: "Respuesta inesperada del servidor.",
+            });
+            setData([]);
             setPercentChange(null);
           }
-
-          // Set default chart type based on time range
-          if (timeRange === "1y" || timeRange === "all") {
-            setChartType("line");
-          } else {
-            setChartType("bar");
-          }
-        }
+          setIsLoading(false);
+        });
       } catch (error) {
-        console.error("Error fetching data:", error);
-        setPercentChange(null);
-      } finally {
+        console.error("Client Error (preset range):", error);
+        const message =
+          error instanceof Error ? error.message : "Error desconocido";
+        setFetchError(`Error en cliente: ${message}`);
+        toast.error("Error en cliente", { description: message });
         setIsLoading(false);
+        setData([]);
+        setPercentChange(null);
       }
     };
 
     fetchRangeData();
   }, [timeRange, variableId]);
 
-  // Fetch comparison data when showComparison is toggled
+  // Fetch comparison data using Server Action
   useEffect(() => {
     const fetchComparisonData = async () => {
       if (
@@ -235,64 +266,86 @@ export function VariableTimeSeriesChart({
         timeRange === "all" ||
         timeRange === "custom" ||
         !data.length
-      )
+      ) {
+        if (comparisonData.length > 0) setComparisonData([]);
         return;
+      }
 
       setIsLoading(true);
+      setFetchError(null);
       try {
         const currentEnd = new Date();
-        let currentStart: Date;
         let previousStart: Date;
         let previousEnd: Date;
 
-        // Calculate date ranges based on current timeRange
         switch (timeRange) {
           case "1m":
-            currentStart = subMonths(currentEnd, 1);
-            previousEnd = new Date(currentStart);
+            previousEnd = subMonths(currentEnd, 1);
             previousStart = subMonths(previousEnd, 1);
             break;
           case "3m":
-            currentStart = subMonths(currentEnd, 3);
-            previousEnd = new Date(currentStart);
+            previousEnd = subMonths(currentEnd, 3);
             previousStart = subMonths(previousEnd, 3);
             break;
           case "6m":
-            currentStart = subMonths(currentEnd, 6);
-            previousEnd = new Date(currentStart);
+            previousEnd = subMonths(currentEnd, 6);
             previousStart = subMonths(previousEnd, 6);
             break;
           case "1y":
-            currentStart = subYears(currentEnd, 1);
-            previousEnd = new Date(currentStart);
+            previousEnd = subYears(currentEnd, 1);
             previousStart = subYears(previousEnd, 1);
             break;
           default:
             return;
         }
 
-        // Format dates for API query
         const desdeStr = format(startOfDay(previousStart), "yyyy-MM-dd");
         const hastaStr = format(endOfDay(previousEnd), "yyyy-MM-dd");
 
-        // Call API with parameters
-        const response = await fetchVariableTimeSeries(
-          variableId,
-          desdeStr,
-          hastaStr
-        );
-        if (response && response.results) {
-          setComparisonData(response.results);
-        }
+        startTransition(async () => {
+          const result = await getVariableDataForRange(
+            variableId,
+            desdeStr,
+            hastaStr,
+          );
+
+          if (result.error) {
+            console.error("Server Action Error (comparison):", result.error);
+            toast.error("Error al cargar datos de comparación", {
+              description: result.error,
+            });
+            setComparisonData([]);
+          } else if (result.data) {
+            setComparisonData(result.data);
+          } else {
+            toast.error("Error", {
+              description:
+                "Respuesta inesperada del servidor al cargar comparación.",
+            });
+            setComparisonData([]);
+          }
+          setIsLoading(false);
+        });
       } catch (error) {
-        console.error("Error fetching comparison data:", error);
-      } finally {
+        console.error("Client Error (comparison):", error);
+        const message =
+          error instanceof Error ? error.message : "Error desconocido";
+        toast.error("Error en cliente al cargar comparación", {
+          description: message,
+        });
         setIsLoading(false);
+        setComparisonData([]);
       }
     };
 
     fetchComparisonData();
-  }, [showComparison, timeRange, variableId, data.length]);
+  }, [
+    showComparison,
+    timeRange,
+    variableId,
+    data.length,
+    comparisonData.length,
+  ]);
 
   // Process data for the chart
   const chartData = useMemo(() => processDataForChart(data), [data]);
@@ -307,13 +360,13 @@ export function VariableTimeSeriesChart({
     return chartData.map((item, index) => {
       const prevItem =
         processedComparisonData[
-        index >= processedComparisonData.length
-          ? processedComparisonData.length - 1
-          : index
+          index >= processedComparisonData.length
+            ? processedComparisonData.length - 1
+            : index
         ];
       return {
         ...item,
-        prevValor: prevItem?.valor
+        prevValor: prevItem?.valor,
       };
     });
   }, [chartData, comparisonData, showComparison]);
@@ -338,7 +391,7 @@ export function VariableTimeSeriesChart({
       change,
       percentChange,
       min,
-      max
+      max,
     };
   }, [chartData]);
 
@@ -377,12 +430,12 @@ export function VariableTimeSeriesChart({
 
           return showComparison && row.prevValor !== undefined
             ? [
-              date,
-              currentValue,
-              formatNumber(row.prevValor).replace(",", ".")
-            ].join(",")
+                date,
+                currentValue,
+                formatNumber(row.prevValor).replace(",", "."),
+              ].join(",")
             : [date, currentValue].join(",");
-        })
+        }),
       ].join("\n");
 
       // Create and download file
@@ -392,7 +445,7 @@ export function VariableTimeSeriesChart({
       link.setAttribute("href", url);
       link.setAttribute(
         "download",
-        `datos_variable_${variableId}_${format(new Date(), "yyyy-MM-dd")}.csv`
+        `datos_variable_${variableId}_${format(new Date(), "yyyy-MM-dd")}.csv`,
       );
       document.body.appendChild(link);
       link.click();
@@ -419,7 +472,7 @@ export function VariableTimeSeriesChart({
                   onClick={() => setTimeRange("custom")}
                   className={cn(
                     "justify-start text-left font-normal w-full sm:w-auto",
-                    !dateRange?.from && "text-muted-foreground"
+                    !dateRange?.from && "text-muted-foreground",
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -580,11 +633,25 @@ export function VariableTimeSeriesChart({
         </div>
       </div>
 
-      {isLoading ? (
+      {fetchError && (
+        <div className="text-red-600 text-center p-4 border border-red-200 rounded bg-red-50">
+          {fetchError}
+        </div>
+      )}
+
+      {isLoading && !fetchError && (
         <div className="h-[350px] w-full flex items-center justify-center">
           <Loader className="h-4 w-4 animate-spin" />
         </div>
-      ) : (
+      )}
+
+      {!isLoading && !fetchError && data.length === 0 && (
+        <div className="h-[350px] w-full flex items-center justify-center text-muted-foreground">
+          No hay datos disponibles para el período seleccionado.
+        </div>
+      )}
+
+      {!isLoading && !fetchError && data.length > 0 && (
         <Tabs defaultValue="visualization" className="w-full">
           <TabsContent value="visualization" className="mt-0">
             {viewMode === "chart" ? (
@@ -597,8 +664,7 @@ export function VariableTimeSeriesChart({
                   className="w-full h-[350px] aspect-auto"
                 >
                   {chartType === "bar" ? (
-                    <BarChart data={combinedChartData} accessibilityLayer
-                    >
+                    <BarChart data={combinedChartData} accessibilityLayer>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis
                         dataKey="fecha"
@@ -754,10 +820,10 @@ export function VariableTimeSeriesChart({
                           {showComparison && (
                             <TableCell className="text-right text-muted-foreground">
                               {(row as ChartDataWithComparison).prevValor !==
-                                undefined
+                              undefined
                                 ? formatNumber(
-                                  (row as ChartDataWithComparison).prevValor!
-                                )
+                                    (row as ChartDataWithComparison).prevValor!,
+                                  )
                                 : "-"}
                             </TableCell>
                           )}
@@ -799,7 +865,7 @@ export function VariableTimeSeriesChart({
         {stats &&
           ` • Variación: ${stats.percentChange > 0 ? "+" : ""}${formatNumber(
             stats.percentChange,
-            2
+            2,
           )}%`}
       </div>
     </div>
@@ -812,7 +878,7 @@ function processDataForChart(data: BCRAVariable[]): BCRAVariable[] {
 
   // Sort data by date (newest first)
   const sortedData = [...data].sort(
-    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()
+    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
   );
 
   // Reverse the data for the chart (oldest first)

@@ -4,72 +4,23 @@ import AllVariablesSection from "@/components/bcra/all-variables-section";
 import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  BCRAVariable,
-  fetchBCRADirect,
-  formatDate,
-  formatNumber,
-} from "@/lib/bcra-fetch";
-import { AlertCircle, Clock, Download, Loader, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { BCRAVariable, formatDate, formatNumber } from "@/lib/bcra-fetch";
+import { Clock, Download, Loader, Search } from "lucide-react";
+import { useState } from "react";
+
+interface BCRADashboardProps {
+  initialVariables: BCRAVariable[];
+}
 
 // Make this component dynamically rendered each time
-export default function BCRADashboard() {
+export default function BCRADashboard({
+  initialVariables,
+}: BCRADashboardProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [data, setData] = useState<{ results: BCRAVariable[] } | null>(null);
-  const [error, setError] = useState<Error | null>(null);
   const [exportLoading, setExportLoading] = useState(false);
 
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchBCRADirect()
-      .then((response) => setData(response))
-      .catch((err) =>
-        setError(err instanceof Error ? err : new Error("Unknown error")),
-      );
-  }, []);
-
-  if (error) {
-    return (
-      <div className="container mx-auto py-8">
-        <header className="mb-8 flex justify-between items-start">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-2">La Macro</h1>
-            <p className="text-muted-foreground">
-              Visualización de variables económicas, monetarias y cambiarias del
-              Banco Central de la República Argentina.
-            </p>
-          </div>
-        </header>
-
-        <div className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg border p-6 my-6 flex flex-col md:flex-row items-start md:items-center gap-4">
-          <AlertCircle className="h-6 w-6 flex-shrink-0" />
-          <div className="flex-grow">
-            <h3 className="font-medium text-lg">Error al cargar datos</h3>
-            <p>No se pudieron cargar los datos del BCRA.</p>
-            <p className="text-xs text-red-500 dark:text-red-400 mt-2">
-              {error.message}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (
-    !data ||
-    !data.results ||
-    !Array.isArray(data.results) ||
-    data.results.length === 0
-  ) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader className="animate-spin" />
-      </div>
-    );
-  }
-
-  const variables = data.results;
+  // Use initialVariables directly
+  const variables = initialVariables;
 
   // Filter variables by ID for each category based on example.md
 
@@ -136,7 +87,7 @@ export default function BCRADashboard() {
 
   // Add exportSectionVariables function
   const exportSectionVariables = () => {
-    if (!data?.results) return;
+    if (!variables || variables.length === 0) return;
 
     setExportLoading(true);
     try {
@@ -228,7 +179,7 @@ export default function BCRADashboard() {
             variant="outline"
             size="default"
             onClick={exportSectionVariables}
-            disabled={exportLoading || !data?.results}
+            disabled={exportLoading || !variables || variables.length === 0}
             className="whitespace-nowrap  dark:bg-secondary dark:hover:bg-secondary/50"
           >
             {exportLoading ? (
@@ -257,6 +208,7 @@ export default function BCRADashboard() {
                   disableTrend={false}
                   key={variable.idVariable}
                   variable={variable}
+                  prefetch={true}
                 />
               ))}
             </div>
@@ -273,6 +225,7 @@ export default function BCRADashboard() {
                   disableTrend={false}
                   key={variable.idVariable}
                   variable={variable}
+                  prefetch={true}
                 />
               ))}
             </div>
@@ -285,7 +238,11 @@ export default function BCRADashboard() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {variablesTasas.map((variable) => (
-                <VariableCard key={variable.idVariable} variable={variable} />
+                <VariableCard
+                  key={variable.idVariable}
+                  variable={variable}
+                  prefetch={true}
+                />
               ))}
             </div>
           </section>
@@ -297,7 +254,11 @@ export default function BCRADashboard() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {variablesBaseMonetaria.map((variable) => (
-                <VariableCard key={variable.idVariable} variable={variable} />
+                <VariableCard
+                  prefetch={true}
+                  key={variable.idVariable}
+                  variable={variable}
+                />
               ))}
             </div>
           </section>
@@ -340,7 +301,6 @@ export default function BCRADashboard() {
         </>
       )}
 
-      {/* Use the client component for remaining variables */}
       <AllVariablesSection
         variables={variables}
         totalCount={variables.length}

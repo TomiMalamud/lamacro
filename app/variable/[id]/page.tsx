@@ -15,23 +15,23 @@ import { Suspense } from "react";
 // Generate static params for the most commonly accessed variables
 export async function generateStaticParams() {
   return [
-    { id: '1' },   // Common exchange rate
-    { id: '4' },   // Another exchange rate
-    { id: '27' },  // Inflation
-    { id: '28' },  // Inflation
-    { id: '29' },  // Inflation
-    { id: '160' }, // Monetary
-    { id: '161' }, // Monetary
-    { id: '136' }, // Monetary
-    { id: '137' }, // Monetary
-    { id: '139' }, // Monetary
-    { id: '140' }  // Monetary
+    { id: "1" }, // Common exchange rate
+    { id: "4" }, // Another exchange rate
+    { id: "27" }, // Inflation
+    { id: "28" }, // Inflation
+    { id: "29" }, // Inflation
+    { id: "160" }, // Monetary
+    { id: "161" }, // Monetary
+    { id: "136" }, // Monetary
+    { id: "137" }, // Monetary
+    { id: "139" }, // Monetary
+    { id: "140" }, // Monetary
   ];
 }
 
 // Page component for variable details
 export default async function VariableDetailPage({
-  params
+  params,
 }: {
   params: Promise<{ id: string }>;
 }) {
@@ -47,7 +47,7 @@ export default async function VariableDetailPage({
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6 sm:px-12 px-2">
-        <Link href="/" passHref prefetch={true}>
+        <Link href="/stats" passHref prefetch={true}>
           <Button variant="link" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Volver al Dashboard
@@ -90,12 +90,12 @@ async function VariableDetail({ id }: { id: number }) {
     // Fetch data in parallel
     const [timeSeriesData, allVariablesData] = await Promise.all([
       fetchVariableTimeSeries(id, desde, hasta),
-      fetchBCRADirect()
+      fetchBCRADirect(),
     ]);
 
     // Find the variable in the full list to get its description
     const variableInfo = allVariablesData.results.find(
-      (v) => v.idVariable === id
+      (v) => v.idVariable === id,
     );
 
     // Get description or use fallback
@@ -111,7 +111,7 @@ async function VariableDetail({ id }: { id: number }) {
     return (
       <div className="space-y-4 sm:px-16 px-6">
         <h1 className="text-3xl font-bold text-primary">
-          {variableDescription.replace('n.a.', 'TNA').replace('e.a.', 'TEA')}
+          {variableDescription.replace("n.a.", "TNA").replace("e.a.", "TEA")}
         </h1>
         <p className="text-sm text-muted-foreground">
           Última actualización: {formatDate(latestDataPoint.fecha)}
@@ -131,7 +131,7 @@ async function VariableDetail({ id }: { id: number }) {
           <CardContent>
             <Link
               href={`https://chat.openai.com/?q=${encodeURIComponent(
-                `Explicá la variable "${variableDescription.replace(/%/g, 'porcentaje')}" del Banco Central de la República Argentina (BCRA). Qué significa que actualmente tenga un valor de ${latestDataPoint.valor}?`
+                `Explicá la variable "${variableDescription.replace(/%/g, "porcentaje")}" del Banco Central de la República Argentina (BCRA). Qué significa que actualmente tenga un valor de ${latestDataPoint.valor}?`,
               )}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -159,7 +159,8 @@ async function VariableDetail({ id }: { id: number }) {
           </CardHeader>
           <CardContent>
             <p className="text-red-600">
-              No se pudieron cargar los datos para esta variable. Puede que no exista.
+              No se pudieron cargar los datos para esta variable. Puede que no
+              exista.
             </p>
             <p className="text-xs text-red-500 mt-2">
               {error instanceof Error ? error.message : "Error desconocido"}

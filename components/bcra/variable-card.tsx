@@ -57,12 +57,14 @@ interface VariableCardProps {
   variable: BCRAVariable;
   className?: string;
   disableTrend?: boolean;
+  prefetch?: boolean;
 }
 
 export function VariableCard({
   variable,
   className = "",
   disableTrend = true,
+  prefetch = false,
 }: VariableCardProps) {
   const [trend, setTrend] = useState<TrendData>({
     isLoading: false, // Start as not loading until we decide to load
@@ -349,11 +351,11 @@ export function VariableCard({
   return (
     <Link
       href={`/variable/${variable.idVariable}`}
-      prefetch={true}
+      prefetch={prefetch}
       className="block w-full h-full"
     >
       <Card
-        className={`${className} h-full cursor-pointer hover:shadow-sm transition-all group animate-fade-in flex flex-col`}
+        className={`${className} h-full cursor-pointer hover:shadow-sm dark:hover:shadow-neutral-700 white transition-all group animate-fade-in flex flex-col`}
       >
         <CardHeader className="pb-2 flex-grow-0">
           <CardTitle className="text-sm font-medium line-clamp-2 min-h-[2.5rem]">
