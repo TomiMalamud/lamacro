@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -13,7 +13,7 @@ const normalizeText = (text: string) => {
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, ' '); // Replace multiple spaces with a single space
+    .replace(/\s+/g, " "); // Replace multiple spaces with a single space
 };
 
 interface AllVariablesSectionProps {
@@ -22,10 +22,10 @@ interface AllVariablesSectionProps {
   searchTerm: string;
 }
 
-export default function AllVariablesSection({ 
-  variables, 
+export default function AllVariablesSection({
+  variables,
   totalCount,
-  searchTerm 
+  searchTerm,
 }: AllVariablesSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
@@ -37,8 +37,8 @@ export default function AllVariablesSection({
   });
 
   // Show only 3 variables initially or all if showAll is true, applied to filtered results
-  const displayedVariables = showAll 
-    ? filteredVariables 
+  const displayedVariables = showAll
+    ? filteredVariables
     : filteredVariables.slice(0, 3);
 
   return (
@@ -54,7 +54,6 @@ export default function AllVariablesSection({
               key={variable.idVariable}
               variable={variable}
               className="h-full"
-              disableTrend={true}
             />
           ))}
         </div>
@@ -63,12 +62,12 @@ export default function AllVariablesSection({
           No se encontraron variables que coincidan con la búsqueda
         </p>
       )}
-      
+
       {/* Show more/less button - only show if we have more than 3 filtered variables */}
       {filteredVariables.length > 3 && (
         <div className="flex justify-center mt-6">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => setShowAll(!showAll)}
             className="flex items-center gap-2"
           >

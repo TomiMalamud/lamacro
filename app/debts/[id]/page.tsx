@@ -115,7 +115,6 @@ interface ChequeResponse {
   results: ChequeRechazado;
 }
 
-
 // Helper function to format date
 function formatDate(dateString: string | null): string {
   if (!dateString) return "N/A";
@@ -151,7 +150,7 @@ async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      next: { tags: [`deudores-${id}`] }
+      next: { tags: [`deudores-${id}`] },
     });
 
     if (!response.ok) {
@@ -178,7 +177,7 @@ async function fetchHistorial(id: string): Promise<HistorialResponse | null> {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      next: { tags: [`historicas-${id}`] }
+      next: { tags: [`historicas-${id}`] },
     });
 
     if (!response.ok) {
@@ -205,7 +204,7 @@ async function fetchCheques(id: string): Promise<ChequeResponse | null> {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      next: { tags: [`cheques-${id}`] }
+      next: { tags: [`cheques-${id}`] },
     });
 
     if (!response.ok) {
@@ -278,9 +277,12 @@ async function DebtorData({ id }: { id: string }) {
       {!hasData ? (
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-amber-600">CUIT/CUIL no encontrado</CardTitle>
+            <CardTitle className="text-amber-600">
+              CUIT/CUIL no encontrado
+            </CardTitle>
             <CardDescription>
-              No se encontraron registros para este número en la Central de Deudores del BCRA
+              No se encontraron registros para este número en la Central de
+              Deudores del BCRA
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -289,7 +291,10 @@ async function DebtorData({ id }: { id: string }) {
                 <p className="mb-2">Posibles razones:</p>
                 <ul className="list-disc pl-6 space-y-1">
                   <li>El CUIT/CUIL ingresado no existe o es incorrecto</li>
-                  <li>La persona o entidad no tiene deudas registradas en el sistema financiero</li>
+                  <li>
+                    La persona o entidad no tiene deudas registradas en el
+                    sistema financiero
+                  </li>
                 </ul>
               </div>
               <div className="border-t">
@@ -510,7 +515,8 @@ async function DebtorData({ id }: { id: string }) {
                   id={id}
                   description="Instituto Nacional de Asociativismo y Economía Social"
                 >
-                  INAES. Servicios de Crédito Cooperativo y/o Ayuda Económica Mutual
+                  INAES. Servicios de Crédito Cooperativo y/o Ayuda Económica
+                  Mutual
                 </ClipboardLink>
               </CardContent>
             </Card>
@@ -518,9 +524,9 @@ async function DebtorData({ id }: { id: string }) {
 
           <div className="text-sm text-muted-foreground mb-8">
             <p>
-              El BCRA no tiene responsabilidad alguna por los datos difundidos en
-              los enlaces anteriores. La información corresponde a las respectivas
-              entidades mencionadas.
+              El BCRA no tiene responsabilidad alguna por los datos difundidos
+              en los enlaces anteriores. La información corresponde a las
+              respectivas entidades mencionadas.
             </p>
           </div>
 
@@ -528,9 +534,9 @@ async function DebtorData({ id }: { id: string }) {
 
           <h3 className="font-semibold mt-4">1. Denominación del deudor</h3>
           <p>
-            Nombre o razón social de la persona humana o jurídica que figura en el
-            padrón de la Agencia de Recaudación y Control Aduanero (ARCA) o bien
-            la que fuera registrada por la entidad informante.
+            Nombre o razón social de la persona humana o jurídica que figura en
+            el padrón de la Agencia de Recaudación y Control Aduanero (ARCA) o
+            bien la que fuera registrada por la entidad informante.
           </p>
 
           <h3 className="font-semibold mt-4">2. Entidad</h3>
@@ -538,8 +544,8 @@ async function DebtorData({ id }: { id: string }) {
 
           <h3 className="font-semibold mt-4">3. Situación</h3>
           <p>
-            Indica la clasificación del deudor informada por la entidad. Para más
-            información, acceder al{" "}
+            Indica la clasificación del deudor informada por la entidad. Para
+            más información, acceder al{" "}
             <Link
               className="text-blue-500 hover:underline"
               href="https://www.bcra.gob.ar/Pdfs/Texord/t-cladeu.pdf"
@@ -575,7 +581,7 @@ async function DebtorData({ id }: { id: string }) {
           </ul>
 
           <h3 className="font-semibold mt-4">5. Monto</h3>
-          <p>Información en miles de pesos.</p>
+          <p>Información en pesos constantes.</p>
 
           <h3 className="font-semibold mt-4">
             6. Días atraso y 7. Observaciones
@@ -591,8 +597,8 @@ async function DebtorData({ id }: { id: string }) {
               Texto ordenado del &quot;Régimen Informativo Contable Mensual -
               Deudores del Sistema Financiero&quot;
             </Link>
-            . Para deudores de cartera de consumo o vivienda en situación distinta
-            a la normal, se informan los días de atraso en casos de
+            . Para deudores de cartera de consumo o vivienda en situación
+            distinta a la normal, se informan los días de atraso en casos de
             refinanciaciones, recategorización obligatoria o situación jurídica.
             La leyenda (N/A) indica &quot;No Aplicable&quot;.
           </p>
@@ -628,32 +634,34 @@ export default async function DebtorPage({
 
   return (
     <main className="min-h-screen mx-auto p-6 sm:px-16">
-      <Suspense fallback={
-        <>
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              <Link
-                href="/debts/search"
-                className="inline-flex items-center text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-              >
-                <ChevronLeft className="mr-1" size={16} />
-                Volver a búsqueda
-              </Link>
+      <Suspense
+        fallback={
+          <>
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Link
+                  href="/debts/search"
+                  className="inline-flex items-center text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+                >
+                  <ChevronLeft className="mr-1" size={16} />
+                  Volver a búsqueda
+                </Link>
+              </div>
+              <h1 className="text-3xl font-bold mb-2">Central de Deudores</h1>
+              <h2 className="text-xl text-slate-700 dark:text-slate-300">
+                <span>
+                  CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`}
+                </span>
+              </h2>
             </div>
-            <h1 className="text-3xl font-bold mb-2">Central de Deudores</h1>
-            <h2 className="text-xl text-slate-700 dark:text-slate-300">
-              <span>
-                CUIT: {`${id.slice(0, 2)}-${id.slice(2, 10)}-${id.slice(10)}`}
-              </span>
-            </h2>
-          </div>
-          <div className="grid gap-6">
-            <DebtSectionSkeleton />
-            <ChequesSkeletonSection />
-            <HistorialChartSkeleton />
-          </div>
-        </>
-      }>
+            <div className="grid gap-6">
+              <DebtSectionSkeleton />
+              <ChequesSkeletonSection />
+              <HistorialChartSkeleton />
+            </div>
+          </>
+        }
+      >
         <DebtorData id={id} />
       </Suspense>
     </main>

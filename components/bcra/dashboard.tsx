@@ -4,7 +4,12 @@ import AllVariablesSection from "@/components/bcra/all-variables-section";
 import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BCRAVariable, fetchBCRADirect, formatDate, formatNumber } from "@/lib/bcra-fetch";
+import {
+  BCRAVariable,
+  fetchBCRADirect,
+  formatDate,
+  formatNumber,
+} from "@/lib/bcra-fetch";
 import { AlertCircle, Clock, Download, Loader, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -20,7 +25,7 @@ export default function BCRADashboard() {
     fetchBCRADirect()
       .then((response) => setData(response))
       .catch((err) =>
-        setError(err instanceof Error ? err : new Error("Unknown error"))
+        setError(err instanceof Error ? err : new Error("Unknown error")),
       );
   }, []);
 
@@ -41,9 +46,7 @@ export default function BCRADashboard() {
           <AlertCircle className="h-6 w-6 flex-shrink-0" />
           <div className="flex-grow">
             <h3 className="font-medium text-lg">Error al cargar datos</h3>
-            <p>
-              No se pudieron cargar los datos del BCRA.
-            </p>
+            <p>No se pudieron cargar los datos del BCRA.</p>
             <p className="text-xs text-red-500 dark:text-red-400 mt-2">
               {error.message}
             </p>
@@ -59,7 +62,11 @@ export default function BCRADashboard() {
     !Array.isArray(data.results) ||
     data.results.length === 0
   ) {
-    return <div className="flex justify-center items-center h-screen"><Loader className="animate-spin" /></div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader className="animate-spin" />
+      </div>
+    );
   }
 
   const variables = data.results;
@@ -69,37 +76,63 @@ export default function BCRADashboard() {
   // Inflación section
   const variablesInflacion = variables
     .filter((v) => [27, 28, 29].includes(v.idVariable))
-    .sort((a, b) => [27, 28, 29].indexOf(a.idVariable) - [27, 28, 29].indexOf(b.idVariable));
+    .sort(
+      (a, b) =>
+        [27, 28, 29].indexOf(a.idVariable) - [27, 28, 29].indexOf(b.idVariable),
+    );
 
   // Divisas section
   const variablesDivisas = variables
     .filter((v) => [1, 4, 5].includes(v.idVariable))
-    .sort((a, b) => [1, 4, 5].indexOf(a.idVariable) - [1, 4, 5].indexOf(b.idVariable));
+    .sort(
+      (a, b) =>
+        [1, 4, 5].indexOf(a.idVariable) - [1, 4, 5].indexOf(b.idVariable),
+    );
 
   // Tasas de Interés section
   const variablesTasas = variables
-    .filter((v) => [6, 34, 44, 45, 7, 35, 8, 9, 11, 12, 13, 14, 43].includes(v.idVariable))
-    .sort((a, b) => [6, 34, 44, 45, 7, 35, 8, 9, 11, 12, 13, 14, 43].indexOf(a.idVariable) - [6, 34, 44, 45, 7, 35, 8, 9, 11, 12, 13, 14, 43].indexOf(b.idVariable));
+    .filter((v) =>
+      [6, 34, 44, 45, 7, 35, 8, 9, 11, 12, 13, 14, 43].includes(v.idVariable),
+    )
+    .sort(
+      (a, b) =>
+        [6, 34, 44, 45, 7, 35, 8, 9, 11, 12, 13, 14, 43].indexOf(a.idVariable) -
+        [6, 34, 44, 45, 7, 35, 8, 9, 11, 12, 13, 14, 43].indexOf(b.idVariable),
+    );
 
   // Base Monetaria section
   const variablesBaseMonetaria = variables
     .filter((v) => [15, 16, 17, 18, 19].includes(v.idVariable))
-    .sort((a, b) => [15, 16, 17, 18, 19].indexOf(a.idVariable) - [15, 16, 17, 18, 19].indexOf(b.idVariable));
+    .sort(
+      (a, b) =>
+        [15, 16, 17, 18, 19].indexOf(a.idVariable) -
+        [15, 16, 17, 18, 19].indexOf(b.idVariable),
+    );
 
   // Depósitos section
   const variablesDepositos = variables
     .filter((v) => [21, 22, 23, 24].includes(v.idVariable))
-    .sort((a, b) => [21, 22, 23, 24].indexOf(a.idVariable) - [21, 22, 23, 24].indexOf(b.idVariable));
+    .sort(
+      (a, b) =>
+        [21, 22, 23, 24].indexOf(a.idVariable) -
+        [21, 22, 23, 24].indexOf(b.idVariable),
+    );
 
   // Índices section
   const variablesIndices = variables
     .filter((v) => [30, 31, 32, 40].includes(v.idVariable))
-    .sort((a, b) => [30, 31, 32, 40].indexOf(a.idVariable) - [30, 31, 32, 40].indexOf(b.idVariable));
+    .sort(
+      (a, b) =>
+        [30, 31, 32, 40].indexOf(a.idVariable) -
+        [30, 31, 32, 40].indexOf(b.idVariable),
+    );
 
   // Privados section
   const variablesPrivados = variables
     .filter((v) => [25, 26].includes(v.idVariable))
-    .sort((a, b) => [25, 26].indexOf(a.idVariable) - [25, 26].indexOf(b.idVariable));
+    .sort(
+      (a, b) => [25, 26].indexOf(a.idVariable) - [25, 26].indexOf(b.idVariable),
+    );
 
   // Add exportSectionVariables function
   const exportSectionVariables = () => {
@@ -115,7 +148,7 @@ export default function BCRADashboard() {
         ...variablesBaseMonetaria,
         ...variablesDepositos,
         ...variablesIndices,
-        ...variablesPrivados
+        ...variablesPrivados,
       ];
 
       // Create CSV content
@@ -125,12 +158,10 @@ export default function BCRADashboard() {
         ...sectionVariables.map((variable) => {
           const date = formatDate(variable.fecha);
           const value = formatNumber(variable.valor).replace(",", ".");
-          return [
-            variable.descripcion.replace(/,/g, ";"),
-            date,
-            value
-          ].join(",");
-        })
+          return [variable.descripcion.replace(/,/g, ";"), date, value].join(
+            ",",
+          );
+        }),
       ].join("\n");
 
       // Create and download file
@@ -140,7 +171,7 @@ export default function BCRADashboard() {
       link.setAttribute("href", url);
       link.setAttribute(
         "download",
-        `variables_bcra_${new Date().toISOString().split("T")[0]}.csv`
+        `variables_bcra_${new Date().toISOString().split("T")[0]}.csv`,
       );
       document.body.appendChild(link);
       link.click();
@@ -168,11 +199,12 @@ export default function BCRADashboard() {
                 La Macro
               </h1>
               <p className="text-primary ">
-                Visualización de variables económicas, monetarias y cambiarias del
-                Banco Central de la República Argentina.
+                Visualización de variables económicas, monetarias y cambiarias
+                del Banco Central de la República Argentina.
               </p>
               <p className="text-muted-foreground">
-                La tendencia de las variables se calcula con los últimos 30-60 días según la variable.
+                La tendencia de las variables se calcula con los últimos 30-60
+                días según la variable.
               </p>
               <p className="text-muted-foreground">
                 Tocá en una variable para ver detalles.
@@ -221,7 +253,11 @@ export default function BCRADashboard() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {variablesInflacion.map((variable) => (
-                <VariableCard key={variable.idVariable} variable={variable} />
+                <VariableCard
+                  disableTrend={false}
+                  key={variable.idVariable}
+                  variable={variable}
+                />
               ))}
             </div>
           </section>
@@ -233,7 +269,11 @@ export default function BCRADashboard() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {variablesDivisas.map((variable) => (
-                <VariableCard key={variable.idVariable} variable={variable} />
+                <VariableCard
+                  disableTrend={false}
+                  key={variable.idVariable}
+                  variable={variable}
+                />
               ))}
             </div>
           </section>
