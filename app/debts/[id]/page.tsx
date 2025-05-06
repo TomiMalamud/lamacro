@@ -26,6 +26,10 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
+export async function generateStaticParams() {
+  return [];
+}
+
 // Define types based on the API schema
 interface DeudaEntidad {
   entidad: string | null;
@@ -150,7 +154,7 @@ async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      next: { tags: [`deudores-${id}`] },
+      next: { revalidate: 86400 },
     });
 
     if (!response.ok) {
@@ -177,7 +181,7 @@ async function fetchHistorial(id: string): Promise<HistorialResponse | null> {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      next: { tags: [`historicas-${id}`] },
+      next: { revalidate: 86400 },
     });
 
     if (!response.ok) {
@@ -204,7 +208,7 @@ async function fetchCheques(id: string): Promise<ChequeResponse | null> {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      next: { tags: [`cheques-${id}`] },
+      next: { revalidate: 86400 },
     });
 
     if (!response.ok) {
@@ -221,16 +225,13 @@ async function fetchCheques(id: string): Promise<ChequeResponse | null> {
   }
 }
 
-// Wrap the fetch in a separate component
 async function DebtorData({ id }: { id: string }) {
-  // Fetch data in parallel using Promise.all
   const [deudaData, historialData, chequesData] = await Promise.all([
     fetchDeudas(id),
     fetchHistorial(id),
     fetchCheques(id),
   ]);
 
-  // If no data is found, show a friendly error message instead of 404
   const hasData = deudaData || historialData || chequesData;
 
   return (

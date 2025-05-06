@@ -1,4 +1,3 @@
-// Remove force-dynamic and implement proper caching
 export const revalidate = 3600; // Revalidate every hour
 
 import { VariableDetailClient } from "@/components/bcra/variable-detail-client";
@@ -12,7 +11,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-// Generate static params for the most commonly accessed variables
 export async function generateStaticParams() {
   return [
     { id: "1" }, // Common exchange rate
