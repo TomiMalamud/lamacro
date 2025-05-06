@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/popover";
 import { formatCurrency } from "@/lib/formatters";
 
-// Reuse the same interfaces from debt-table.tsx
 interface DeudaEntidad {
   entidad: string | null;
   situacion: number | null;
@@ -137,17 +136,7 @@ export default function DebtMobileSection({
               Período: {formatPeriod(deudaData.results.periodos[0].periodo)}
             </div>
             <div className="flex items-center gap-1">
-              Monto expresado en
-              <Popover>
-                <PopoverTrigger>
-                  <span className="font-bold">
-                    pesos constantes<sup>?</sup>
-                  </span>
-                </PopoverTrigger>
-                <PopoverContent className="text-sm">
-                  Por ejemplo: si dice 100 son $100.000 ARS
-                </PopoverContent>
-              </Popover>
+              Monto expresado en pesos.
             </div>
             <div className="flex items-center gap-1">
               La situación &quot;normal&quot;
@@ -194,7 +183,7 @@ export default function DebtMobileSection({
                     <span className="text-muted-foreground">
                       Deuda:{" "}
                       <span className="text-foreground">
-                        {formatCurrency(entidad.monto)}
+                        {formatCurrency(Number(entidad.monto) * 1000)}
                       </span>
                     </span>
                   </div>

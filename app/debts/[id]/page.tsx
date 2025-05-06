@@ -582,7 +582,7 @@ async function DebtorData({ id }: { id: string }) {
           </ul>
 
           <h3 className="font-semibold mt-4">5. Monto</h3>
-          <p>Información en pesos constantes.</p>
+          <p>Información en pesos.</p>
 
           <h3 className="font-semibold mt-4">
             6. Días atraso y 7. Observaciones

@@ -130,24 +130,19 @@ export default function DebtSection({
       <CardHeader>
         <CardTitle>Deudas Actuales</CardTitle>
         <CardDescription>
-          Período: {formatPeriod(deudaData.results.periodos[0].periodo)}. Monto
-          expresado en{" "}
-          <Popover>
-            <PopoverTrigger>
-              <span className="font-bold">
-                pesos constantes<sup>?</sup>
-              </span>
-            </PopoverTrigger>
-            <PopoverContent className="text-sm">
-              Por ejemplo: si dice 100 son $100.000 ARS
-            </PopoverContent>
-          </Popover>
-          .
+          Período:{" "}
+          <span className="font-bold">
+            {" "}
+            {formatPeriod(deudaData.results.periodos[0].periodo)}.
+          </span>{" "}
+          Monto expresado en pesos.
           <span className="block">
-            La deuda incluye los consumos realizados con tarjeta de crédito. La
-            situación &quot;normal&quot;{" "}
+            Si dice &quot;normal&quot;,{" "}
+            <span className="font-bold text-white">¡NO ES MORA!</span> La deuda
+            incluye los consumos realizados con tarjeta de crédito. La situación
+            &quot;normal&quot;{" "}
             <Popover>
-              <PopoverTrigger className="font-bold">
+              <PopoverTrigger className="font-bold text-white">
                 es estar al día.<sup>?</sup>
               </PopoverTrigger>
               <PopoverContent className="text-sm">
@@ -188,10 +183,10 @@ export default function DebtSection({
           <TableHeader>
             <TableRow>
               <TableHead>Entidad</TableHead>
-              <TableHead>Situación</TableHead>
-              <TableHead>Monto</TableHead>
-              <TableHead>Días Atraso</TableHead>
-              <TableHead>Detalles</TableHead>
+              <TableHead className="text-center">Situación</TableHead>
+              <TableHead className="text-right">Monto</TableHead>
+              <TableHead className="text-right">Días Atraso</TableHead>
+              <TableHead className="text-right">Detalles</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -206,7 +201,7 @@ export default function DebtSection({
               .map((entidad, entIndex) => (
                 <TableRow key={entIndex}>
                   <TableCell>{entidad.entidad}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-center">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${getSituacionColor(
                         entidad.situacion,
@@ -215,9 +210,13 @@ export default function DebtSection({
                       {getSituacionDescription(entidad.situacion)}
                     </span>
                   </TableCell>
-                  <TableCell>{formatCurrency(entidad.monto)}</TableCell>
-                  <TableCell>{entidad.diasAtrasoPago ?? "N/A"}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(Number(entidad.monto) * 1000)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {entidad.diasAtrasoPago ?? "N/A"}
+                  </TableCell>
+                  <TableCell className="text-right">
                     <div className="flex flex-wrap gap-1">
                       {entidad.refinanciaciones && (
                         <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
