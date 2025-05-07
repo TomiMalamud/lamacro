@@ -139,21 +139,46 @@ export default function DebtMobileSection({
               Monto expresado en pesos.
             </div>
             <div className="flex items-center gap-1">
-              La situación &quot;normal&quot;
-              <Popover>
-                <PopoverTrigger className="font-bold">
-                  es estar al día<sup>?</sup>
-                </PopoverTrigger>
-                <PopoverContent className="text-sm">
-                  <ul className="list-disc list-inside space-y-1">
-                    <li>Normal: Atraso hasta 31 días</li>
-                    <li>Riesgo bajo: Atraso de 31 a 90 días</li>
-                    <li>Riesgo medio: Atraso de 90 a 180 días</li>
-                    <li>Riesgo alto: Atraso de 180 días a 1 año</li>
-                    <li>Irrecuperable: Atrasos mayores a 1 año</li>
-                  </ul>
-                </PopoverContent>
-              </Popover>
+              <span className="block">
+                Si dice &quot;normal&quot;,{" "}
+                <span className="font-bold text-white">¡NO ES MORA!</span> La
+                deuda incluye los consumos realizados con tarjeta de crédito. La
+                situación &quot;normal&quot;{" "}
+                <Popover>
+                  <PopoverTrigger className="font-bold text-white">
+                    es estar al día.<sup>?</sup>
+                  </PopoverTrigger>
+                  <PopoverContent className="text-sm">
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>
+                        Normal: Atraso en el pago que no supere los 31 días. (o
+                        sea, al día)
+                      </li>
+                      <li>
+                        Riesgo bajo: Atraso en el pago de más de 31 y hasta 90
+                        días desde el vencimiento.
+                      </li>
+                      <li>
+                        Riesgo medio: Atraso en el pago de más de 90 y hasta 180
+                        días.
+                      </li>
+                      <li>
+                        Riesgo alto: Atraso en el pago de más de 180 días hasta
+                        un año.
+                      </li>
+                      <li>Irrecuperable: Atrasos superiores a un año.</li>
+                    </ul>
+                    <a
+                      className="text-blue-500 hover:text-blue-600"
+                      href="https://www.bcra.gob.ar/BCRAyVos/Preg-Frec-Qué-significa-cada-situación-en-la-Central-de-deudores-considerando-sólo-la-mora.asp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Fuente
+                    </a>
+                  </PopoverContent>
+                </Popover>
+              </span>
             </div>
           </div>
         </CardDescription>
