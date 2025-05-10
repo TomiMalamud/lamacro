@@ -20,6 +20,7 @@ import {
   parseISO,
   startOfDay,
 } from "date-fns";
+import { DUAL_BONDS_COLORS } from "@/components/duales-tamar/constants";
 
 const TICKERS: Record<string, string> = {
   S16A5: "2025-04-16",
@@ -557,15 +558,8 @@ export async function getDualBondSimulationData(
             date: eventDateStr,
             bondTicker: bondTicker,
             value: projectedAvgTamar,
-            // Colors can be better managed in the component or passed if fixed
             color:
-              bondTicker === "TTM26"
-                ? "#ff8888"
-                : bondTicker === "TTJ26"
-                  ? "#fb9f3f"
-                  : bondTicker === "TTS26"
-                    ? "#4af6c3"
-                    : "#66CCFF",
+              DUAL_BONDS_COLORS[bondTicker] || DUAL_BONDS_COLORS.projection_AVG,
             scenarioLabel: proyAvgKey,
           });
           if (projectedAvgTamar > tasaFija) {

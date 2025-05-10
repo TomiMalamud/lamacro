@@ -20,23 +20,23 @@ export const chartConfig = {
     label: "Promedio Histórico TAMAR",
     color: DUAL_BONDS_COLORS.tamar_AVG,
   },
-  TTM26: {
+  TTM26_fixed_rate: {
     label: "TTM26 Tasa Fija",
     color: DUAL_BONDS_COLORS.TTM26,
   },
-  TTJ26: {
+  TTJ26_fixed_rate: {
     label: "TTJ26 Tasa Fija",
     color: DUAL_BONDS_COLORS.TTJ26,
   },
-  TTS26: {
+  TTS26_fixed_rate: {
     label: "TTS26 Tasa Fija",
     color: DUAL_BONDS_COLORS.TTS26,
   },
-  TTD26: {
+  TTD26_fixed_rate: {
     label: "TTD26 Tasa Fija",
     color: DUAL_BONDS_COLORS.TTD26,
   },
-  projection_AVG: {
+  tamar_proy_AVG: {
     label: "Promedio Proyección TAMAR",
     color: DUAL_BONDS_COLORS.projection_AVG,
   },

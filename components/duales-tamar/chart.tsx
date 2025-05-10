@@ -10,7 +10,6 @@ import {
   CartesianGrid,
   Label,
   LabelList,
-  Legend,
   Line,
   LineChart,
   ReferenceLine,
@@ -18,7 +17,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "../ui/chart";
 import { chartConfig, DUAL_BONDS_COLORS } from "./constants";
 
 interface DualesTamarChartProps {
@@ -43,14 +48,6 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
   }
 
   const yAxisTickFormatter = (value: number) => `${(value * 100).toFixed(1)}%`;
-  const tooltipFormatter = (value: number, name: string) => [
-    `${(value * 100).toFixed(2)}%`,
-    name
-      .replace("tamar_proy_", "Proy. ")
-      .replace("_AVG", " Promedio")
-      .replace("tamar_tem_spot", "TEM Spot TAMAR")
-      .replace("tamar_AVG", "Promedio TAMAR"),
-  ];
 
   let minY = Infinity;
   let maxY = -Infinity;
@@ -70,7 +67,7 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
         data={chartData}
         margin={{ top: 5, right: 30, left: 20, bottom: 40 }}
       >
-        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+        <CartesianGrid />
         <XAxis
           dataKey="date"
           tick={{ fontSize: 10 }}
@@ -85,16 +82,10 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
           padding={{ top: 30, bottom: 30 }}
         />
         <ChartTooltip
-          formatter={tooltipFormatter}
-          labelStyle={{ color: "black" }}
-          contentStyle={{
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
-            borderRadius: "5px",
-          }}
-          content={<ChartTooltipContent />}
+          cursor={true}
+          content={<ChartTooltipContent indicator="line" />}
         />
-        <Legend wrapperStyle={{ bottom: 0 }} />
-
+        <ChartLegend content={<ChartLegendContent />} />
         <Line
           type="monotone"
           dataKey="tamar_tem_spot"
@@ -112,7 +103,6 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
           strokeWidth={1.5}
           dot={false}
         />
-
         {Object.keys(DUAL_BOND_EVENTS).map((bondTicker) => (
           <Line
             key={`${bondTicker}_fixed_rate`}
@@ -124,21 +114,22 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
             dot={false}
           />
         ))}
-
-        {targetsTEM.map((target) => {
-          const proyAvgKey = `tamar_proy_${(target * 100).toFixed(1)}_AVG`;
-          return (
-            <Line
-              key={proyAvgKey}
-              type="monotone"
-              dataKey={proyAvgKey}
-              name={`Escenario TAMAR ${(target * 100).toFixed(1)}% (Promedio)`}
-              stroke={DUAL_BONDS_COLORS.projection_AVG}
-              strokeWidth={1}
-              dot={false}
-            />
-          );
-        })}
+        {targetsTEM.length > 0 &&
+          (() => {
+            const currentTargetTEM = targetsTEM[0];
+            const proyAvgKey = `tamar_proy_${(currentTargetTEM * 100).toFixed(1)}_AVG`;
+            return (
+              <Line
+                key={proyAvgKey}
+                type="monotone"
+                dataKey={proyAvgKey}
+                name={`Escenario TAMAR ${(currentTargetTEM * 100).toFixed(1)}% `}
+                stroke={DUAL_BONDS_COLORS.projection_AVG}
+                strokeWidth={1.5}
+                dot={false}
+              />
+            );
+          })()}
 
         {Object.entries(eventDates).map(([label, dateStr]) => {
           const bondColor = DUAL_BONDS_COLORS[label] || "grey";
@@ -177,26 +168,26 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
           >
             {/* eslint-disable @typescript-eslint/no-explicit-any */}
             <LabelList
-              dataKey="value"
+              dataKey={p.scenarioLabel}
               position="top"
               content={(props: any) => {
-                const { x, y, value } = props;
-                if (value === undefined) return null;
+                const { x, y, value: pointValue } = props;
+                if (pointValue === undefined) return null;
                 return (
                   <text
                     x={x}
                     y={y}
                     dy={-8}
-                    fill="#333"
+                    fill={p.color}
                     stroke="#FFF"
-                    strokeWidth={0.4}
-                    fontSize={8}
+                    strokeWidth={0.3}
+                    fontSize={9}
                     textAnchor="middle"
-                  >{`${(value * 100).toFixed(2)}%`}</text>
+                    fontWeight="bold"
+                  >{`${(pointValue * 100).toFixed(1)}%`}</text>
                 );
               }}
             />
-            {}
           </Scatter>
         ))}
       </LineChart>
