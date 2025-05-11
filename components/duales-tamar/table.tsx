@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import clsx from "clsx";
 
 interface DualesTamarTableProps {
   tableData: DualBondTableEntry[];
@@ -44,7 +45,7 @@ export const DualesTamarTable: React.FC<DualesTamarTableProps> = ({
           </TableHeader>
           <TableBody>
             {tableData.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
+              <TableRow key={rowIndex} className={clsx()}>
                 <TableCell className="font-medium">{row.label}</TableCell>
                 <TableCell>{row.TTM26}</TableCell>
                 <TableCell>{row.TTJ26}</TableCell>

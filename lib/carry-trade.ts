@@ -267,6 +267,21 @@ const DUAL_BOND_FIXED_RATES: Record<string, number> = {
 
 const TARGET_FECHA_DUALES = "2026-12-31"; // Equivalent to pd.Timestamp("2026-12-31")
 
+// Define the fixed TEM scenarios for table generation and all chart projection lines
+const ALL_PROJECTION_SCENARIOS_TEM: number[] = [];
+const MIN_SCENARIO_TEM = 0.005; // As per page.tsx constants
+const MAX_SCENARIO_TEM = 0.055; // As per page.tsx constants
+const SCENARIO_TEM_STEP = 0.005; // As per page.tsx constants
+
+// Populate the scenarios array, handling potential floating point inaccuracies
+for (
+  let tem = MIN_SCENARIO_TEM;
+  tem <= MAX_SCENARIO_TEM + SCENARIO_TEM_STEP / 2;
+  tem += SCENARIO_TEM_STEP
+) {
+  ALL_PROJECTION_SCENARIOS_TEM.push(parseFloat(tem.toFixed(4)));
+}
+
 export interface DualBondChartPoint {
   date: string; // YYYY-MM-DD
   tamar_tem_spot?: number;
@@ -373,7 +388,8 @@ function getRelativeParts(
 }
 
 export async function getDualBondSimulationData(
-  targetsTEM: number[],
+  // activeTargetsTEM is from the slider, expected to be a single value array e.g. [0.02]
+  activeTargetsTEM: number[],
 ): Promise<DualBondSimulationResults | null> {
   const tamarDataRaw = await fetchTamarRateV3(45); // ID=45 es la TAMAR
   if (!tamarDataRaw || tamarDataRaw.length === 0) {
@@ -449,7 +465,8 @@ export async function getDualBondSimulationData(
         )
       : 0;
 
-  targetsTEM.forEach((targetTEM) => {
+  // Calculate 'tamar_proy_X' lines for ALL defined scenarios
+  ALL_PROJECTION_SCENARIOS_TEM.forEach((targetTEM) => {
     const proyKey = `tamar_proy_${(targetTEM * 100).toFixed(1)}`;
     futureDates.forEach((date) => {
       const dateStr = format(date, "yyyy-MM-dd");
@@ -501,8 +518,8 @@ export async function getDualBondSimulationData(
     allChartPointsMap.set(dateStr, point);
   });
 
-  // Calculate projection averages
-  targetsTEM.forEach((targetTEM) => {
+  // Calculate projection averages for ALL defined scenarios
+  ALL_PROJECTION_SCENARIOS_TEM.forEach((targetTEM) => {
     const proyKey = `tamar_proy_${(targetTEM * 100).toFixed(1)}`;
     const proyAvgKey = `${proyKey}_AVG`;
 
@@ -540,36 +557,48 @@ export async function getDualBondSimulationData(
 
     let pointForEvent = chartData.find((p) => p.date === eventDateStr);
     if (!pointForEvent) {
-      // Find first point on or after eventDate
       pointForEvent = chartData.find(
         (p) => !isBefore(parse(p.date, "yyyy-MM-dd", new Date()), eventDate),
       );
     }
 
     if (pointForEvent) {
-      targetsTEM.forEach((targetTEM) => {
-        const proyAvgKey = `tamar_proy_${(targetTEM * 100).toFixed(1)}_AVG`;
-        const projectedAvgTamar = pointForEvent[proyAvgKey] as
+      // Scatter points are for the *active* slider TEM
+      if (activeTargetsTEM && activeTargetsTEM.length > 0) {
+        const activeSliderTEM = activeTargetsTEM[0];
+        const activeProyAvgKey = `tamar_proy_${(activeSliderTEM * 100).toFixed(1)}_AVG`;
+        const activeProjectedAvgTamar = pointForEvent[activeProyAvgKey] as
           | number
           | undefined;
 
-        if (projectedAvgTamar !== undefined) {
+        if (activeProjectedAvgTamar !== undefined) {
           scatterPoints.push({
             date: eventDateStr,
             bondTicker: bondTicker,
-            value: projectedAvgTamar,
+            value: activeProjectedAvgTamar,
             color:
               DUAL_BONDS_COLORS[bondTicker] || DUAL_BONDS_COLORS.projection_AVG,
-            scenarioLabel: proyAvgKey,
+            scenarioLabel: activeProyAvgKey, // This label refers to the active projection
           });
-          if (projectedAvgTamar > tasaFija) {
-            sobreTasaTamarRaw[bondTicker][proyAvgKey] =
-              projectedAvgTamar - tasaFija;
+        }
+      }
+
+      // sobreTasaTamarRaw for table calculations needs to use ALL scenarios
+      ALL_PROJECTION_SCENARIOS_TEM.forEach((tableScenarioTEM) => {
+        const proyAvgKeyForTable = `tamar_proy_${(tableScenarioTEM * 100).toFixed(1)}_AVG`;
+        const projectedAvgTamarForTable = pointForEvent[proyAvgKeyForTable] as
+          | number
+          | undefined;
+
+        if (projectedAvgTamarForTable !== undefined) {
+          if (projectedAvgTamarForTable > tasaFija) {
+            sobreTasaTamarRaw[bondTicker][proyAvgKeyForTable] =
+              projectedAvgTamarForTable - tasaFija;
           } else {
-            sobreTasaTamarRaw[bondTicker][proyAvgKey] = 0;
+            sobreTasaTamarRaw[bondTicker][proyAvgKeyForTable] = 0;
           }
         } else {
-          sobreTasaTamarRaw[bondTicker][proyAvgKey] = 0; // If no projection, diff is 0
+          sobreTasaTamarRaw[bondTicker][proyAvgKeyForTable] = 0;
         }
       });
     }
@@ -601,20 +630,21 @@ export async function getDualBondSimulationData(
     mesesPayoff[bondTicker] = years * 12 + months + days / 30.0;
   });
 
-  targetsTEM.forEach((targetTEM) => {
+  // Calculate tables for ALL defined scenarios
+  ALL_PROJECTION_SCENARIOS_TEM.forEach((targetTEM) => {
     const scenarioLabelPrefix = `tamar_proy_${(targetTEM * 100).toFixed(1)}`;
     const proyAvgKeySuffix = "_AVG";
 
     // Initialize all properties for DualBondTableEntry
     const temDiffRow: DualBondTableEntry = {
-      label: `con TAMAR ${(targetTEM * 100).toFixed(1)}% => dic-26`,
+      label: `con TAMAR ${(targetTEM * 100).toFixed(1)}%`,
       TTM26: "0.00%",
       TTJ26: "0.00%",
       TTS26: "0.00%",
       TTD26: "0.00%", // Initial default values
     };
     const payoffDiffRow: DualBondTableEntry = {
-      label: `con TAMAR ${(targetTEM * 100).toFixed(1)}% => dic-26`,
+      label: `con TAMAR ${(targetTEM * 100).toFixed(1)}%`,
       TTM26: "0.00%",
       TTJ26: "0.00%",
       TTS26: "0.00%",

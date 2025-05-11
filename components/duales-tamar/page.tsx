@@ -5,7 +5,6 @@ import { Slider } from "@/components/ui/slider";
 import {
   getDualBondSimulationData,
   type DualBondSimulationResults,
-  type DualBondTableEntry,
 } from "@/lib/carry-trade";
 import { useEffect, useState } from "react";
 import { DualesTamarChart } from "./chart";
@@ -13,21 +12,20 @@ import { DualesTamarTable } from "./table";
 
 interface SimulacionData {
   title: string;
-  data: DualBondSimulationResults | null; // This will hold all data from the API
+  data: DualBondSimulationResults | null;
   isLoading: boolean;
   error: string | null;
 }
 
 const INITIAL_TAMAR_TEM = 0.02;
-const MIN_TAMAR_TEM = 0;
-const MAX_TAMAR_TEM = 0.06;
+const MIN_TAMAR_TEM = 0.005;
+const MAX_TAMAR_TEM = 0.055;
 const TAMAR_TEM_STEP = 0.005;
 
 export default function DualesTamarPage() {
   const [currentTamarTEM, setCurrentTamarTEM] =
     useState<number>(INITIAL_TAMAR_TEM);
 
-  // Holds all data from getDualBondSimulationData, including tables for the currentTamarTEM
   const [simulacion, setSimulacion] = useState<SimulacionData>({
     title: "Simulación Dinámica TAMAR",
     data: null,
@@ -35,19 +33,12 @@ export default function DualesTamarPage() {
     error: null,
   });
 
-  // Holds table data from the *initial* load, remains static
-  const [staticTableData, setStaticTableData] = useState<{
-    temDiff: DualBondTableEntry[] | null;
-    payoffDiff: DualBondTableEntry[] | null;
-  }>({ temDiff: null, payoffDiff: null });
-
   useEffect(() => {
     let isMounted = true;
 
     async function fetchData() {
       if (!isMounted) return;
 
-      // Set loading state for the main simulation object
       setSimulacion((prev) => ({
         ...prev,
         isLoading: true,
@@ -60,16 +51,6 @@ export default function DualesTamarPage() {
         if (!isMounted) return;
 
         if (result) {
-          if (!staticTableData.temDiff && isMounted) {
-            setStaticTableData({
-              temDiff: result.tableDataTemDiff,
-              payoffDiff: result.tableDataPayoffDiff,
-            });
-          }
-
-          // Always update the main 'simulacion' state with the latest full result.
-          // The chart will use chartData, scatterPoints, eventDates from here.
-          // The tables will ignore tableDataTemDiff, tableDataPayoffDiff from here if staticTableData is set.
           if (isMounted) {
             setSimulacion({
               title: "Simulación Dinámica TAMAR",
@@ -126,16 +107,10 @@ export default function DualesTamarPage() {
       return <p>No hay datos disponibles para la simulación.</p>;
     }
 
-    const tableDataForDisplay = {
-      temDiff: staticTableData.temDiff || simulacion.data.tableDataTemDiff,
-      payoffDiff:
-        staticTableData.payoffDiff || simulacion.data.tableDataPayoffDiff,
-    };
-
     return (
       <div className="space-y-8 mt-8">
         <h3 className="text-2xl font-semibold tracking-tight">
-          {simulacion.title} (TEM Proyectada:{" "}
+          {simulacion.title} (TEM Proyectada en Gráfico:{" "}
           {(currentTamarTEM * 100).toFixed(1)}%)
         </h3>
         <DualesTamarChart
@@ -144,16 +119,16 @@ export default function DualesTamarPage() {
           eventDates={simulacion.data.eventDates}
           targetsTEM={[currentTamarTEM]}
         />
-        {tableDataForDisplay.temDiff && (
+        {simulacion.data.tableDataTemDiff && (
           <DualesTamarTable
-            tableData={tableDataForDisplay.temDiff}
-            title="Diferencial TEM (TAMAR - Tasa Fija) - Escenario Inicial"
+            tableData={simulacion.data.tableDataTemDiff}
+            title="Diferencial TEM (TAMAR - Tasa Fija) - Diciembre 2026"
           />
         )}
-        {tableDataForDisplay.payoffDiff && (
+        {simulacion.data.tableDataPayoffDiff && (
           <DualesTamarTable
-            tableData={tableDataForDisplay.payoffDiff}
-            title="Diferencial Payoff Acumulado - Escenario Inicial"
+            tableData={simulacion.data.tableDataPayoffDiff}
+            title="Diferencial Payoff Acumulado - Diciembre 2026"
           />
         )}
       </div>
@@ -167,7 +142,7 @@ export default function DualesTamarPage() {
       </h2>
       <div className="my-8 p-6 border rounded-lg shadow">
         <Label htmlFor="tamar-tem-slider" className="text-lg font-medium">
-          Ajustar TEM Proyectada TAMAR:{" "}
+          Ajustar TEM Proyectada en Gráfico:{" "}
           <span className="font-bold text-primary">
             {(currentTamarTEM * 100).toFixed(1)}%
           </span>
@@ -184,10 +159,14 @@ export default function DualesTamarPage() {
 
         <div className="flex items-center justify-between text-sm text-muted-foreground mt-2">
           {Array.from(
-            { length: (MAX_TAMAR_TEM - MIN_TAMAR_TEM) / TAMAR_TEM_STEP + 1 },
+            {
+              length:
+                Math.round((MAX_TAMAR_TEM - MIN_TAMAR_TEM) / TAMAR_TEM_STEP) +
+                1,
+            },
             (_, i) => (
               <span key={i}>
-                {(MIN_TAMAR_TEM + i * TAMAR_TEM_STEP * 100).toFixed(1)}%
+                {((MIN_TAMAR_TEM + i * TAMAR_TEM_STEP) * 100).toFixed(1)}%
               </span>
             ),
           )}
