@@ -50,7 +50,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.1",
+    "lint-staged": "^16.0.0",
     "postcss": "^8",
     "prettier": "3.5.3",
     "tailwindcss": "^3.4.1",
