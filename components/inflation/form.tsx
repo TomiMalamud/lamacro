@@ -27,9 +27,12 @@ import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ShareCalculationDialog } from "../share-calculation-dialog";
+import { ShareCalculationDialog } from "./share-calculation-dialog";
 import { Card, CardContent, CardFooter } from "../ui/card";
-import InflationCalculator, { getMonthName, InflationResult as InflationResultType } from "./calculator";
+import InflationCalculator, {
+  getMonthName,
+  InflationResult as InflationResultType,
+} from "./calculator";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
 
@@ -49,12 +52,21 @@ interface ResponsiveSelectProps {
   isMobile: boolean;
 }
 
-function ResponsiveSelect({ value, onValueChange, options, placeholder, isMobile }: ResponsiveSelectProps) {
+function ResponsiveSelect({
+  value,
+  onValueChange,
+  options,
+  placeholder,
+  isMobile,
+}: ResponsiveSelectProps) {
   const [open, setOpen] = useState(false);
 
   if (isMobile) {
     return (
-      <Select value={value.toString()} onValueChange={(val) => onValueChange(parseInt(val))}>
+      <Select
+        value={value.toString()}
+        onValueChange={(val) => onValueChange(parseInt(val))}
+      >
         <SelectTrigger className="w-32 dark:bg-black">
           <SelectValue placeholder={placeholder}>
             {options.find((opt) => opt.value === value)?.label}
@@ -62,7 +74,11 @@ function ResponsiveSelect({ value, onValueChange, options, placeholder, isMobile
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem key={option.value} value={option.value.toString()} className="py-2 text-lg">
+            <SelectItem
+              key={option.value}
+              value={option.value.toString()}
+              className="py-2 text-lg"
+            >
               {option.label}
             </SelectItem>
           ))}
@@ -81,7 +97,7 @@ function ResponsiveSelect({ value, onValueChange, options, placeholder, isMobile
           className="w-32 justify-between"
           tabIndex={0}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (e.key === "Enter" || e.key === " ") {
               setOpen(true);
             }
           }}
@@ -92,7 +108,9 @@ function ResponsiveSelect({ value, onValueChange, options, placeholder, isMobile
       </PopoverTrigger>
       <PopoverContent align="start" className="w-36 p-0">
         <Command>
-          <CommandInput placeholder={`Buscar ${placeholder.toLowerCase()}...`} />
+          <CommandInput
+            placeholder={`Buscar ${placeholder.toLowerCase()}...`}
+          />
           <CommandList>
             <CommandEmpty>No se encontró.</CommandEmpty>
             <CommandGroup>
@@ -109,7 +127,7 @@ function ResponsiveSelect({ value, onValueChange, options, placeholder, isMobile
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
+                      value === option.value ? "opacity-100" : "opacity-0",
                     )}
                   />
                   {option.label}
@@ -141,7 +159,6 @@ export function InflationForm({
   const [isMobile, setIsMobile] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
 
@@ -156,11 +173,10 @@ export function InflationForm({
     label: getMonthName(i + 1),
   }));
 
-
   const getValidMonthOptions = (year: number) => {
     let months = monthOptions; // Use the predefined monthOptions
     if (year === currentYear) {
-      months = months.filter(month => month.value <= currentMonth);
+      months = months.filter((month) => month.value <= currentMonth);
     }
     return months;
   };
@@ -179,7 +195,10 @@ export function InflationForm({
   // Calculate results whenever any input changes
   useEffect(() => {
     const canCalculate = (() => {
-      if (endYear > currentYear || (endYear === currentYear && endMonth > currentMonth)) {
+      if (
+        endYear > currentYear ||
+        (endYear === currentYear && endMonth > currentMonth)
+      ) {
         setError("La fecha final no puede ser en el futuro");
         return false;
       }
@@ -193,13 +212,21 @@ export function InflationForm({
         startYear,
         startValue,
         endMonth,
-        endYear
+        endYear,
       });
       setResult(calculationResult);
     } else {
       setResult(null);
     }
-  }, [currentYear, currentMonth, startMonth, startYear, startValue, endMonth, endYear]);
+  }, [
+    currentYear,
+    currentMonth,
+    startMonth,
+    startYear,
+    startValue,
+    endMonth,
+    endYear,
+  ]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -207,8 +234,8 @@ export function InflationForm({
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Update URL when values change
@@ -220,7 +247,15 @@ export function InflationForm({
     params.set("endMonth", endMonth.toString());
     params.set("endYear", endYear.toString());
     router.replace(`/inflation-calculator?${params.toString()}`);
-  }, [startMonth, startYear, startValue, endMonth, endYear, router, searchParams]);
+  }, [
+    startMonth,
+    startYear,
+    startValue,
+    endMonth,
+    endYear,
+    router,
+    searchParams,
+  ]);
 
   return (
     <>
@@ -228,16 +263,16 @@ export function InflationForm({
         <CardContent className="p-4 text-center">
           <div className="space-y-6">
             {error && (
-              <div className="text-red-500 font-medium text-sm">
-                {error}
-              </div>
+              <div className="text-red-500 font-medium text-sm">{error}</div>
             )}
             <div className="flex flex-col items-center gap-4 text-lg">
               {/* First row */}
               <div className="flex flex-col md:flex-row items-center gap-2">
                 <span className="text-muted-foreground">Si compré algo a</span>
                 <div className="relative w-48">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2">$</span>
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2">
+                    $
+                  </span>
                   <Input
                     type="number"
                     min="0"
@@ -296,11 +331,13 @@ export function InflationForm({
 
               {result && result.totalIncrement > 0 && (
                 <div className="border-t flex flex-col md:flex-row pt-4 items-center gap-2 font-medium">
-                  <span className="text-muted-foreground">ese mismo ítem valdría</span>
+                  <span className="text-muted-foreground">
+                    ese mismo ítem valdría
+                  </span>
                   <span className="text-xl font-bold">
-                    {new Intl.NumberFormat('es-AR', {
-                      style: 'currency',
-                      currency: 'ARS'
+                    {new Intl.NumberFormat("es-AR", {
+                      style: "currency",
+                      currency: "ARS",
                     }).format(result.endValue)}
                   </span>
                 </div>
@@ -339,4 +376,4 @@ export function InflationForm({
       )}
     </>
   );
-} 
+}

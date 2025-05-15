@@ -41,7 +41,8 @@ export function ShareCalculationDialog() {
         });
       } catch (err) {
         toast.error("Error al copiar", {
-          description: "No se pudo copiar la URL. Por favor, copiala manualmente.",
+          description:
+            "No se pudo copiar la URL. Por favor, copiala manualmente.",
         });
         console.error("Error copying to clipboard:", err);
       }
@@ -130,4 +131,4 @@ export function ShareCalculationDialog() {
       </DrawerContent>
     </Drawer>
   );
-} 
+}
