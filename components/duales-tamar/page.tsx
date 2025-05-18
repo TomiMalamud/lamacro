@@ -109,38 +109,36 @@ export default function DualesTamarPage() {
 
     return (
       <div className="space-y-8 mt-8">
-        <h3 className="text-2xl font-semibold tracking-tight">
-          {simulacion.title} (TEM Proyectada en Gráfico:{" "}
-          {(currentTamarTEM * 100).toFixed(1)}%)
-        </h3>
-        <DualesTamarChart
-          chartData={simulacion.data.chartData}
-          scatterPoints={simulacion.data.scatterPoints}
-          eventDates={simulacion.data.eventDates}
-          targetsTEM={[currentTamarTEM]}
-        />
-        {simulacion.data.tableDataTemDiff && (
-          <DualesTamarTable
-            tableData={simulacion.data.tableDataTemDiff}
-            title="Diferencial TEM (TAMAR - Tasa Fija) - Diciembre 2026"
+        <div className="hidden md:block">
+          <h3 className="text-2xl font-semibold tracking-tight">
+            {simulacion.title} (TEM Proyectada en Gráfico:{" "}
+            {(currentTamarTEM * 100).toFixed(1)}%)
+          </h3>
+          <DualesTamarChart
+            chartData={simulacion.data.chartData}
+            scatterPoints={simulacion.data.scatterPoints}
+            eventDates={simulacion.data.eventDates}
+            targetsTEM={[currentTamarTEM]}
           />
-        )}
-        {simulacion.data.tableDataPayoffDiff && (
-          <DualesTamarTable
-            tableData={simulacion.data.tableDataPayoffDiff}
-            title="Diferencial Payoff Acumulado - Diciembre 2026"
-          />
-        )}
+        </div>
+        {simulacion.data.tableDataTemDiff &&
+          simulacion.data.tableDataPayoffDiff && (
+            <DualesTamarTable
+              tableDataTemDiff={simulacion.data.tableDataTemDiff}
+              tableDataPayoffDiff={simulacion.data.tableDataPayoffDiff}
+              title="Diferencial TEM y Payoff Acumulado vs Tasa Fija - Diciembre 2026"
+            />
+          )}
       </div>
     );
   };
 
   return (
-    <div className="container mx-auto p-4 md:p-8 bg-background text-foreground">
-      <h2 className="text-3xl font-bold tracking-tight">
+    <>
+      <h2 className="mt-8 text-3xl font-bold tracking-tight">
         Análisis de Bonos Duales TAMAR
       </h2>
-      <div className="my-8 p-6 border rounded-lg shadow">
+      <div className="hidden md:block my-8 p-6 border rounded-lg shadow">
         <Label htmlFor="tamar-tem-slider" className="text-lg font-medium">
           Ajustar TEM Proyectada en Gráfico:{" "}
           <span className="font-bold text-primary">
@@ -173,6 +171,6 @@ export default function DualesTamarPage() {
         </div>
       </div>
       {renderSimulacion()}
-    </div>
+    </>
   );
 }

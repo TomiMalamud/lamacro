@@ -1,3 +1,4 @@
+import { DUAL_BONDS_COLORS } from "@/components/duales-tamar/constants";
 import { fetchVariableTimeSeries, type BCRAVariable } from "@/lib/bcra-fetch";
 import type {
   CarryExitData,
@@ -20,7 +21,6 @@ import {
   parseISO,
   startOfDay,
 } from "date-fns";
-import { DUAL_BONDS_COLORS } from "@/components/duales-tamar/constants";
 
 const TICKERS: Record<string, string> = {
   S16A5: "2025-04-16",
@@ -637,14 +637,14 @@ export async function getDualBondSimulationData(
 
     // Initialize all properties for DualBondTableEntry
     const temDiffRow: DualBondTableEntry = {
-      label: `con TAMAR ${(targetTEM * 100).toFixed(1)}%`,
+      label: `TAMAR ${(targetTEM * 100).toFixed(1)}%`,
       TTM26: "0.00%",
       TTJ26: "0.00%",
       TTS26: "0.00%",
       TTD26: "0.00%", // Initial default values
     };
     const payoffDiffRow: DualBondTableEntry = {
-      label: `con TAMAR ${(targetTEM * 100).toFixed(1)}%`,
+      label: `TAMAR ${(targetTEM * 100).toFixed(1)}%`,
       TTM26: "0.00%",
       TTJ26: "0.00%",
       TTS26: "0.00%",
