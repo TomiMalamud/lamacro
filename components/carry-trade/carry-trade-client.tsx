@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CPI_EST, EST_DATE_STR } from "@/lib/carry-trade-data";
+import { CPI_EST, EST_DATE_STR } from "@/lib/carry-trade";
 import { formatARS, formatPercent } from "@/lib/formatters";
 import type { CarryExitData, CarryTradeData } from "@/types/carry-trade";
 import { addDays, format, parseISO } from "date-fns";
