@@ -4,7 +4,7 @@ import {
   type DualBondChartPoint,
   type DualBondScatterPoint,
   DUAL_BOND_EVENTS,
-} from "@/lib/carry-trade";
+} from "@/lib/duales";
 import React from "react";
 import {
   CartesianGrid,

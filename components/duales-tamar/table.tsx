@@ -15,8 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type DualBondTableEntry } from "@/lib/carry-trade";
+import { type DualBondTableEntry } from "@/lib/duales";
 import React from "react";
+import clsx from "clsx";
 
 interface DualesTamarTableProps {
   tableDataTemDiff: DualBondTableEntry[];
@@ -84,15 +85,27 @@ export const DualesTamarTable: React.FC<DualesTamarTableProps> = ({
         <CardTitle>{title}</CardTitle>
         {mesesPayoffRow && (
           <CardDescription className="mt-2">
-            <span className="font-bold mr-2">Meses de payoff:</span>
-            {bonds.map((bond, index) => (
-              <span key={bond} className="inline-block">
-                {bond}: {mesesPayoffRow[bond as keyof DualBondTableEntry]}
-                <span className="text-gray-500 mx-2">
-                  {index < bonds.length - 1 ? " - " : ""}
-                </span>
-              </span>
-            ))}
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <span className="font-bold mr-2">Meses de payoff:</span>
+                {bonds.map((bond, index) => (
+                  <span key={bond} className="inline-block">
+                    {bond}: {mesesPayoffRow[bond as keyof DualBondTableEntry]}
+                    <span className="text-gray-500 mx-2">
+                      {index < bonds.length - 1 ? " - " : ""}
+                    </span>
+                  </span>
+                ))}
+              </li>
+              <li>
+                Las primeras tres filas{" "}
+                <span className="text-blue-600 dark:text-blue-400">
+                  marcadas en azul
+                </span>{" "}
+                son los percentiles 25, 50 y 75 del REM para TAMAR a diciembre
+                2026.
+              </li>
+            </ul>
           </CardDescription>
         )}
       </CardHeader>
@@ -147,16 +160,20 @@ export const DualesTamarTable: React.FC<DualesTamarTableProps> = ({
 
               return (
                 <TableRow key={rowIndex}>
-                  <TableCell className="font-medium">{rowTem.label}</TableCell>
-
+                  <TableCell
+                    className={`${rowIndex < 3 ? "dark:text-blue-400 text-blue-600 bg-blue-500/10" : ""}`}
+                  >
+                    {rowTem.label}
+                  </TableCell>
                   {bonds.map((bond) => (
                     <TableCell
                       key={`tem-${bond}`}
-                      className={`text-gray-500 ${
-                        temWinners.includes(bond)
-                          ? "font-bold text-black dark:text-white"
-                          : ""
-                      } ${bond === "TTD26" ? "border-r border-border" : ""}`}
+                      className={clsx("text-gray-500", {
+                        "font-bold text-black dark:text-white":
+                          temWinners.includes(bond),
+                        "border-r border-border": bond === "TTD26",
+                        "bg-blue-500/10": rowIndex < 3,
+                      })}
                     >
                       {rowTem[bond as keyof DualBondTableEntry]}
                     </TableCell>
@@ -167,11 +184,11 @@ export const DualesTamarTable: React.FC<DualesTamarTableProps> = ({
                     bonds.map((bond) => (
                       <TableCell
                         key={`payoff-${bond}`}
-                        className={`text-gray-500 ${
-                          payoffWinners.includes(bond)
-                            ? "font-bold text-black dark:text-white"
-                            : ""
-                        }`}
+                        className={clsx("text-gray-500", {
+                          "font-bold text-black dark:text-white":
+                            payoffWinners.includes(bond),
+                          "bg-blue-500/10": rowIndex < 3,
+                        })}
                       >
                         {rowPayoff[bond as keyof DualBondTableEntry]}
                       </TableCell>

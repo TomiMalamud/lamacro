@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import {
   getDualBondSimulationData,
   type DualBondSimulationResults,
-} from "@/lib/carry-trade";
+} from "@/lib/duales";
 import { useEffect, useState } from "react";
 import { DualesTamarChart } from "./chart";
 import { DualesTamarTable } from "./table";
