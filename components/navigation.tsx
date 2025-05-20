@@ -1,8 +1,22 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from "./ui/navigation-menu";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "./ui/drawer";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  navigationMenuTriggerStyle,
+} from "./ui/navigation-menu";
 
 export function Navigation() {
   return (
@@ -10,7 +24,9 @@ export function Navigation() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center">
           <Link href="/" className="flex items-center" prefetch={true}>
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r dark:from-blue-400 dark:via-yellow-100 dark:to-blue-400 from-blue-500 via-sky-400 to-blue-500">La Macro</span>
+            <span className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r dark:from-blue-400 dark:via-yellow-100 dark:to-blue-400 from-blue-500 via-sky-400 to-blue-500">
+              La Macro
+            </span>
           </Link>
         </div>
 
@@ -18,12 +34,7 @@ export function Navigation() {
           <NavigationMenu className="ml-2 text-left">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link
-                  href="/stats"
-                  prefetch={true}
-                  legacyBehavior
-                  passHref
-                >
+                <Link href="/stats" prefetch={true} legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Estadísticas
                   </NavigationMenuLink>
@@ -84,22 +95,38 @@ export function Navigation() {
                 <div className="p-4 pb-0">
                   <nav className="flex flex-col space-y-2">
                     <DrawerClose asChild>
-                      <Link href="/stats" prefetch={true} className="text-lg font-medium hover:underline">
+                      <Link
+                        href="/stats"
+                        prefetch={true}
+                        className="text-lg font-medium hover:underline"
+                      >
                         Estadísticas
                       </Link>
                     </DrawerClose>
                     <DrawerClose asChild>
-                      <Link href="/debts/search" prefetch={true} className="text-lg font-medium hover:underline">
+                      <Link
+                        href="/debts/search"
+                        prefetch={true}
+                        className="text-lg font-medium hover:underline"
+                      >
                         Central de Deudores
                       </Link>
                     </DrawerClose>
                     <DrawerClose asChild>
-                      <Link href="/inflation-calculator" prefetch={true} className="text-lg font-medium hover:underline">
+                      <Link
+                        href="/inflation-calculator"
+                        prefetch={true}
+                        className="text-lg font-medium hover:underline"
+                      >
                         Calculadora de Inflación
                       </Link>
                     </DrawerClose>
                     <DrawerClose asChild>
-                      <Link href="/carry-trade" prefetch={true} className="text-lg font-medium hover:underline">
+                      <Link
+                        href="/carry-trade"
+                        prefetch={true}
+                        className="text-lg font-medium hover:underline"
+                      >
                         Carry Trade
                       </Link>
                     </DrawerClose>
@@ -117,4 +144,4 @@ export function Navigation() {
       </div>
     </nav>
   );
-} 
+}

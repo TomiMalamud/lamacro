@@ -5,7 +5,7 @@ import {
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
-  ChartTooltip
+  ChartTooltip,
 } from "@/components/ui/chart";
 import type { ProcessedBondData } from "@/types/carry-trade";
 import { format } from "date-fns";
@@ -15,7 +15,7 @@ import {
   CartesianGrid,
   TooltipProps,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 
 interface MepBreakevenChartProps {
@@ -38,24 +38,30 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload as ProcessedBondData; // Access the full bond data
     return (
-      <div className="rounded-lg border bg-background p-2 shadow-sm text-xs">
+      <div className="rounded-lg border bg-background p-2 shadow-xs text-xs">
         <div className="grid grid-cols-2 gap-2">
           <div className="flex flex-col">
             <span className="text-[0.70rem] uppercase text-muted-foreground">
               Ticker
             </span>
             <span className="font-bold text-muted-foreground">
-              {data.symbol} ({format(new Date(data.expiration), 'MMM-yy')})
+              {data.symbol} ({format(new Date(data.expiration), "MMM-yy")})
             </span>
           </div>
         </div>
         <div className="mt-2 grid gap-1.5">
           {payload.map((item) => (
             <div key={item.dataKey} className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[var(--color)]" style={{ '--color': item.color } as React.CSSProperties} />
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-(--color)"
+                style={{ "--color": item.color } as React.CSSProperties}
+              />
               <p className="text-muted-foreground">{item.name}:</p>
               <p className="font-medium text-foreground">
-                ${item.value?.toLocaleString('es-AR', { maximumFractionDigits: 0 })}
+                $
+                {item.value?.toLocaleString("es-AR", {
+                  maximumFractionDigits: 0,
+                })}
               </p>
             </div>
           ))}
@@ -65,7 +71,6 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   }
   return null;
 };
-
 
 export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
   return (
@@ -77,8 +82,9 @@ export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
           left: 12,
           right: 12,
           top: 12,
-          bottom: 12
-        }}>
+          bottom: 12,
+        }}
+      >
         <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <XAxis
           dataKey="symbol"
@@ -91,15 +97,14 @@ export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
           tick={{ fontSize: 10 }}
         />
         <YAxis
-          tickFormatter={(value) => `$${value.toLocaleString('es-AR', { maximumFractionDigits: 0 })}`}
+          tickFormatter={(value) =>
+            `$${value.toLocaleString("es-AR", { maximumFractionDigits: 0 })}`
+          }
           axisLine={false}
           tickLine={false}
-          domain={['dataMin', 'dataMax']}
+          domain={["dataMin", "dataMax"]}
         />
-        <ChartTooltip
-          cursor={true}
-          content={<CustomTooltip />}
-        />
+        <ChartTooltip cursor={true} content={<CustomTooltip />} />
         <ChartLegend content={<ChartLegendContent />} />
         <defs>
           <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
@@ -146,9 +151,8 @@ export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
           stroke="var(--color-mep_breakeven)"
           name="MEP Breakeven"
           dot={false}
-        >
-        </Area>
+        ></Area>
       </AreaChart>
     </ChartContainer>
   );
-} 
+}

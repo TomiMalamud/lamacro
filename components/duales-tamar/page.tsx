@@ -138,7 +138,7 @@ export default function DualesTamarPage() {
       <h2 className="mt-8 text-3xl font-bold tracking-tight">
         Análisis de Bonos Duales TAMAR
       </h2>
-      <div className="hidden md:block my-8 p-6 border rounded-lg shadow">
+      <div className="hidden md:block my-8 p-6 border rounded-lg shadow-sm">
         <Label htmlFor="tamar-tem-slider" className="text-lg font-medium">
           Ajustar TEM Proyectada a Diciembre 2026:{" "}
           <span className="font-bold text-primary">

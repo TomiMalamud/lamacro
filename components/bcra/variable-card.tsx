@@ -355,17 +355,17 @@ export function VariableCard({
       className="block w-full h-full"
     >
       <Card
-        className={`${className} h-full cursor-pointer hover:shadow-sm dark:hover:shadow-neutral-700 white transition-all group animate-fade-in flex flex-col`}
+        className={`${className} h-full cursor-pointer hover:shadow-xs dark:hover:shadow-neutral-700 white transition-all group animate-fade-in flex flex-col`}
       >
-        <CardHeader className="pb-2 flex-grow-0">
-          <CardTitle className="text-sm font-medium line-clamp-2 min-h-[2.5rem]">
+        <CardHeader className="pb-2 grow-0">
+          <CardTitle className="text-sm font-medium line-clamp-2 min-h-10">
             {variable.descripcion.replace("n.a.", "TNA").replace("e.a.", "TEA")}
           </CardTitle>
           <CardDescription>
             Últ. act: {formatDate(variable.fecha)}
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow flex flex-col justify-end">
+        <CardContent className="grow flex flex-col justify-end">
           <div className="flex items-center justify-between">
             <div className="mr-4">
               <div className="text-3xl font-bold">

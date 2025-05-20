@@ -136,7 +136,7 @@ async function VariableDetail({ id }: { id: number }) {
             >
               <Button variant="secondary" className="gap-2">
                 Preguntar a ChatGPT
-                <ArrowLeft className="h-4 w-4 rotate-[135deg]" />
+                <ArrowLeft className="h-4 w-4 rotate-135" />
               </Button>
             </Link>
           </CardContent>

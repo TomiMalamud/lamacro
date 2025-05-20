@@ -23,8 +23,8 @@ export default async function Stats() {
     return (
       <main className="min-h-screen mx-auto px-6 sm:px-16 py-8">
         <div className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-lg border p-6 my-6 flex flex-col md:flex-row items-start md:items-center gap-4">
-          <AlertCircle className="h-6 w-6 flex-shrink-0" />
-          <div className="flex-grow">
+          <AlertCircle className="h-6 w-6 shrink-0" />
+          <div className="grow">
             <h3 className="font-medium text-lg">Error al cargar datos</h3>
             <p>No se pudieron cargar los datos iniciales del BCRA.</p>
             <p className="text-xs text-red-500 dark:text-red-400 mt-2">
