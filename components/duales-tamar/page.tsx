@@ -111,7 +111,7 @@ export default function DualesTamarPage() {
       <div className="space-y-8 mt-8">
         <div className="hidden md:block">
           <h3 className="text-2xl font-semibold tracking-tight">
-            {simulacion.title} (TEM Proyectada en Gráfico:{" "}
+            {simulacion.title} (TEM Proyectada a Diciembre 2026:{" "}
             {(currentTamarTEM * 100).toFixed(1)}%)
           </h3>
           <DualesTamarChart
@@ -140,7 +140,7 @@ export default function DualesTamarPage() {
       </h2>
       <div className="hidden md:block my-8 p-6 border rounded-lg shadow">
         <Label htmlFor="tamar-tem-slider" className="text-lg font-medium">
-          Ajustar TEM Proyectada en Gráfico:{" "}
+          Ajustar TEM Proyectada a Diciembre 2026:{" "}
           <span className="font-bold text-primary">
             {(currentTamarTEM * 100).toFixed(1)}%
           </span>
