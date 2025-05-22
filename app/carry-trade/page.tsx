@@ -1,5 +1,5 @@
 import { CarryTradeClient } from "@/components/carry-trade/carry-trade-client";
-import DualesTamarPage from "@/components/duales-tamar/page";
+import DualesTamarPage from "@/components/duales-tamar/duales";
 import { getCarryExitSimulation, getCarryTradeData } from "@/lib/carry-trade";
 
 export const metadata = {

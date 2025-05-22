@@ -13,7 +13,7 @@ import { startOfDay } from "date-fns";
 import { compareAsc } from "date-fns";
 import { fetchVariableTimeSeries } from "./bcra-fetch";
 import { BCRAVariable } from "./bcra-fetch";
-import { DUAL_BONDS_COLORS } from "@/components/duales-tamar/constants";
+import { DUAL_BONDS_COLORS } from "@/components/duales-tamar/duales-chart";
 
 export const DUAL_BOND_EVENTS: Record<string, string> = {
   TTM26: "2026-03-16",

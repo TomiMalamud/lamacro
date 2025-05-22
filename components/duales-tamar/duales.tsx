@@ -7,8 +7,8 @@ import {
   type DualBondSimulationResults,
 } from "@/lib/duales";
 import { useEffect, useState } from "react";
-import { DualesTamarChart } from "./chart";
-import { DualesTamarTable } from "./table";
+import { DualesTamarChart } from "./duales-chart";
+import { DualesTamarTable } from "./duales-table";
 
 interface SimulacionData {
   title: string;
