@@ -26,10 +26,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export async function generateStaticParams() {
-  return [];
-}
-
 // Define types based on the API schema
 interface DeudaEntidad {
   entidad: string | null;

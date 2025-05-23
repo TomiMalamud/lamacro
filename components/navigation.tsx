@@ -26,7 +26,7 @@ export function Navigation() {
           <NavigationMenu className="ml-2 text-left">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/stats" prefetch={true} legacyBehavior passHref>
+                <Link href="/variables" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Estadísticas
                   </NavigationMenuLink>
@@ -57,19 +57,14 @@ export function Navigation() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link
-                  href="/carry-trade"
-                  prefetch={true}
-                  legacyBehavior
-                  passHref
-                >
+                <Link href="/carry-trade" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Carry Trade
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="/duales" prefetch={true} legacyBehavior passHref>
+                <Link href="/duales" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Duales TAMAR
                   </NavigationMenuLink>
@@ -91,8 +86,7 @@ export function Navigation() {
                 <nav className="flex flex-col space-y-8">
                   <DrawerClose asChild>
                     <Link
-                      href="/stats"
-                      prefetch={true}
+                      href="/variables"
                       className="text-lg font-medium hover:underline"
                     >
                       Estadísticas
@@ -110,7 +104,6 @@ export function Navigation() {
                   <DrawerClose asChild>
                     <Link
                       href="/inflation-calculator"
-                      prefetch={true}
                       className="text-lg font-medium hover:underline"
                     >
                       Calculadora de Inflación
@@ -119,7 +112,6 @@ export function Navigation() {
                   <DrawerClose asChild>
                     <Link
                       href="/carry-trade"
-                      prefetch={true}
                       className="text-lg font-medium hover:underline"
                     >
                       Carry Trade
@@ -128,7 +120,6 @@ export function Navigation() {
                   <DrawerClose asChild>
                     <Link
                       href="/duales"
-                      prefetch={true}
                       className="text-lg font-medium hover:underline"
                     >
                       Duales TAMAR

@@ -3,8 +3,11 @@ export const revalidate = 3600; // Revalidate every hour
 import { VariableDetailClient } from "@/components/bcra/variable-detail-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate } from "@/lib/bcra-fetch";
-import { fetchBCRADirect, fetchVariableTimeSeries } from "@/lib/bcra-fetch";
+import {
+  fetchBCRADirect,
+  fetchVariableTimeSeries,
+  formatDate,
+} from "@/lib/bcra-fetch";
 import { format, subMonths } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -45,12 +48,12 @@ export default async function VariableDetailPage({
   return (
     <div className="container mx-auto py-8">
       <div className="mb-6 sm:px-12 px-2">
-        <Link href="/stats" passHref prefetch={true}>
-          <Button variant="link" className="gap-2">
+        <Button variant="link" className="gap-2" asChild>
+          <Link href="/variables" prefetch={true}>
             <ArrowLeft className="h-4 w-4" />
             Volver al Dashboard
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
       <Suspense fallback={<VariableDetailSkeleton />}>

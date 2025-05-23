@@ -350,7 +350,7 @@ export function VariableCard({
 
   return (
     <Link
-      href={`/variable/${variable.idVariable}`}
+      href={`/variables/${variable.idVariable}`}
       prefetch={prefetch}
       className="block w-full h-full"
     >
