@@ -11,29 +11,38 @@ import { DualesTamarChart } from "./duales-chart";
 import { DualesTamarTable } from "./duales-table";
 
 interface SimulacionData {
-  title: string;
   data: DualBondSimulationResults | null;
   isLoading: boolean;
   error: string | null;
 }
 
-const INITIAL_TAMAR_TEM = 0.02;
+interface DualesClientProps {
+  initialData: DualBondSimulationResults | null;
+  initialTamarTEM: number;
+}
+
 const MIN_TAMAR_TEM = 0.005;
 const MAX_TAMAR_TEM = 0.055;
 const TAMAR_TEM_STEP = 0.005;
 
-export default function DualesTamarPage() {
+export default function DualesClient({
+  initialData,
+  initialTamarTEM,
+}: DualesClientProps) {
   const [currentTamarTEM, setCurrentTamarTEM] =
-    useState<number>(INITIAL_TAMAR_TEM);
+    useState<number>(initialTamarTEM);
 
   const [simulacion, setSimulacion] = useState<SimulacionData>({
-    title: "Simulación Dinámica TAMAR",
-    data: null,
-    isLoading: true,
-    error: null,
+    data: initialData,
+    isLoading: false,
+    error: initialData ? null : "No initial data available",
   });
 
   useEffect(() => {
+    if (currentTamarTEM === initialTamarTEM) {
+      return;
+    }
+
     let isMounted = true;
 
     async function fetchData() {
@@ -53,7 +62,6 @@ export default function DualesTamarPage() {
         if (result) {
           if (isMounted) {
             setSimulacion({
-              title: "Simulación Dinámica TAMAR",
               data: result,
               isLoading: false,
               error: null,
@@ -86,7 +94,7 @@ export default function DualesTamarPage() {
     return () => {
       isMounted = false;
     };
-  }, [currentTamarTEM]);
+  }, [currentTamarTEM, initialTamarTEM]);
 
   const handleSliderChange = (value: number[]) => {
     setCurrentTamarTEM(value[0]);
@@ -110,10 +118,6 @@ export default function DualesTamarPage() {
     return (
       <div className="space-y-8 mt-8">
         <div className="hidden md:block">
-          <h3 className="text-2xl font-semibold tracking-tight">
-            {simulacion.title} (TEM Proyectada a Diciembre 2026:{" "}
-            {(currentTamarTEM * 100).toFixed(1)}%)
-          </h3>
           <DualesTamarChart
             chartData={simulacion.data.chartData}
             scatterPoints={simulacion.data.scatterPoints}
@@ -135,10 +139,7 @@ export default function DualesTamarPage() {
 
   return (
     <>
-      <h2 className="mt-8 text-3xl font-bold tracking-tight">
-        Análisis de Bonos Duales TAMAR
-      </h2>
-      <div className="hidden md:block my-8 p-6 border rounded-lg shadow-sm">
+      <div className="hidden bg-white dark:bg-black md:block my-8 p-6 border rounded-lg shadow-sm">
         <Label htmlFor="tamar-tem-slider" className="text-lg font-medium">
           Ajustar TEM Proyectada a Diciembre 2026:{" "}
           <span className="font-bold text-primary">
@@ -147,7 +148,7 @@ export default function DualesTamarPage() {
         </Label>
         <Slider
           id="tamar-tem-slider"
-          defaultValue={[INITIAL_TAMAR_TEM]}
+          defaultValue={[initialTamarTEM]}
           min={MIN_TAMAR_TEM}
           max={MAX_TAMAR_TEM}
           step={TAMAR_TEM_STEP}

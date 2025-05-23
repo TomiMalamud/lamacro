@@ -86,6 +86,27 @@ export interface DualBondSimulationResults {
   eventDates: Record<string, string>;
 }
 
+export interface CallValueRequest {
+  target_mean: number;
+  target_prob: number;
+  threshold: number;
+  min_val: number;
+}
+
+export interface DistributionDataPoint {
+  TAMAR_DIC_26_pct: number;
+  TAMAR_MEAN: number;
+  fixed_amort_b100: number;
+  proba_pct: number;
+  tamar_amort_b100: number;
+  tamar_diff_b100: number;
+}
+
+export interface CallValueResponse {
+  call_value_b100: number;
+  distribution_data: DistributionDataPoint[];
+}
+
 async function fetchTamarRateV3(variableID: number): Promise<BCRAVariable[]> {
   try {
     const response = await fetchVariableTimeSeries(

@@ -1,15 +1,7 @@
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "./ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "./ui/drawer";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -76,6 +68,13 @@ export function Navigation() {
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="/duales" prefetch={true} legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Duales TAMAR
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
@@ -88,55 +87,54 @@ export function Navigation() {
               </Button>
             </DrawerTrigger>
             <DrawerContent>
-              <div className="mx-auto w-full max-w-sm">
-                <DrawerHeader>
-                  <DrawerTitle>Navegación</DrawerTitle>
-                </DrawerHeader>
-                <div className="p-4 pb-0">
-                  <nav className="flex flex-col space-y-2">
-                    <DrawerClose asChild>
-                      <Link
-                        href="/stats"
-                        prefetch={true}
-                        className="text-lg font-medium hover:underline"
-                      >
-                        Estadísticas
-                      </Link>
-                    </DrawerClose>
-                    <DrawerClose asChild>
-                      <Link
-                        href="/debts/search"
-                        prefetch={true}
-                        className="text-lg font-medium hover:underline"
-                      >
-                        Central de Deudores
-                      </Link>
-                    </DrawerClose>
-                    <DrawerClose asChild>
-                      <Link
-                        href="/inflation-calculator"
-                        prefetch={true}
-                        className="text-lg font-medium hover:underline"
-                      >
-                        Calculadora de Inflación
-                      </Link>
-                    </DrawerClose>
-                    <DrawerClose asChild>
-                      <Link
-                        href="/carry-trade"
-                        prefetch={true}
-                        className="text-lg font-medium hover:underline"
-                      >
-                        Carry Trade
-                      </Link>
-                    </DrawerClose>
-                  </nav>
-                </div>
-                <DrawerFooter>
+              <div className="mx-auto w-full pb-16 pt-6 px-4 max-w-sm">
+                <nav className="flex flex-col space-y-8">
                   <DrawerClose asChild>
-                    <Button variant="outline">Cerrar</Button>
+                    <Link
+                      href="/stats"
+                      prefetch={true}
+                      className="text-lg font-medium hover:underline"
+                    >
+                      Estadísticas
+                    </Link>
                   </DrawerClose>
-                </DrawerFooter>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/debts/search"
+                      prefetch={true}
+                      className="text-lg font-medium hover:underline"
+                    >
+                      Central de Deudores
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/inflation-calculator"
+                      prefetch={true}
+                      className="text-lg font-medium hover:underline"
+                    >
+                      Calculadora de Inflación
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/carry-trade"
+                      prefetch={true}
+                      className="text-lg font-medium hover:underline"
+                    >
+                      Carry Trade
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/duales"
+                      prefetch={true}
+                      className="text-lg font-medium hover:underline"
+                    >
+                      Duales TAMAR
+                    </Link>
+                  </DrawerClose>
+                </nav>
               </div>
             </DrawerContent>
           </Drawer>
