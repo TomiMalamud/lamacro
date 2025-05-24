@@ -87,11 +87,21 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
     );
   }
 
-  const yAxisTickFormatter = (value: number) => `${(value * 100).toFixed(1)}%`;
+  const yAxisTickFormatter = (value: number) => `${value.toFixed(1)}%`;
+
+  const transformedChartData = chartData.map((point) => {
+    const transformed = { ...point };
+    Object.keys(transformed).forEach((key) => {
+      if (key !== "date" && typeof transformed[key] === "number") {
+        transformed[key] = (transformed[key] as number) * 100;
+      }
+    });
+    return transformed;
+  });
 
   let minY = Infinity;
   let maxY = -Infinity;
-  chartData.forEach((point) => {
+  transformedChartData.forEach((point) => {
     Object.keys(point).forEach((key) => {
       if (key !== "date" && typeof point[key] === "number") {
         const val = point[key] as number;
@@ -104,7 +114,7 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
   return (
     <ChartContainer config={chartConfig}>
       <LineChart
-        data={chartData}
+        data={transformedChartData}
         margin={{ top: 5, right: 30, left: 20, bottom: 40 }}
       >
         <CartesianGrid />
@@ -196,11 +206,11 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
             key={`scatter-${p.bondTicker}-${p.scenarioLabel}-${index}`}
             name={p.bondTicker}
             data={[
-              chartData.find(
+              transformedChartData.find(
                 (d) =>
                   d.date === p.date &&
                   p.value !== undefined &&
-                  d[p.scenarioLabel] === p.value,
+                  d[p.scenarioLabel] === p.value * 100,
               ),
             ]}
             fill={p.color}
@@ -224,7 +234,7 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
                     fontSize={9}
                     textAnchor="middle"
                     fontWeight="bold"
-                  >{`${(pointValue * 100).toFixed(1)}%`}</text>
+                  >{`${pointValue.toFixed(1)}%`}</text>
                 );
               }}
             />

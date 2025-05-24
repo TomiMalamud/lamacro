@@ -40,6 +40,7 @@ export default async function CallsPage() {
         >
           JohnGalt_is_www
         </a>
+        . Los números son tasas (%) mensuales.
       </p>
       <DualesClient
         initialData={initialDualesData}
