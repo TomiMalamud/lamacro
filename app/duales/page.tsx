@@ -1,6 +1,7 @@
-import CallValueComponent from "@/components/duales-tamar/call-value";
+import CallValueComponent, {
+  DEFAULT_CALL_VALUE_REQUEST,
+} from "@/components/duales-tamar/call-value";
 import DualesClient from "@/components/duales-tamar/duales-client";
-import type { CallValueRequest } from "@/lib/duales";
 import { getDualBondSimulationData } from "@/lib/duales";
 import { getTamarCallValueData } from "@/lib/tamar-actions";
 
@@ -11,13 +12,6 @@ export const metadata = {
 };
 
 const INITIAL_TAMAR_TEM = 0.02;
-
-const DEFAULT_CALL_VALUE_REQUEST: CallValueRequest = {
-  target_mean: 0.0143,
-  target_prob: 0.0244,
-  threshold: 0.0271,
-  min_val: 0.0049,
-};
 
 export default async function CallsPage() {
   const [initialDualesData, callValueData] = await Promise.all([

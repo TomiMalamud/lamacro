@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CallValueRequest, CallValueResponse } from "@/lib/duales";
 import { getTamarCallValueAction } from "@/lib/tamar-actions";
-import { BarChart3, Loader2, TrendingUp } from "lucide-react";
+import { BarChart3, Info, Loader2, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import {
   Table,
@@ -22,19 +22,26 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
+export const DEFAULT_CALL_VALUE_REQUEST: CallValueRequest = {
+  target_mean: 0.0154, // 0.1851/12, obtenido de mediana REM dic-26
+  target_prob: 0.0294, // 1/34, participantes de REM dic-26
+  threshold: 0.0315, // 0.0378/12, obtenido de máximo REM dic-26
+  min_val: 0.0058, // 0.0068/12, obtenido de mínimo REM dic-26
+};
 interface CallValueComponentProps {
   initialRequest?: CallValueRequest;
   initialResponse?: CallValueResponse | null;
 }
 
 export default function CallValueComponent({
-  initialRequest = {
-    target_mean: 0.0143,
-    target_prob: 0.0244,
-    threshold: 0.0271,
-    min_val: 0.0049,
-  },
+  initialRequest = DEFAULT_CALL_VALUE_REQUEST,
   initialResponse = null,
 }: CallValueComponentProps) {
   const [request, setRequest] = useState<CallValueRequest>(initialRequest);
@@ -66,7 +73,7 @@ export default function CallValueComponent({
 
   const handleInputChange = (field: keyof CallValueRequest, value: string) => {
     const numValue = parseFloat(value);
-    if (!isNaN(numValue)) {
+    if (!isNaN(numValue) && numValue >= 0 && numValue <= 1) {
       setRequest((prev) => ({ ...prev, [field]: numValue }));
     }
   };
@@ -75,13 +82,13 @@ export default function CallValueComponent({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Calculadora de Prima del Call
+          <CardTitle className="flex leading-6 items-center gap-2">
+            Calculadora de Prima del Call de TTD26 · Dic-26
           </CardTitle>
           <CardDescription>
             Calculá la prima del call y la distribución de los valores de
-            amortización para los bonos TAMAR. Números obtenidos del{" "}
+            amortización para los bonos TAMAR. Números obtenidos de las
+            estimaciones del{" "}
             <a
               href="https://www.bcra.gob.ar/PublicacionesEstadisticas/Relevamiento_Expectativas_de_Mercado.asp"
               target="_blank"
@@ -89,20 +96,22 @@ export default function CallValueComponent({
               className="underline underline-offset-4 hover:decoration-stone-900 hover:text-stone-900 dark:hover:decoration-stone-200 dark:hover:text-stone-200 transition-all duration-300"
             >
               REM
-            </a>
-            .
+            </a>{" "}
+            al 26 de diciembre de 2026.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="target_mean">Target Medio</Label>
+                <Label htmlFor="target_mean">Mediana estimada de TAMAR</Label>
                 <Input
                   className="mt-2 bg-white dark:bg-black"
                   id="target_mean"
                   type="number"
                   step="0.0001"
+                  min="0"
+                  max="1"
                   value={request.target_mean}
                   onChange={(e) =>
                     handleInputChange("target_mean", e.target.value)
@@ -112,12 +121,16 @@ export default function CallValueComponent({
               </div>
 
               <div>
-                <Label htmlFor="target_prob">Target (Probabilidad)</Label>
+                <Label htmlFor="target_prob">
+                  Probabilidad asignada a máximo estimado
+                </Label>
                 <Input
                   className="mt-2 bg-white dark:bg-black"
                   id="target_prob"
                   type="number"
                   step="0.0001"
+                  min="0"
+                  max="1"
                   value={request.target_prob}
                   onChange={(e) =>
                     handleInputChange("target_prob", e.target.value)
@@ -127,12 +140,14 @@ export default function CallValueComponent({
               </div>
 
               <div>
-                <Label htmlFor="threshold">Umbral</Label>
+                <Label htmlFor="threshold">Máximo valor esperado</Label>
                 <Input
                   className="mt-2 bg-white dark:bg-black"
                   id="threshold"
                   type="number"
                   step="0.0001"
+                  min="0"
+                  max="1"
                   value={request.threshold}
                   onChange={(e) =>
                     handleInputChange("threshold", e.target.value)
@@ -142,12 +157,26 @@ export default function CallValueComponent({
               </div>
 
               <div>
-                <Label htmlFor="min_val">Valor Mínimo</Label>
+                <Label htmlFor="min_val">
+                  Mínimo valor esperado
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-4 w-4 inline-block ml-2 text-muted-foreground" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Free risk de USA 400 bps + riesgo país 300 bps
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </Label>
                 <Input
                   className="mt-2 bg-white dark:bg-black"
                   id="min_val"
                   type="number"
                   step="0.0001"
+                  min="0"
+                  max="1"
                   value={request.min_val}
                   onChange={(e) => handleInputChange("min_val", e.target.value)}
                   placeholder="0.0049"
@@ -181,7 +210,7 @@ export default function CallValueComponent({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Valor de la Prima del Call
+                Valor de la Prima del Call de TTD26
               </CardTitle>
             </CardHeader>
             <CardContent>
