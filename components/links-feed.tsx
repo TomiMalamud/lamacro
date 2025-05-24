@@ -1,5 +1,11 @@
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
-import { BarChart3, Calculator, DollarSign, Search } from "lucide-react";
+import {
+  BarChart3,
+  Calculator,
+  ChartArea,
+  DollarSign,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function LinksFeed() {
@@ -8,7 +14,7 @@ export default function LinksFeed() {
       title: "Estadísticas",
       description:
         "Accedé a las principales estadísticas del BCRA: inflación, reservas, dólar, etc.",
-      icon: BarChart3,
+      icon: ChartArea,
       href: "/variables",
     },
     {
@@ -30,6 +36,12 @@ export default function LinksFeed() {
         "Fijate cuál es el mejor bono para hacer carry trade. Se actualiza casi a tiempo real. ",
       icon: DollarSign,
       href: "/carry-trade",
+    },
+    {
+      title: "Duales TAMAR",
+      description: "Análisis avanzado de duales TAMAR.",
+      icon: BarChart3,
+      href: "/duales",
     },
   ];
 
