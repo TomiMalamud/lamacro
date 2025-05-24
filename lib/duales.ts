@@ -1,19 +1,17 @@
 import {
-  addMonths,
-  isBefore,
-  parse,
-  format,
   addDays,
+  addMonths,
+  addYears,
+  compareAsc,
   eachDayOfInterval,
+  format,
   getDay,
+  isBefore,
   differenceInDays as originalDifferenceInDays,
+  parse,
+  startOfDay,
 } from "date-fns";
-import { addYears } from "date-fns";
-import { startOfDay } from "date-fns";
-import { compareAsc } from "date-fns";
-import { fetchVariableTimeSeries } from "./bcra-fetch";
-import { BCRAVariable } from "./bcra-fetch";
-import { DUAL_BONDS_COLORS } from "@/components/duales-tamar/duales-chart";
+import { BCRAVariable, fetchVariableTimeSeries } from "./bcra-fetch";
 
 export const DUAL_BOND_EVENTS: Record<string, string> = {
   TTM26: "2026-03-16",
@@ -71,16 +69,8 @@ export interface DualBondTableEntry {
   TTD26: string | number;
 }
 
-export interface DualBondScatterPoint {
-  date: string;
-  bondTicker: string;
-  value: number;
-  color: string; // To help styling in the chart
-  scenarioLabel: string; // Identifier for the scenario
-}
 export interface DualBondSimulationResults {
   chartData: DualBondChartPoint[];
-  scatterPoints: DualBondScatterPoint[];
   tableDataTemDiff: DualBondTableEntry[];
   tableDataPayoffDiff: DualBondTableEntry[];
   eventDates: Record<string, string>;
@@ -170,9 +160,7 @@ function getRelativeParts(
   return { years, months, days };
 }
 
-export async function getDualBondSimulationData(
-  activeTargetsTEM: number[],
-): Promise<DualBondSimulationResults | null> {
+export async function getDualBondSimulationData(): Promise<DualBondSimulationResults | null> {
   const tamarDataRaw = await fetchTamarRateV3(45);
   if (!tamarDataRaw || tamarDataRaw.length === 0) {
     return null;
@@ -316,7 +304,6 @@ export async function getDualBondSimulationData(
     allChartPointsMap.values(),
   ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  const scatterPoints: DualBondScatterPoint[] = [];
   const sobreTasaTamarRaw: Record<string, Record<string, number>> = {};
 
   Object.keys(DUAL_BOND_EVENTS).forEach((bondTicker) => {
@@ -333,25 +320,6 @@ export async function getDualBondSimulationData(
     }
 
     if (pointForEvent) {
-      if (activeTargetsTEM && activeTargetsTEM.length > 0) {
-        const activeSliderTEM = activeTargetsTEM[0];
-        const activeProyAvgKey = `tamar_proy_${(activeSliderTEM * 100).toFixed(1)}_AVG`;
-        const activeProjectedAvgTamar = pointForEvent[activeProyAvgKey] as
-          | number
-          | undefined;
-
-        if (activeProjectedAvgTamar !== undefined) {
-          scatterPoints.push({
-            date: eventDateStr,
-            bondTicker: bondTicker,
-            value: activeProjectedAvgTamar,
-            color:
-              DUAL_BONDS_COLORS[bondTicker] || DUAL_BONDS_COLORS.projection_AVG,
-            scenarioLabel: activeProyAvgKey,
-          });
-        }
-      }
-
       ALL_PROJECTION_SCENARIOS_TEM.forEach((tableScenarioTEM) => {
         const proyAvgKeyForTable = `tamar_proy_${(tableScenarioTEM * 100).toFixed(1)}_AVG`;
         const projectedAvgTamarForTable = pointForEvent[proyAvgKeyForTable] as
@@ -444,7 +412,6 @@ export async function getDualBondSimulationData(
 
   return {
     chartData,
-    scatterPoints,
     tableDataTemDiff,
     tableDataPayoffDiff,
     eventDates: DUAL_BOND_EVENTS,

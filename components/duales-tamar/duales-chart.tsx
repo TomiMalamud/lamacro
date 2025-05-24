@@ -1,19 +1,13 @@
 "use client";
 
-import {
-  type DualBondChartPoint,
-  type DualBondScatterPoint,
-  DUAL_BOND_EVENTS,
-} from "@/lib/duales";
+import { type DualBondChartPoint, DUAL_BOND_EVENTS } from "@/lib/duales";
 import React from "react";
 import {
   CartesianGrid,
   Label,
-  LabelList,
   Line,
   LineChart,
   ReferenceLine,
-  Scatter,
   XAxis,
   YAxis,
 } from "recharts";
@@ -64,14 +58,12 @@ const chartConfig = {
 
 interface DualesTamarChartProps {
   chartData: DualBondChartPoint[];
-  scatterPoints: DualBondScatterPoint[];
   eventDates: Record<string, string>;
   targetsTEM: number[];
 }
 
 export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
   chartData,
-  scatterPoints,
   eventDates,
   targetsTEM,
 }) => {
@@ -189,46 +181,6 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
             </ReferenceLine>
           );
         })}
-
-        {scatterPoints.map((p, index) => (
-          <Scatter
-            key={`scatter-${p.bondTicker}-${p.scenarioLabel}-${index}`}
-            name={p.bondTicker}
-            data={[
-              transformedChartData.find(
-                (d) =>
-                  d.date === p.date &&
-                  p.value !== undefined &&
-                  d[p.scenarioLabel] === p.value * 100,
-              ),
-            ]}
-            fill={p.color}
-            shape="circle"
-          >
-            {/* eslint-disable @typescript-eslint/no-explicit-any */}
-            <LabelList
-              dataKey={p.scenarioLabel}
-              position="top"
-              content={(props: any) => {
-                const { x, y, value: pointValue } = props;
-                if (pointValue === undefined) return null;
-                return (
-                  <text
-                    x={x}
-                    y={y}
-                    dy={-8}
-                    fill={p.color}
-                    stroke="#FFF"
-                    strokeWidth={0.3}
-                    fontSize={9}
-                    textAnchor="middle"
-                    fontWeight="bold"
-                  >{`${pointValue.toFixed(1)}%`}</text>
-                );
-              }}
-            />
-          </Scatter>
-        ))}
       </LineChart>
     </ChartContainer>
   );

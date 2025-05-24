@@ -21,7 +21,7 @@ const DEFAULT_CALL_VALUE_REQUEST: CallValueRequest = {
 
 export default async function CallsPage() {
   const [initialDualesData, callValueData] = await Promise.all([
-    getDualBondSimulationData([INITIAL_TAMAR_TEM]),
+    getDualBondSimulationData(),
     getTamarCallValueData(DEFAULT_CALL_VALUE_REQUEST),
   ]);
 
@@ -33,14 +33,14 @@ export default async function CallsPage() {
       <p className="text-muted-foreground mb-8">
         Cálculos hechos por{" "}
         <a
-          href="https://x.com/JohnGalt_is_www/status/1912555971400069372"
+          href="https://x.com/JohnGalt_is_www/"
           target="_blank"
           rel="noopener noreferrer"
           className="underline underline-offset-4 hover:decoration-stone-900 hover:text-stone-900 dark:hover:decoration-stone-200 dark:hover:text-stone-200 transition-all duration-300"
         >
           JohnGalt_is_www
         </a>
-        . Los números son tasas (%) mensuales.
+        . Los números son tasas mensuales (%).
       </p>
       <DualesClient
         initialData={initialDualesData}

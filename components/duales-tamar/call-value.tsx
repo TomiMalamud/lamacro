@@ -23,6 +23,41 @@ import {
   TableRow,
 } from "../ui/table";
 
+const getCurrentRemUrl = () => {
+  const now = new Date();
+  const currentDay = now.getDate();
+  let targetMonth = now.getMonth();
+  let targetYear = now.getFullYear();
+
+  if (currentDay < 10) {
+    targetMonth = targetMonth - 1;
+    if (targetMonth < 0) {
+      targetMonth = 11;
+      targetYear = targetYear - 1;
+    }
+  }
+
+  const monthNames = [
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
+  ];
+
+  const targetMonthName = monthNames[targetMonth];
+  const targetYearShort = targetYear.toString().slice(-2);
+
+  return `https://www.bcra.gob.ar/Noticias/REM-${targetMonthName}-${targetYearShort}.asp`;
+};
+
 interface CallValueComponentProps {
   initialRequest?: CallValueRequest;
   initialResponse?: CallValueResponse | null;
@@ -81,7 +116,16 @@ export default function CallValueComponent({
           </CardTitle>
           <CardDescription>
             Calculá la prima del call y la distribución de los valores de
-            amortización para los bonos TAMAR
+            amortización para los bonos TAMAR. Números obtenidos del{" "}
+            <a
+              href={getCurrentRemUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4 hover:decoration-stone-900 hover:text-stone-900 dark:hover:decoration-stone-200 dark:hover:text-stone-200 transition-all duration-300"
+            >
+              REM más reciente del BCRA
+            </a>
+            .
           </CardDescription>
         </CardHeader>
         <CardContent>
