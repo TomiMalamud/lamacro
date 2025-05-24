@@ -40,10 +40,6 @@ const chartConfig = {
     label: "TEM Spot TAMAR",
     color: DUAL_BONDS_COLORS.tamar_tem_spot,
   },
-  tamar_AVG: {
-    label: "Promedio Histórico TAMAR",
-    color: DUAL_BONDS_COLORS.tamar_AVG,
-  },
   TTM26_fixed_rate: {
     label: "TTM26 Tasa Fija",
     color: DUAL_BONDS_COLORS.TTM26,
@@ -145,14 +141,7 @@ export const DualesTamarChart: React.FC<DualesTamarChartProps> = ({
           dot={false}
           strokeDasharray="3 3"
         />
-        <Line
-          type="monotone"
-          dataKey="tamar_AVG"
-          name="Promedio Histórico TAMAR"
-          stroke={DUAL_BONDS_COLORS.tamar_AVG}
-          strokeWidth={1.5}
-          dot={false}
-        />
+
         {Object.keys(DUAL_BOND_EVENTS).map((bondTicker) => (
           <Line
             key={`${bondTicker}_fixed_rate`}

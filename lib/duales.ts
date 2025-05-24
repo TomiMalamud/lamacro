@@ -303,10 +303,11 @@ export async function getDualBondSimulationData(
     const proyAvgValues = calculateExpandingMean(valuesForProyAvg);
 
     sortedDates.forEach((date, idx) => {
-      const point = allChartPointsMap.get(format(date, "yyyy-MM-dd"));
-      if (point && point[proyKey] !== undefined) {
+      const dateStr = format(date, "yyyy-MM-dd");
+      const point = allChartPointsMap.get(dateStr) || { date: dateStr };
+      if (proyAvgValues[idx] !== undefined) {
         point[proyAvgKey] = proyAvgValues[idx];
-        allChartPointsMap.set(format(date, "yyyy-MM-dd"), point);
+        allChartPointsMap.set(dateStr, point);
       }
     });
   });
