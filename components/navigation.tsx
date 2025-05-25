@@ -70,6 +70,13 @@ export function Navigation() {
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link href="/fija" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Renta Fija
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
         </div>
@@ -123,6 +130,14 @@ export function Navigation() {
                       className="text-lg font-medium hover:underline"
                     >
                       Duales TAMAR
+                    </Link>
+                  </DrawerClose>
+                  <DrawerClose asChild>
+                    <Link
+                      href="/fija"
+                      className="text-lg font-medium hover:underline"
+                    >
+                      Renta Fija
                     </Link>
                   </DrawerClose>
                 </nav>

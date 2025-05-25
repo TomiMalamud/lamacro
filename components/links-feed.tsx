@@ -3,6 +3,7 @@ import {
   BarChart3,
   Calculator,
   ChartArea,
+  ChartPie,
   DollarSign,
   Search,
 } from "lucide-react";
@@ -42,6 +43,12 @@ export default function LinksFeed() {
       description: "Análisis avanzado de duales TAMAR.",
       icon: BarChart3,
       href: "/duales",
+    },
+    {
+      title: "Renta Fija",
+      description: "Análisis de letras y bonos con cálculos de TNA, TEM y TEA",
+      icon: ChartPie,
+      href: "/fija",
     },
   ];
 

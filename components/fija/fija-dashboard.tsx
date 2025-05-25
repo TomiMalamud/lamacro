@@ -34,7 +34,7 @@ export default function FijaDashboard({ letras, bonos }: FijaDashboardProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="hidden sm:block">
         <CardHeader>
           <CardTitle>TEM vs Días hasta Vencimiento</CardTitle>
           <CardDescription>
@@ -46,6 +46,9 @@ export default function FijaDashboard({ letras, bonos }: FijaDashboardProps) {
           <FijaChart data={tableData} />
         </CardContent>
       </Card>
+      <div className="sm:hidden">
+        <FijaChart data={tableData} />
+      </div>
     </div>
   );
 }

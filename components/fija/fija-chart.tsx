@@ -145,7 +145,7 @@ export default function FijaChart({ data }: FijaChartProps) {
           top: 20,
           right: 20,
           bottom: 20,
-          left: 20,
+          left: 0,
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
