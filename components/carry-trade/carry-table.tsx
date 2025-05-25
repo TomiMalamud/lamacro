@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatARS, formatPercent } from "@/lib/formatters";
+import { formatNumber } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import type { ProcessedBondData } from "@/types/carry-trade";
 
@@ -21,7 +21,7 @@ interface CarryTableProps {
 }
 
 const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];
-const carryColumnKeys = CARRY_PRICES.map(price => `carry_${price}` as const);
+const carryColumnKeys = CARRY_PRICES.map((price) => `carry_${price}` as const);
 
 export function CarryTable({ data, mep }: CarryTableProps) {
   return (
@@ -31,9 +31,7 @@ export function CarryTable({ data, mep }: CarryTableProps) {
           <TableRow>
             <TableHead>
               <Popover>
-                <PopoverTrigger>
-                  Ticker
-                </PopoverTrigger>
+                <PopoverTrigger>Ticker</PopoverTrigger>
                 <PopoverContent>
                   Ticker que representa el bono. Buscalo así en tu broker.
                 </PopoverContent>
@@ -41,51 +39,53 @@ export function CarryTable({ data, mep }: CarryTableProps) {
             </TableHead>
             <TableHead className="text-right">
               <Popover>
-                <PopoverTrigger>
-                  Precio
-                </PopoverTrigger>
+                <PopoverTrigger>Precio</PopoverTrigger>
                 <PopoverContent>Precio del bono actual</PopoverContent>
               </Popover>
             </TableHead>
             <TableHead className="text-right">
               <Popover>
-                <PopoverTrigger>
-                  Días
-                </PopoverTrigger>
+                <PopoverTrigger>Días</PopoverTrigger>
                 <PopoverContent>Días hasta el vencimiento</PopoverContent>
               </Popover>
             </TableHead>
             <TableHead className="text-right">
               <Popover>
-                <PopoverTrigger>
-                  TEM
-                </PopoverTrigger>
+                <PopoverTrigger>TEM</PopoverTrigger>
                 <PopoverContent>Tasa Efectiva Mensual</PopoverContent>
               </Popover>
             </TableHead>
             <TableHead className="text-right">
               <Popover>
-                <PopoverTrigger>
-                  Carry {mep.toFixed(0)}
-                </PopoverTrigger>
-                <PopoverContent>Carry para MEP al valor actual ({formatARS(mep)})</PopoverContent>
+                <PopoverTrigger>Carry {mep.toFixed(0)}</PopoverTrigger>
+                <PopoverContent>
+                  Carry para MEP al valor actual ($ {formatNumber(mep)})
+                </PopoverContent>
               </Popover>
             </TableHead>
             {/* Dynamic headers for carry columns */}
-            {carryColumnKeys.map(colKey => (
-              <TableHead key={colKey} className={cn("text-right",
-                colKey === 'carry_1100' || colKey === 'carry_1200' || colKey === 'carry_1300' ? "hidden md:table-cell" : ""
-              )}
+            {carryColumnKeys.map((colKey) => (
+              <TableHead
+                key={colKey}
+                className={cn(
+                  "text-right",
+                  colKey === "carry_1100" ||
+                    colKey === "carry_1200" ||
+                    colKey === "carry_1300"
+                    ? "hidden md:table-cell"
+                    : "",
+                )}
               >
-                {`Carry ${colKey.split('_')[1]}`}
+                {`Carry ${colKey.split("_")[1]}`}
               </TableHead>
             ))}
             <TableHead className="text-right">
               <Popover>
-                <PopoverTrigger>
-                  Carry Peor
-                </PopoverTrigger>
-                <PopoverContent>Peor caso del Carry. Asume que el MEP arranca en 1400 e incrementa 1% por mes hasta el vencimiento.</PopoverContent>
+                <PopoverTrigger>Carry Peor</PopoverTrigger>
+                <PopoverContent>
+                  Peor caso del Carry. Asume que el MEP arranca en 1400 e
+                  incrementa 1% por mes hasta el vencimiento.
+                </PopoverContent>
               </Popover>
             </TableHead>
           </TableRow>
@@ -94,32 +94,53 @@ export function CarryTable({ data, mep }: CarryTableProps) {
           {data.map((bond) => (
             <TableRow key={bond.symbol}>
               <TableCell className="font-medium">{bond.symbol}</TableCell>
-              <TableCell className="text-right">{formatARS(bond.bond_price)}</TableCell>
-              <TableCell className="text-right">{bond.days_to_exp}</TableCell>
-              <TableCell className="text-right">{formatPercent(bond.tem, 2)}</TableCell>
-              <TableCell className={cn("text-right font-mono",
-                bond.carry_mep > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-              )}>
-                {formatPercent(bond.carry_mep)}
+              <TableCell className="text-right">
+                $ {formatNumber(bond.bond_price)}
               </TableCell>
-              {carryColumnKeys.map(colKey => {
+              <TableCell className="text-right">{bond.days_to_exp}</TableCell>
+              <TableCell className="text-right">
+                {formatNumber(bond.tem, 2, "percentage")}
+              </TableCell>
+              <TableCell
+                className={cn(
+                  "text-right font-mono",
+                  bond.carry_mep > 0
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400",
+                )}
+              >
+                {formatNumber(bond.carry_mep, 1, "percentage")}
+              </TableCell>
+              {carryColumnKeys.map((colKey) => {
                 const carryValue = bond[colKey];
                 return (
                   <TableCell
                     key={colKey}
-                    className={cn("text-right font-mono",
-                      carryValue > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400",
-                      colKey === 'carry_1100' || colKey === 'carry_1200' || colKey === 'carry_1300' ? "hidden md:table-cell" : ""
+                    className={cn(
+                      "text-right font-mono",
+                      carryValue > 0
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400",
+                      colKey === "carry_1100" ||
+                        colKey === "carry_1200" ||
+                        colKey === "carry_1300"
+                        ? "hidden md:table-cell"
+                        : "",
                     )}
                   >
-                    {formatPercent(carryValue)}
+                    {formatNumber(carryValue, 1, "percentage")}
                   </TableCell>
                 );
               })}
-              <TableCell className={cn("text-right font-mono",
-                bond.carry_worst > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-              )}>
-                {formatPercent(bond.carry_worst)}
+              <TableCell
+                className={cn(
+                  "text-right font-mono",
+                  bond.carry_worst > 0
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-red-600 dark:text-red-400",
+                )}
+              >
+                {formatNumber(bond.carry_worst, 1, "percentage")}
               </TableCell>
             </TableRow>
           ))}
@@ -127,4 +148,4 @@ export function CarryTable({ data, mep }: CarryTableProps) {
       </Table>
     </div>
   );
-} 
+}

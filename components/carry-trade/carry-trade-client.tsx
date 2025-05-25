@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CPI_EST, EST_DATE_STR } from "@/lib/carry-trade";
-import { formatARS, formatPercent } from "@/lib/formatters";
+import { formatNumber } from "@/lib/utils";
 import type { CarryExitData, CarryTradeData } from "@/types/carry-trade";
 import { addDays, format, parseISO } from "date-fns";
 import { CarryExitTable } from "./carry-exit-table";
@@ -64,15 +64,16 @@ export function CarryTradeClient({
                       : "text-red-600 dark:text-red-400 font-semibold"
                   }
                 >
-                  {formatPercent(bestCarryBond.carry_worst)}
+                  {formatNumber(bestCarryBond.carry_worst, 2, "percentage")}
                 </span>
               </p>
               <p>
-                <strong>TEM:</strong> {formatPercent(bestCarryBond.tem, 2)}
+                <strong>TEM:</strong>{" "}
+                {formatNumber(bestCarryBond.tem, 2, "percentage")}
               </p>
               <p>
-                <strong>MEP Breakeven:</strong>{" "}
-                {formatARS(bestCarryBond.mep_breakeven)}
+                <strong>MEP Breakeven:</strong> ${" "}
+                {formatNumber(bestCarryBond.mep_breakeven)}
               </p>
               <p>
                 <strong>Días al Vencimiento:</strong>{" "}
@@ -103,16 +104,16 @@ export function CarryTradeClient({
               <p>
                 <strong>TEA Estimada (ARS):</strong>{" "}
                 <span className="text-green-600 dark:text-green-400 font-semibold">
-                  {formatPercent(bestExitBond.ars_tea)}
+                  {formatNumber(bestExitBond.ars_tea, 2, "percentage")}
                 </span>
               </p>
               <p>
                 <strong>Rendimiento Directo (ARS):</strong>{" "}
-                {formatPercent(bestExitBond.ars_direct_yield)}
+                {formatNumber(bestExitBond.ars_direct_yield, 2, "percentage")}
               </p>
               <p>
-                <strong>Precio Salida Estimado:</strong>{" "}
-                {formatARS(bestExitBond.bond_price_out)}
+                <strong>Precio Salida Estimado:</strong> ${" "}
+                {formatNumber(bestExitBond.bond_price_out)}
               </p>
               <p>
                 <strong>Días Invertido:</strong> {bestExitBond.days_in}{" "}
@@ -161,7 +162,7 @@ export function CarryTradeClient({
             {format(parseISO(EST_DATE_STR), "dd/MM/yy")} (
             {carryExitSimulation[0]?.days_in} días de tenencia), asumiendo una
             convergencia de la TEM a un valor estimado de{" "}
-            {formatPercent(CPI_EST)}.
+            {formatNumber(CPI_EST, 2, "percentage")}.
           </CardDescription>
         </CardHeader>
         <CardContent>

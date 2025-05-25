@@ -10,7 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { formatCurrency } from "@/lib/formatters";
+import { formatNumber, formatPeriod } from "@/lib/utils";
 
 interface DeudaEntidad {
   entidad: string | null;
@@ -40,30 +40,6 @@ interface Deuda {
 interface DeudaResponse {
   status: number;
   results: Deuda;
-}
-
-function formatPeriod(periodString: string | null): string {
-  if (!periodString || periodString.length !== 6) return periodString || "N/A";
-
-  const year = periodString.substring(0, 4);
-  const month = parseInt(periodString.substring(4, 6));
-
-  const monthNames = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ];
-
-  return `${monthNames[month - 1]} ${year}`;
 }
 
 function getSituacionDescription(situacion: number | null): string {
@@ -208,7 +184,7 @@ export default function DebtMobileSection({
                     <span className="text-muted-foreground">
                       Deuda:{" "}
                       <span className="text-foreground">
-                        {formatCurrency(Number(entidad.monto) * 1000)}
+                        $ {formatNumber(Number(entidad.monto) * 1000)}
                       </span>
                     </span>
                   </div>

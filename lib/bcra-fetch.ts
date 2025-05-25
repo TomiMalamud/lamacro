@@ -36,20 +36,6 @@ export const VARIABLE_GROUPS = {
   MONETARY_BASE: [15, 16, 17, 18, 19, 46, 64, 71, 72, 73],
 };
 
-export function formatNumber(value: number, decimals?: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    ...(decimals !== undefined && {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals,
-    }),
-  }).format(value);
-}
-
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat("es-AR").format(date);
-}
-
 // Enhanced cache interface
 interface CacheEntry {
   timestamp: number;

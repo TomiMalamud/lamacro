@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { BCRAVariable, formatDate, formatNumber } from "@/lib/bcra-fetch";
+import { BCRAVariable } from "@/lib/bcra-fetch";
 import { getVariableDataForRange } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import { endOfDay, format, startOfDay, subMonths, subYears } from "date-fns";
@@ -51,6 +51,8 @@ import {
   ChartTooltipContent,
 } from "../ui/chart";
 import { toast } from "sonner";
+import { formatDate } from "date-fns";
+import { formatNumber } from "@/lib/utils";
 
 // Extended interface for chart data with comparison values
 interface ChartDataWithComparison extends BCRAVariable {
@@ -425,7 +427,7 @@ export function VariableTimeSeriesChart({
       const csvContent = [
         headers.join(","),
         ...combinedChartData.map((row) => {
-          const date = formatDate(row.fecha);
+          const date = formatDate(row.fecha, "dd/MM/yyyy");
           const currentValue = formatNumber(row.valor).replace(",", ".");
 
           return showComparison && row.prevValor !== undefined
@@ -691,7 +693,9 @@ export function VariableTimeSeriesChart({
                               : " Período anterior";
                           return [`${formatNumber(value)}`, label];
                         }}
-                        labelFormatter={(label) => formatDate(label as string)}
+                        labelFormatter={(label) =>
+                          formatDate(label as string, "dd/MM/yyyy")
+                        }
                         cursor={false}
                         content={
                           <ChartTooltipContent
@@ -753,7 +757,9 @@ export function VariableTimeSeriesChart({
                               : " Período anterior";
                           return [`${formatNumber(value)}`, label];
                         }}
-                        labelFormatter={(label) => formatDate(label as string)}
+                        labelFormatter={(label) =>
+                          formatDate(label as string, "dd/MM/yyyy")
+                        }
                         cursor={false}
                         content={
                           <ChartTooltipContent
@@ -813,7 +819,9 @@ export function VariableTimeSeriesChart({
 
                       return (
                         <TableRow key={row.fecha}>
-                          <TableCell>{formatDate(row.fecha)}</TableCell>
+                          <TableCell>
+                            {formatDate(row.fecha, "dd/MM/yyyy")}
+                          </TableCell>
                           <TableCell className="text-right font-medium">
                             {formatNumber(row.valor)}
                           </TableCell>
@@ -859,7 +867,7 @@ export function VariableTimeSeriesChart({
       <div className="text-xs text-muted-foreground text-center">
         Mostrando {chartData.length} registros • Último dato:{" "}
         {chartData[chartData.length - 1]?.fecha
-          ? formatDate(chartData[chartData.length - 1].fecha)
+          ? formatDate(chartData[chartData.length - 1].fecha, "dd/MM/yyyy")
           : "N/A"}
         {stats && ` • Promedio: ${formatNumber(stats.average, 2)}`}
         {stats &&

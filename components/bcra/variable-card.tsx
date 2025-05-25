@@ -13,12 +13,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  BCRAVariable,
-  fetchVariableTimeSeries,
-  formatDate,
-  formatNumber,
-} from "@/lib/bcra-fetch";
+import { BCRAVariable, fetchVariableTimeSeries } from "@/lib/bcra-fetch";
+import { formatNumber } from "@/lib/utils";
+import { formatDate } from "date-fns";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -298,8 +295,10 @@ export function VariableCard({
             <TooltipContent>
               Subió {formatNumber(trend.percentage || 0, 1)}%. Desde{" "}
               {formatNumber(trend.oldestValue || 0)}{" "}
-              {trend.oldestDate ? `el ${formatDate(trend.oldestDate)}` : ""} a{" "}
-              {formatNumber(variable.valor)}
+              {trend.oldestDate
+                ? `el ${formatDate(trend.oldestDate, "dd/MM/yyyy")}`
+                : ""}{" "}
+              a {formatNumber(variable.valor)}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -319,8 +318,10 @@ export function VariableCard({
             <TooltipContent>
               Bajó {formatNumber(trend.percentage || 0, 1)}%. Desde{" "}
               {formatNumber(trend.oldestValue || 0)}{" "}
-              {trend.oldestDate ? `el ${formatDate(trend.oldestDate)}` : ""} a{" "}
-              {formatNumber(variable.valor)}
+              {trend.oldestDate
+                ? `el ${formatDate(trend.oldestDate, "dd/MM/yyyy")}`
+                : ""}{" "}
+              a {formatNumber(variable.valor)}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -337,8 +338,10 @@ export function VariableCard({
             <TooltipContent>
               Sin cambios significativos. Desde{" "}
               {formatNumber(trend.oldestValue || 0)}{" "}
-              {trend.oldestDate ? `el ${formatDate(trend.oldestDate)}` : ""} a{" "}
-              {formatNumber(variable.valor)}
+              {trend.oldestDate
+                ? `el ${formatDate(trend.oldestDate, "dd/MM/yyyy")}`
+                : ""}{" "}
+              a {formatNumber(variable.valor)}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -362,14 +365,14 @@ export function VariableCard({
             {variable.descripcion.replace("n.a.", "TNA").replace("e.a.", "TEA")}
           </CardTitle>
           <CardDescription>
-            Últ. act: {formatDate(variable.fecha)}
+            Últ. act: {formatDate(variable.fecha, "dd/MM/yyyy")}
           </CardDescription>
         </CardHeader>
         <CardContent className="grow flex flex-col justify-end">
           <div className="flex items-center justify-between">
             <div className="mr-4">
               <div className="text-3xl font-bold">
-                {formatNumber(variable.valor) +
+                {formatNumber(variable.valor, 2) +
                   (variable.descripcion.includes("%") ||
                   variable.descripcion.includes("Tasa")
                     ? "%"

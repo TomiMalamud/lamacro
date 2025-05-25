@@ -20,11 +20,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatCurrency } from "@/lib/formatters";
+import { formatDate } from "date-fns";
 import { ChevronLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { formatNumber } from "@/lib/utils";
 
 // Define types based on the API schema
 interface DeudaEntidad {
@@ -113,13 +114,6 @@ interface ChequeRechazado {
 interface ChequeResponse {
   status: number;
   results: ChequeRechazado;
-}
-
-// Helper function to format date
-function formatDate(dateString: string | null): string {
-  if (!dateString) return "N/A";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("es-AR");
 }
 
 // Generate metadata for the page
@@ -347,14 +341,19 @@ async function DebtorData({ id }: { id: string }) {
                               <TableRow key={chequeIndex}>
                                 <TableCell>{cheque.nroCheque}</TableCell>
                                 <TableCell>
-                                  {formatDate(cheque.fechaRechazo)}
+                                  {formatDate(
+                                    cheque.fechaRechazo,
+                                    "dd/MM/yyyy",
+                                  )}
                                 </TableCell>
                                 <TableCell>
-                                  {formatCurrency(cheque.monto)}
+                                  {formatNumber(cheque.monto, 2)}
                                 </TableCell>
-                                <TableCell>
-                                  {formatDate(cheque.fechaPago)}
-                                </TableCell>
+                                {cheque.fechaPago && (
+                                  <TableCell>
+                                    {formatDate(cheque.fechaPago, "dd/MM/yyyy")}
+                                  </TableCell>
+                                )}
                                 <TableCell>
                                   {cheque.estadoMulta ||
                                     (cheque.fechaPagoMulta

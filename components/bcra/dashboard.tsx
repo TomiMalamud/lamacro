@@ -4,9 +4,11 @@ import AllVariablesSection from "@/components/bcra/all-variables-section";
 import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BCRAVariable, formatDate, formatNumber } from "@/lib/bcra-fetch";
+import { BCRAVariable } from "@/lib/bcra-fetch";
 import { Clock, Download, Loader, Search } from "lucide-react";
 import { useState } from "react";
+import { formatNumber } from "@/lib/utils";
+import { formatDate } from "date-fns";
 
 interface BCRADashboardProps {
   initialVariables: BCRAVariable[];
@@ -107,7 +109,7 @@ export default function BCRADashboard({
       const csvContent = [
         headers.join(","),
         ...sectionVariables.map((variable) => {
-          const date = formatDate(variable.fecha);
+          const date = formatDate(variable.fecha, "dd/MM/yyyy");
           const value = formatNumber(variable.valor).replace(",", ".");
           return [variable.descripcion.replace(/,/g, ";"), date, value].join(
             ",",

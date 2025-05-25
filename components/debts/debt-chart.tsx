@@ -5,7 +5,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import {
   Bar,
@@ -13,7 +13,7 @@ import {
   ComposedChart,
   Line,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 import {
   ChartConfig,
@@ -23,64 +23,38 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
-import { formatCurrency } from "@/lib/formatters";
+import { formatNumber, formatPeriod } from "@/lib/utils";
 
 const chartConfig = {
   situacion1: {
     label: "Normal",
-    color: "#22c55e"
+    color: "#22c55e",
   },
   situacion2: {
     label: "Riesgo Bajo",
-    color: "#84cc16"
+    color: "#84cc16",
   },
   situacion3: {
     label: "Riesgo Medio",
-    color: "#eab308"
+    color: "#eab308",
   },
   situacion4: {
     label: "Riesgo Alto",
-    color: "#f97316"
+    color: "#f97316",
   },
   situacion5: {
     label: "Irrecuperable",
-    color: "#ef4444"
+    color: "#ef4444",
   },
   situacion6: {
     label: "Irrecuperable DT",
-    color: "#7c3aed"
+    color: "#7c3aed",
   },
   montoTotal: {
     label: "Monto Total de Deuda",
-    color: "#3b82f6"  // Matching the line color
-  }
+    color: "#3b82f6", // Matching the line color
+  },
 } satisfies ChartConfig;
-
-
-// Format period from YYYYMM to a more readable format (e.g., "Diciembre 2024")
-function formatPeriod(periodString: string | null): string {
-  if (!periodString || periodString.length !== 6) return periodString || "N/A";
-
-  const year = periodString.substring(0, 4);
-  const month = parseInt(periodString.substring(4, 6));
-
-  const monthNames = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre"
-  ];
-
-  return `${monthNames[month - 1]} ${year}`;
-}
 
 // Types for our components
 export interface HistorialChartProps {
@@ -100,7 +74,9 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
   if (!periodos || periodos.length === 0) {
     return (
       <div className="md:hidden">
-        <h2 className="text-2xl font-semibold tracking-tight mb-2">Evolución Histórica</h2>
+        <h2 className="text-2xl font-semibold tracking-tight mb-2">
+          Evolución Histórica
+        </h2>
         <p className="text-sm text-muted-foreground mb-4">
           Visualización histórica de situaciones crediticias y montos
         </p>
@@ -140,12 +116,15 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
         situacion3: situacionMontos[2],
         situacion4: situacionMontos[3],
         situacion5: situacionMontos[4],
-        situacion6: situacionMontos[5]
+        situacion6: situacionMontos[5],
       };
     });
 
   const chartContent = (
-    <ChartContainer config={chartConfig} className="h-[350px] w-full aspect-auto">
+    <ChartContainer
+      config={chartConfig}
+      className="h-[350px] w-full aspect-auto"
+    >
       <ComposedChart
         accessibilityLayer
         data={chartData}
@@ -164,7 +143,7 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
             new Intl.NumberFormat("es-AR", {
               notation: "compact",
               compactDisplay: "short",
-              maximumFractionDigits: 1
+              maximumFractionDigits: 1,
             }).format(value)
           }
         />
@@ -174,19 +153,12 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
               typeof name === "string"
                 ? name.replace("situacion", "Situación ")
                 : `Situación ${name}`;
-            return [formatCurrency(value as number) + " ", nameStr];
+            return ["$ " + formatNumber(value as number) + " ", nameStr];
           }}
-          content={
-            <ChartTooltipContent indicator="dot" nameKey="dataKey" />
-          }
+          content={<ChartTooltipContent indicator="dot" nameKey="dataKey" />}
         />
         <ChartLegend verticalAlign="top" content={<ChartLegendContent />} />
-        <Bar
-          dataKey="situacion1"
-          stackId="a"
-          fill="#22c55e"
-          name="Normal"
-        />
+        <Bar dataKey="situacion1" stackId="a" fill="#22c55e" name="Normal" />
         <Bar
           dataKey="situacion2"
           stackId="a"
@@ -239,7 +211,9 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
       {/* Mobile View */}
       <div className="md:hidden space-y-4">
         <div>
-          <h2 className="text-2xl font-semibold tracking-tight">Montos por Situación Crediticia</h2>          
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Montos por Situación Crediticia
+          </h2>
         </div>
         {chartContent}
       </div>
@@ -252,9 +226,7 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
             Monto total de deuda por situación crediticia a lo largo del tiempo
           </CardDescription>
         </CardHeader>
-        <CardContent className="pl-0 pr-2">
-          {chartContent}
-        </CardContent>
+        <CardContent className="pl-0 pr-2">{chartContent}</CardContent>
       </Card>
     </>
   );
