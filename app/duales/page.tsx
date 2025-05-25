@@ -21,9 +21,7 @@ export default async function CallsPage() {
 
   return (
     <main className="container mx-auto px-6 md:px-16 py-8">
-      <h1 className="text-3xl font-bold mb-2">
-        Análisis de Bonos Duales TAMAR
-      </h1>
+      <h1 className="text-3xl font-bold mb-2">{metadata.title}</h1>
       <p className="text-muted-foreground mb-8">
         Cálculos hechos por{" "}
         <a
