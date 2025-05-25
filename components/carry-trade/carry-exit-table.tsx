@@ -54,10 +54,10 @@ export function CarryExitTable({ data }: CarryExitTableProps) {
               <TableCell className="font-medium">{sim.symbol}</TableCell>
               <TableCell className="text-right">{sim.days_to_exp}</TableCell>
               <TableCell className="text-right">
-                {formatNumber(sim.bond_price_in, 2, "currency")}
+                $ {formatNumber(sim.bond_price_in)}
               </TableCell>
               <TableCell className="text-right">
-                {formatNumber(sim.bond_price_out, 2, "currency")}
+                $ {formatNumber(sim.bond_price_out)}
               </TableCell>
               <TableCell className="text-right font-mono">
                 {formatNumber(sim.ars_direct_yield, 2, "percentage")}
