@@ -64,7 +64,7 @@ export function Navigation() {
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link href="/duales" legacyBehavior passHref>
+                <Link href="/duales" legacyBehavior passHref prefetch={false}>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Duales TAMAR
                   </NavigationMenuLink>
@@ -128,6 +128,7 @@ export function Navigation() {
                     <Link
                       href="/duales"
                       className="text-lg font-medium hover:underline"
+                      prefetch={false}
                     >
                       Duales TAMAR
                     </Link>

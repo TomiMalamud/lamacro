@@ -114,11 +114,13 @@ export default function DebtSection({
           Monto expresado en pesos.
           <span className="block">
             Si dice &quot;normal&quot;,{" "}
-            <span className="font-bold text-white">¡NO ES MORA!</span> La deuda
-            incluye los consumos realizados con tarjeta de crédito. La situación
-            &quot;normal&quot;{" "}
+            <span className="font-bold text-black dark:text-white">
+              ¡NO ES MORA!
+            </span>{" "}
+            La deuda incluye los consumos realizados con tarjeta de crédito. La
+            situación &quot;normal&quot;{" "}
             <Popover>
-              <PopoverTrigger className="font-bold text-white">
+              <PopoverTrigger className="font-bold text-black dark:text-white">
                 es estar al día.<sup>?</sup>
               </PopoverTrigger>
               <PopoverContent className="text-sm">

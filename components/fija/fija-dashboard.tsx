@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useFijaData } from "@/hooks/use-fija-data";
-import { SecurityData } from "@/types/fija";
+import { SecurityData, ComparatasasOption } from "@/types/fija";
 import FijaCalculator from "./fija-calculator";
 import FijaChart from "./fija-chart";
 import FijaTable from "./fija-table";
@@ -16,14 +16,19 @@ import FijaTable from "./fija-table";
 interface FijaDashboardProps {
   letras: SecurityData[];
   bonos: SecurityData[];
+  billeteras: ComparatasasOption[];
 }
 
-export default function FijaDashboard({ letras, bonos }: FijaDashboardProps) {
+export default function FijaDashboard({
+  letras,
+  bonos,
+  billeteras,
+}: FijaDashboardProps) {
   const { tableData } = useFijaData({ letras, bonos });
 
   return (
     <div className="space-y-8">
-      <FijaCalculator tableData={tableData} />
+      <FijaCalculator tableData={tableData} billeteras={billeteras} />
       <Card>
         <CardHeader>
           <CardTitle>LECAPs, BONCAPs y Duales</CardTitle>

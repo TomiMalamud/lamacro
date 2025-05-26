@@ -1,3 +1,5 @@
+import { ComparatasasOption } from "@/types/fija";
+
 export async function getLetras() {
   const response = await fetch("https://data912.com/live/arg_notes", {
     next: { revalidate: 1200 },
@@ -12,6 +14,20 @@ export async function getBonos() {
   });
   const data = await response.json();
   return data;
+}
+
+export async function getBilleteras() {
+  const response = await fetch(
+    "https://api.comparatasas.ar/cuentas-y-billeteras",
+    {
+      next: { revalidate: 21600 },
+    },
+  );
+  const data = await response.json();
+  const filteredData = data.filter(
+    (item: ComparatasasOption) => item.currency === "ARS",
+  );
+  return filteredData;
 }
 
 export const Holidays = [

@@ -21,3 +21,15 @@ export interface FijaTableRow {
   tem: number;
   tea: number;
 }
+
+export interface ComparatasasOption {
+  prettyName: string;
+  tna: number;
+  limit: number | null;
+  type: string;
+  prettyType: string;
+  logoUrl: string;
+  url: string;
+  currency: string;
+  fundName?: string;
+}

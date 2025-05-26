@@ -33,8 +33,9 @@ import {
 } from "@/components/ui/popover";
 import { FIJA_TABLE_CONFIG } from "@/lib/fija-data";
 import { cn, formatNumber } from "@/lib/utils";
-import { FijaTableRow } from "@/types/fija";
+import { FijaTableRow, ComparatasasOption } from "@/types/fija";
 import { Check, ChevronsUpDown } from "lucide-react";
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import InlineLink from "../inline-link";
 
@@ -48,7 +49,7 @@ function formatNumberInput(value: number): string {
   return value.toLocaleString("es-AR");
 }
 
-function validateNominales(value: string): {
+function validatePesosIniciales(value: string): {
   isValid: boolean;
   error?: string;
 } {
@@ -85,36 +86,43 @@ function validateCaucho(value: string): { isValid: boolean; error?: string } {
 
 export default function FijaCalculator({
   tableData,
+  billeteras,
 }: {
   tableData: FijaTableRow[];
+  billeteras: ComparatasasOption[];
 }) {
-  const [nominales, setNominales] = useState(100000);
-  const [nominalesDisplay, setNominalesDisplay] = useState("100.000");
-  const [nominalesError, setNominalesError] = useState<string | undefined>();
+  const [pesosIniciales, setPesosIniciales] = useState(100000);
+  const [pesosInicialesDisplay, setPesosInicialesDisplay] = useState("100.000");
+  const [pesosInicialesError, setPesosInicialesError] = useState<
+    string | undefined
+  >();
 
   const [selectedTicker, setSelectedTicker] = useState("");
 
   const [cauchoDisplay, setCauchoDisplay] = useState("23");
   const [caucho, setCaucho] = useState(23);
   const [cauchoError, setCauchoError] = useState<string | undefined>();
+  const [selectedAlternative, setSelectedAlternative] = useState<string>("");
+  const [isCustomAlternative, setIsCustomAlternative] = useState(false);
 
   const [open, setOpen] = useState(false);
+  const [alternativeOpen, setAlternativeOpen] = useState(false);
 
-  const handleNominalesChange = (value: string) => {
-    setNominalesDisplay(value);
-    const validation = validateNominales(value);
+  const handlePesosInicialesChange = (value: string) => {
+    setPesosInicialesDisplay(value);
+    const validation = validatePesosIniciales(value);
 
     if (validation.isValid) {
-      setNominalesError(undefined);
+      setPesosInicialesError(undefined);
       if (value === "") {
-        setNominales(0);
+        setPesosIniciales(0);
       } else {
         const numericValue = parseFormattedNumber(value);
-        setNominales(numericValue);
-        setNominalesDisplay(formatNumberInput(numericValue));
+        setPesosIniciales(numericValue);
+        setPesosInicialesDisplay(formatNumberInput(numericValue));
       }
     } else {
-      setNominalesError(validation.error);
+      setPesosInicialesError(validation.error);
     }
   };
 
@@ -135,8 +143,32 @@ export default function FijaCalculator({
     }
   };
 
+  const handleAlternativeSelect = (value: string) => {
+    setSelectedAlternative(value);
+
+    if (value === "custom") {
+      setIsCustomAlternative(true);
+    } else {
+      setIsCustomAlternative(false);
+      const selectedOption = billeteras.find(
+        (option) => option.prettyName === value,
+      );
+      if (selectedOption) {
+        const tnaValue = selectedOption.tna.toString();
+        setCauchoDisplay(tnaValue);
+        setCaucho(selectedOption.tna);
+        setCauchoError(undefined);
+      }
+    }
+  };
+
   const calculations = useMemo(() => {
-    if (!selectedTicker || nominalesError || cauchoError || nominales === 0)
+    if (
+      !selectedTicker ||
+      pesosInicialesError ||
+      cauchoError ||
+      pesosIniciales === 0
+    )
       return null;
 
     const selectedData = tableData.find((row) => row.ticker === selectedTicker);
@@ -147,7 +179,7 @@ export default function FijaCalculator({
     if (!selectedData || !configData) return null;
 
     const precio = selectedData.px;
-    const pesosIniciales = (nominales * precio) / 100;
+    const nominales = (pesosIniciales * 100) / precio;
     const alVencimiento = (configData.pagoFinal * nominales) / 100;
     const montoCaucho =
       pesosIniciales * Math.pow(1 + caucho / 100 / 365, selectedData.dias);
@@ -161,6 +193,7 @@ export default function FijaCalculator({
 
     return {
       precio,
+      nominales,
       pesosIniciales,
       alVencimiento,
       montoCaucho,
@@ -173,10 +206,10 @@ export default function FijaCalculator({
     };
   }, [
     selectedTicker,
-    nominales,
+    pesosIniciales,
     caucho,
     tableData,
-    nominalesError,
+    pesosInicialesError,
     cauchoError,
   ]);
 
@@ -188,18 +221,29 @@ export default function FijaCalculator({
     }))
     .sort((a, b) => a.value.localeCompare(b.value));
 
+  const alternativeOptions = [
+    { value: "custom", label: "Personalizado", tna: null, logoUrl: null },
+    ...billeteras.map((option) => ({
+      value: option.prettyName,
+      label: option.prettyName,
+      tna: option.tna,
+      logoUrl: option.logoUrl,
+    })),
+  ];
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Calculadora de Renta Fija</CardTitle>
         <CardDescription>
           Compará rendimientos de instrumentos de renta fija con otras
-          alternativas de tasa. Puede ser caucho (caución) o instrumentos
-          listados en{" "}
+          alternativas de tasa. Podés seleccionar un instrumento de los listados
+          en{" "}
           <InlineLink href="https://comparatasas.ar">
             Comparatasas.ar
           </InlineLink>
-          , como Mercado Pago, Ualá, Cocos, Plazos Fijos, etc.
+          , como Mercado Pago, Ualá, Cocos, Plazos Fijos, etc., o usar una tasa
+          personalizada.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -302,36 +346,227 @@ export default function FijaCalculator({
             </Popover>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="nominales">Nominales</Label>
+            <Label htmlFor="pesosIniciales">Pesos Iniciales</Label>
             <Input
-              id="nominales"
+              id="pesosIniciales"
               type="text"
-              value={nominalesDisplay}
-              onChange={(e) => handleNominalesChange(e.target.value)}
+              value={pesosInicialesDisplay}
+              onChange={(e) => handlePesosInicialesChange(e.target.value)}
               className={cn(
                 "dark:bg-neutral-900",
-                nominalesError && "border-red-500",
+                pesosInicialesError && "border-red-500",
               )}
               placeholder="Ej: 100.000"
             />
-            {nominalesError && (
-              <p className="text-sm text-red-500">{nominalesError}</p>
+            {pesosInicialesError && (
+              <p className="text-sm text-red-500">{pesosInicialesError}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="caucho">Alternativa (TNA %)</Label>
-            <Input
-              id="caucho"
-              type="text"
-              value={cauchoDisplay}
-              onChange={(e) => handleCauchoChange(e.target.value)}
-              className={cn(
-                "dark:bg-neutral-900",
-                cauchoError && "border-red-500",
+            <Label>Alternativa (TNA %)</Label>
+            <div className="flex gap-2">
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    className="flex-1 justify-between dark:bg-neutral-900 sm:hidden"
+                  >
+                    <div className="flex items-center gap-2">
+                      {!isCustomAlternative &&
+                        selectedAlternative &&
+                        selectedAlternative !== "custom" && (
+                          <div className="flex items-center gap-2">
+                            {(() => {
+                              const option = alternativeOptions.find(
+                                (opt) => opt.value === selectedAlternative,
+                              );
+                              return option?.logoUrl ? (
+                                <Image
+                                  src={option.logoUrl}
+                                  alt={option.label}
+                                  width={16}
+                                  height={16}
+                                  className="rounded-sm"
+                                />
+                              ) : null;
+                            })()}
+                            <span className="truncate">
+                              {selectedAlternative} ({caucho}%)
+                            </span>
+                          </div>
+                        )}
+                      {isCustomAlternative && (
+                        <span>Personalizado ({caucho}%)</span>
+                      )}
+                      {!selectedAlternative && (
+                        <span>Seleccioná la alternativa...</span>
+                      )}
+                    </div>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent className="max-h-[80vh] pb-16">
+                  <DrawerHeader>
+                    <DrawerTitle>Seleccionar Alternativa</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 pb-4 overflow-y-auto">
+                    <div className="space-y-2">
+                      {alternativeOptions.map((option) => (
+                        <DrawerClose asChild key={option.value}>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start h-auto p-3 text-left"
+                            onClick={() =>
+                              handleAlternativeSelect(option.value)
+                            }
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedAlternative === option.value
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                            <div className="flex items-center gap-2 min-w-0">
+                              {option.logoUrl && (
+                                <Image
+                                  src={option.logoUrl}
+                                  alt={option.label}
+                                  width={20}
+                                  height={20}
+                                  className="rounded-sm flex-shrink-0"
+                                />
+                              )}
+                              <div className="min-w-0">
+                                <div className="text-sm font-medium truncate">
+                                  {option.label}
+                                </div>
+                                {option.tna && (
+                                  <div className="text-xs text-muted-foreground">
+                                    TNA: {option.tna}%
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </Button>
+                        </DrawerClose>
+                      ))}
+                    </div>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+
+              <Popover open={alternativeOpen} onOpenChange={setAlternativeOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={alternativeOpen}
+                    className="flex-1 justify-between dark:bg-neutral-900 hidden sm:flex"
+                  >
+                    <div className="flex items-center gap-2">
+                      {!isCustomAlternative &&
+                        selectedAlternative &&
+                        selectedAlternative !== "custom" && (
+                          <div className="flex items-center gap-2">
+                            {(() => {
+                              const option = alternativeOptions.find(
+                                (opt) => opt.value === selectedAlternative,
+                              );
+                              return option?.logoUrl ? (
+                                <Image
+                                  src={option.logoUrl}
+                                  alt={option.label}
+                                  width={16}
+                                  height={16}
+                                  className="rounded-sm"
+                                />
+                              ) : null;
+                            })()}
+                            <span className="truncate">
+                              {selectedAlternative} ({caucho}%)
+                            </span>
+                          </div>
+                        )}
+                      {isCustomAlternative && (
+                        <span>Personalizado ({caucho}%)</span>
+                      )}
+                      {!selectedAlternative && (
+                        <span>Seleccioná la alternativa...</span>
+                      )}
+                    </div>
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Buscar alternativa..." />
+                    <CommandList>
+                      <CommandEmpty>
+                        No se encontró la alternativa.
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {alternativeOptions.map((option) => (
+                          <CommandItem
+                            key={option.value}
+                            value={option.value}
+                            onSelect={() => {
+                              handleAlternativeSelect(option.value);
+                              setAlternativeOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                selectedAlternative === option.value
+                                  ? "opacity-100"
+                                  : "opacity-0",
+                              )}
+                            />
+                            <div className="flex items-center gap-2 min-w-0">
+                              {option.logoUrl && (
+                                <Image
+                                  src={option.logoUrl}
+                                  alt={option.label}
+                                  width={16}
+                                  height={16}
+                                  className="rounded-sm flex-shrink-0"
+                                />
+                              )}
+                              <div className="min-w-0">
+                                <span className="truncate">{option.label}</span>
+                                {option.tna && (
+                                  <span className="text-xs text-muted-foreground ml-1">
+                                    ({option.tna}%)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+
+              {isCustomAlternative && (
+                <Input
+                  id="caucho"
+                  type="text"
+                  value={cauchoDisplay}
+                  onChange={(e) => handleCauchoChange(e.target.value)}
+                  className={cn(
+                    "dark:bg-neutral-900 flex-1",
+                    cauchoError && "border-red-500",
+                  )}
+                  placeholder="Ej: 23"
+                />
               )}
-              placeholder="Ej: 23"
-            />
+            </div>
             {cauchoError && (
               <p className="text-sm text-red-500">{cauchoError}</p>
             )}
@@ -341,9 +576,6 @@ export default function FijaCalculator({
         {calculations && (
           <div className="space-y-6 border-t pt-6">
             <div>
-              <h3 className="text-lg font-semibold mb-4">
-                Variables de Cálculo
-              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
@@ -355,10 +587,10 @@ export default function FijaCalculator({
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
-                    Pesos Iniciales
+                    Nominales {selectedTicker}
                   </Label>
                   <div className="text-lg font-medium">
-                    ${formatNumber(calculations.pesosIniciales)}
+                    {formatNumber(calculations.nominales, 0)}
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -371,7 +603,7 @@ export default function FijaCalculator({
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
-                    Monto Alternativa
+                    Monto {selectedAlternative}
                   </Label>
                   <div className="text-lg font-medium">
                     ${formatNumber(calculations.montoCaucho)}
@@ -391,7 +623,7 @@ export default function FijaCalculator({
                     className={`text-lg font-medium ${
                       calculations.diferenciaGanancia >= 0
                         ? "text-green-600"
-                        : "text-red-600"
+                        : "text-blue-600"
                     }`}
                   >
                     ${formatNumber(calculations.diferenciaGanancia)}
@@ -405,7 +637,7 @@ export default function FijaCalculator({
                     className={`text-lg font-medium ${
                       calculations.porDia >= 0
                         ? "text-green-600"
-                        : "text-red-600"
+                        : "text-blue-600"
                     }`}
                   >
                     ${formatNumber(calculations.porDia)}
@@ -419,7 +651,7 @@ export default function FijaCalculator({
                     className={`text-lg font-medium ${
                       calculations.tasaGanancia >= 0
                         ? "text-green-600"
-                        : "text-red-600"
+                        : "text-blue-600"
                     }`}
                   >
                     {formatNumber(calculations.tasaGanancia, 2, "percentage")}
@@ -427,7 +659,7 @@ export default function FijaCalculator({
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
-                    TEA Instrumento
+                    TEA {selectedTicker}
                   </Label>
                   <div className="text-lg font-medium">
                     {formatNumber(calculations.tea, 2, "percentage")}
@@ -435,7 +667,7 @@ export default function FijaCalculator({
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
-                    TEA Alternativa
+                    TEA {selectedAlternative}
                   </Label>
                   <div className="text-lg font-medium">
                     {formatNumber(calculations.teaCaucho, 2, "percentage")}
@@ -448,15 +680,15 @@ export default function FijaCalculator({
               <div className="text-base">
                 {calculations.diferenciaGanancia >= 0 ? (
                   <span className="text-green-600 font-medium">
-                    El instrumento rinde $
+                    {selectedTicker} rinde $
                     {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
-                    más que la alternativa
+                    más que {selectedAlternative}
                   </span>
                 ) : (
-                  <span className="text-red-600 font-medium">
-                    La alternativa rinde $
+                  <span className="text-blue-600 font-medium">
+                    {selectedAlternative} rinde $
                     {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
-                    más que el instrumento
+                    más que {selectedTicker}
                   </span>
                 )}
                 <span className="text-muted-foreground">

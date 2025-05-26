@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatNumber, formatPeriod } from "@/lib/utils";
 import {
   Bar,
   CartesianGrid,
@@ -23,7 +24,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
-import { formatNumber, formatPeriod } from "@/lib/utils";
 
 const chartConfig = {
   situacion1: {

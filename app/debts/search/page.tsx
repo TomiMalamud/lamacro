@@ -4,25 +4,23 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Central de Deudores - Búsqueda",
   description:
-    "Buscar información de deudas registradas en el BCRA por CUIT/CUIL"
+    "Buscar información de deudas registradas en el BCRA por CUIT/CUIL",
 };
-
-// Mark this page as static to improve performance
-export const dynamic = "force-static";
-export const revalidate = false;
 
 export default function DebtSearchPage() {
   return (
     <main className="container mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl text-center font-bold mb-2">Central de Deudores</h1>
+        <h1 className="text-3xl text-center font-bold mb-2">
+          Central de Deudores
+        </h1>
       </div>
 
       <div className="max-w-2xl mx-auto">
@@ -76,3 +74,6 @@ export default function DebtSearchPage() {
     </main>
   );
 }
+
+export const dynamic = "force-static";
+export const revalidate = false;

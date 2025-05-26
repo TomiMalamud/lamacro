@@ -1,4 +1,4 @@
-import { makeBCRARequest } from "../../../../../../lib/bcra-api-helper";
+import { makeBCRARequest } from "@/lib/bcra-api-helper";
 
 export async function GET(
   request: Request,

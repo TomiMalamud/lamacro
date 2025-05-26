@@ -1,15 +1,34 @@
 import CocosLogo from "@/components/cocos-logo";
 import FijaDashboard from "@/components/fija/fija-dashboard";
-import { getBonos, getLetras } from "@/lib/fija";
+import { getBonos, getLetras, getBilleteras } from "@/lib/fija";
 
 export const metadata = {
   title: "Renta Fija",
   description: "Análisis de letras y bonos con cálculos de TNA, TEM y TEA",
 };
 
+async function fetchDataSafely<T>(
+  fetchFn: () => Promise<T>,
+  fallback: T,
+): Promise<T> {
+  try {
+    return await fetchFn();
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return fallback;
+  }
+}
+
 export default async function FijaPage() {
-  const letras = await getLetras();
-  const bonos = await getBonos();
+  const [letras, bonos, billeteras] = await Promise.all([
+    fetchDataSafely(() => getLetras(), []),
+    fetchDataSafely(() => getBonos(), []),
+    fetchDataSafely(() => getBilleteras(), []),
+  ]);
+
+  if (letras.length === 0 && bonos.length === 0 && billeteras.length === 0) {
+    throw new Error("All data sources failed to load");
+  }
 
   return (
     <div className="container mx-auto px-6 md:px-16 py-8">
@@ -20,12 +39,12 @@ export default async function FijaPage() {
             {metadata.description}. Cálculos por{" "}
           </p>
           <a href="https://cocos.capital" target="_blank" rel="noopener">
-            <CocosLogo className="h-8 pb-2 w-auto hidden sm:block" />
+            <CocosLogo className="h-8 pb-2 w-auto hidden sm:block dark:grayscale dark:invert" />
           </a>
         </div>
-        <CocosLogo className="h-8 pb-2 w-auto sm:hidden block mt-2" />
+        <CocosLogo className="h-8 pb-2 w-auto sm:hidden block mt-2 dark:text-white dark:bg-white" />
       </div>
-      <FijaDashboard letras={letras} bonos={bonos} />
+      <FijaDashboard letras={letras} bonos={bonos} billeteras={billeteras} />
     </div>
   );
 }
