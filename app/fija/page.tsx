@@ -42,7 +42,7 @@ export default async function FijaPage() {
             <CocosLogo className="h-8 pb-2 w-auto hidden sm:block dark:grayscale dark:invert" />
           </a>
         </div>
-        <CocosLogo className="h-8 pb-2 w-auto sm:hidden block mt-2 dark:text-white dark:bg-white" />
+        <CocosLogo className="h-8 pb-2 w-auto sm:hidden block mt-2 dark:grayscale dark:invert" />
       </div>
       <FijaDashboard letras={letras} bonos={bonos} billeteras={billeteras} />
     </div>
