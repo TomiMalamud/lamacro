@@ -165,6 +165,7 @@ export default function FijaCalculator({
   const calculations = useMemo(() => {
     if (
       !selectedTicker ||
+      !selectedAlternative ||
       pesosInicialesError ||
       cauchoError ||
       pesosIniciales === 0
@@ -206,6 +207,7 @@ export default function FijaCalculator({
     };
   }, [
     selectedTicker,
+    selectedAlternative,
     pesosIniciales,
     caucho,
     tableData,
