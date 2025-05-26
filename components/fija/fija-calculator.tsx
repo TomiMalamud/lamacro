@@ -371,7 +371,7 @@ export default function FijaCalculator({
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
-                    Monto Caucho
+                    Monto Alternativa
                   </Label>
                   <div className="text-lg font-medium">
                     ${formatNumber(calculations.montoCaucho)}
@@ -435,7 +435,7 @@ export default function FijaCalculator({
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
-                    TEA Caucho
+                    TEA Alternativa
                   </Label>
                   <div className="text-lg font-medium">
                     {formatNumber(calculations.teaCaucho, 2, "percentage")}
@@ -448,15 +448,15 @@ export default function FijaCalculator({
               <div className="text-base">
                 {calculations.diferenciaGanancia >= 0 ? (
                   <span className="text-green-600 font-medium">
-                    El caucho rinde $
+                    El instrumento rinde $
                     {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
-                    más que el instrumento
+                    más que la alternativa
                   </span>
                 ) : (
                   <span className="text-red-600 font-medium">
-                    El instrumento rinde $
+                    La alternativa rinde $
                     {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
-                    más que el caucho
+                    más que el instrumento
                   </span>
                 )}
                 <span className="text-muted-foreground">
