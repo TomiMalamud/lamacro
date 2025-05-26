@@ -20,9 +20,10 @@ export default async function FijaPage() {
             {metadata.description}. Cálculos por{" "}
           </p>
           <a href="https://cocos.capital" target="_blank" rel="noopener">
-            <CocosLogo className="h-8 pb-2 w-auto" />
+            <CocosLogo className="h-8 pb-2 w-auto hidden sm:block" />
           </a>
         </div>
+        <CocosLogo className="h-8 pb-2 w-auto sm:hidden block mt-2" />
       </div>
       <FijaDashboard letras={letras} bonos={bonos} />
     </div>

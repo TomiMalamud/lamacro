@@ -24,7 +24,7 @@ export default function FijaDashboard({ letras, bonos }: FijaDashboardProps) {
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>LECAPs y BONCAPs</CardTitle>
+          <CardTitle>LECAPs, BONCAPs y Duales</CardTitle>
           <CardDescription>
             Tabla completa de letras y bonos con cálculos de TNA, TEM y TEA
           </CardDescription>

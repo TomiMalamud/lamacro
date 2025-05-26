@@ -119,4 +119,28 @@ export const FIJA_TABLE_CONFIG = [
     liquidacionSecundaria: "2025-05-23",
     pagoFinal: 161.1,
   },
+  {
+    ticker: "TTM26",
+    fechaVencimiento: "2026-03-16",
+    liquidacionSecundaria: "2025-05-19",
+    pagoFinal: 135.24,
+  },
+  {
+    ticker: "TTJ26",
+    fechaVencimiento: "2026-06-30",
+    liquidacionSecundaria: "2025-05-19",
+    pagoFinal: 144.63,
+  },
+  {
+    ticker: "TTS26",
+    fechaVencimiento: "2026-09-16",
+    liquidacionSecundaria: "2025-05-19",
+    pagoFinal: 152.08,
+  },
+  {
+    ticker: "TTD26",
+    fechaVencimiento: "2026-12-15",
+    liquidacionSecundaria: "2025-05-19",
+    pagoFinal: 161.14,
+  },
 ];

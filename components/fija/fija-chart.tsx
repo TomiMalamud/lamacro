@@ -100,7 +100,13 @@ function solveLinearSystem(matrix: number[][], vector: number[]): number[] {
 
 export default function FijaChart({ data }: FijaChartProps) {
   const chartData = data
-    .filter((row) => row.px > 0 && row.tem > 0 && row.tna < 1)
+    .filter(
+      (row) =>
+        row.px > 0 &&
+        row.tem > 0 &&
+        row.tna < 1 &&
+        !row.ticker.startsWith("TT"),
+    ) // filtrar duales
     .map((row) => ({
       dias: row.dias,
       tem: row.tem * 100,
@@ -140,6 +146,7 @@ export default function FijaChart({ data }: FijaChartProps) {
   return (
     <ChartContainer config={chartConfig} className="h-[400px] w-full">
       <ComposedChart
+        accessibilityLayer
         data={combinedData}
         margin={{
           top: 20,
