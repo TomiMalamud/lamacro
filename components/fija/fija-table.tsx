@@ -22,6 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface FijaTableProps {
   letras: SecurityData[];
@@ -135,102 +141,104 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
           </SelectContent>
         </Select>
       </div>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="sticky left-0 bg-card dark:bg-[#1C1C1E]">
-              Ticker
-            </TableHead>
-            <TableHead>Tipo</TableHead>
-            <TableHead className="text-center">Vencimiento</TableHead>
-            <TableHead className="text-center">
-              Liquidación Secundaria
-            </TableHead>
-            <TableHead className="text-center">Días</TableHead>
-            <TableHead className="text-center">Meses</TableHead>
-            <TableHead className="text-center">Precio actual</TableHead>
-            <TableHead className="text-center">Pago Final</TableHead>
-            <TableHead className="text-right">
-              <Button
-                variant="ghost"
-                onClick={() => handleSort("tna")}
-                className="h-8"
-              >
-                TNA
-                {getSortIcon("tna")}
-              </Button>
-            </TableHead>
-            <TableHead className="text-right">
-              <Button
-                variant="ghost"
-                onClick={() => handleSort("tem")}
-                className="h-8"
-              >
-                TEM
-                {getSortIcon("tem")}
-              </Button>
-            </TableHead>
-            <TableHead className="text-right">
-              <Button
-                variant="ghost"
-                onClick={() => handleSort("tea")}
-                className="h-8"
-              >
-                TEA
-                {getSortIcon("tea")}
-              </Button>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {tableData.map((row) => (
-            <TableRow key={row.ticker}>
-              <TableCell className="sticky left-0 bg-card dark:bg-[#1C1C1E]">
-                {row.ticker}
-              </TableCell>
-              <TableCell className="text-center">
-                <div className="py-1 px-3 bg-muted rounded-md text-xs">
-                  {getSecurityType(row.ticker)}
-                </div>
-              </TableCell>
-              <TableCell className="text-center text-muted-foreground">
-                {row.fechaVencimiento}
-              </TableCell>
-              <TableCell className="text-center text-muted-foreground">
-                {row.liquiSecu}
-              </TableCell>
-              <TableCell className="text-center text-muted-foreground">
-                {row.dias}
-              </TableCell>
-              <TableCell className="text-center text-muted-foreground">
-                {formatNumber(row.meses)}
-              </TableCell>
-              <TableCell className="text-center text-muted-foreground">
-                {row.px > 0 ? formatNumber(row.px) : "-"}
-              </TableCell>
-              <TableCell className="text-center text-muted-foreground">
-                {formatNumber(row.pagoFinal)}
-              </TableCell>
-              <TableCell className="text-center">
-                {row.px > 0 && row.tna < 1
-                  ? formatNumber(row.tna, 2, "percentage")
-                  : "-"}
-              </TableCell>
-              <TableCell className="text-center">
-                {row.px > 0 && row.meses > 0 && row.tna < 1
-                  ? formatNumber(row.tem, 2, "percentage")
-                  : "-"}
-              </TableCell>
-              <TableCell className="text-center">
-                {row.px > 0 && row.tna < 1
-                  ? formatNumber(row.tea, 2, "percentage")
-                  : "-"}
-              </TableCell>
+      <TooltipProvider>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center">Tipo</TableHead>
+              <TableHead className="sticky left-0 bg-card dark:bg-[#1C1C1E] sm:hidden">
+                Ticker
+              </TableHead>
+              <TableHead className="hidden sm:table-cell">Ticker</TableHead>
+              <TableHead className="text-center">Vencimiento</TableHead>
+              <TableHead className="text-center">Días</TableHead>
+              <TableHead className="text-center">Pago Final</TableHead>
+              <TableHead className="text-center">Precio actual</TableHead>
+              <TableHead className="text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("tna")}
+                  className="h-8"
+                >
+                  TNA
+                  {getSortIcon("tna")}
+                </Button>
+              </TableHead>
+              <TableHead className="text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("tem")}
+                  className="h-8"
+                >
+                  TEM
+                  {getSortIcon("tem")}
+                </Button>
+              </TableHead>
+              <TableHead className="text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("tea")}
+                  className="h-8"
+                >
+                  TEA
+                  {getSortIcon("tea")}
+                </Button>
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {tableData.map((row) => (
+              <TableRow key={row.ticker}>
+                <TableCell className="text-center">
+                  <div className="py-1 px-2 bg-muted rounded-md text-xs">
+                    {getSecurityType(row.ticker)}
+                  </div>
+                </TableCell>
+                <TableCell className="sticky left-0 bg-card dark:bg-[#1C1C1E] sm:hidden">
+                  {row.ticker}
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  {row.ticker}
+                </TableCell>
+                <TableCell className="text-center text-muted-foreground">
+                  {row.fechaVencimiento}
+                </TableCell>
+                <TableCell className="text-center text-muted-foreground">
+                  <Tooltip delayDuration={300}>
+                    <TooltipTrigger className="text-center text-muted-foreground">
+                      {row.dias}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {formatNumber(row.meses)} meses
+                    </TooltipContent>
+                  </Tooltip>
+                </TableCell>
+                <TableCell className="text-center text-muted-foreground">
+                  {formatNumber(row.pagoFinal)}
+                </TableCell>
+                <TableCell className="text-center text-muted-foreground">
+                  {row.px > 0 ? formatNumber(row.px) : "-"}
+                </TableCell>
+                <TableCell className="text-center">
+                  {row.px > 0 && row.tna < 1
+                    ? formatNumber(row.tna, 2, "percentage")
+                    : "-"}
+                </TableCell>
+                <TableCell className="text-center">
+                  {row.px > 0 && row.meses > 0 && row.tna < 1
+                    ? formatNumber(row.tem, 2, "percentage")
+                    : "-"}
+                </TableCell>
+                <TableCell className="text-center">
+                  {row.px > 0 && row.tna < 1
+                    ? formatNumber(row.tea, 2, "percentage")
+                    : "-"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TooltipProvider>
     </div>
   );
 }

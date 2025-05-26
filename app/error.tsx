@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import InlineLink from "@/components/inline-link";
 
 interface ErrorProps {
   error: Error & { digest?: string };
@@ -20,14 +21,7 @@ export default function CarryTradeError({ error, reset }: ErrorProps) {
       </h2>
       <p className="mb-4">
         Avisame de este error por{" "}
-        <a
-          href="https://x.com/tomasmalamud"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline underline-offset-4 hover:decoration-stone-900 hover:text-stone-900 dark:hover:decoration-stone-200 dark:hover:text-stone-200 transition-all duration-300"
-        >
-          X
-        </a>
+        <InlineLink href="https://x.com/tomasmalamud">X</InlineLink>
         {" 🙏"}
       </p>
       <p className="text-muted-foreground mb-1 mt-8">o si no, </p>

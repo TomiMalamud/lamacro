@@ -28,6 +28,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import InlineLink from "../inline-link";
 
 export const DEFAULT_CALL_VALUE_REQUEST: CallValueRequest = {
   target_mean: 0.0154, // 0.1851/12, obtenido de mediana REM dic-26
@@ -89,14 +90,9 @@ export default function CallValueComponent({
             Calculá la prima del call y la distribución de los valores de
             amortización para los bonos TAMAR. Números obtenidos de las
             estimaciones del{" "}
-            <a
-              href="https://www.bcra.gob.ar/PublicacionesEstadisticas/Relevamiento_Expectativas_de_Mercado.asp"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-4 hover:decoration-stone-900 hover:text-stone-900 dark:hover:decoration-stone-200 dark:hover:text-stone-200 transition-all duration-300"
-            >
+            <InlineLink href="https://www.bcra.gob.ar/PublicacionesEstadisticas/Relevamiento_Expectativas_de_Mercado.asp">
               REM
-            </a>{" "}
+            </InlineLink>{" "}
             al 26 de diciembre de 2026.
           </CardDescription>
         </CardHeader>

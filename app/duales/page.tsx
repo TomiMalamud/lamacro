@@ -2,6 +2,7 @@ import CallValueComponent, {
   DEFAULT_CALL_VALUE_REQUEST,
 } from "@/components/duales-tamar/call-value";
 import DualesClient from "@/components/duales-tamar/duales-client";
+import InlineLink from "@/components/inline-link";
 import { getDualBondSimulationData } from "@/lib/duales";
 import { getTamarCallValueData } from "@/lib/tamar-actions";
 
@@ -24,14 +25,9 @@ export default async function CallsPage() {
       <h1 className="text-3xl font-bold mb-2">{metadata.title}</h1>
       <p className="text-muted-foreground mb-8">
         Cálculos hechos por{" "}
-        <a
-          href="https://x.com/JohnGalt_is_www/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline underline-offset-4 hover:decoration-stone-900 hover:text-stone-900 dark:hover:decoration-stone-200 dark:hover:text-stone-200 transition-all duration-300"
-        >
+        <InlineLink href="https://x.com/JohnGalt_is_www/">
           JohnGalt_is_www
-        </a>
+        </InlineLink>
         . Los números son tasas mensuales (%).
       </p>
       <DualesClient

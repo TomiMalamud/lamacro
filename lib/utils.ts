@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { Holidays } from "./fija";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -52,4 +53,24 @@ export function formatPeriod(periodString: string | null): string {
   ];
 
   return `${monthNames[month - 1]} ${year}`;
+}
+
+export function getNextBusinessDay(date: Date = new Date()): Date {
+  const holidayDates = new Set(Holidays.map((h) => h.fecha));
+
+  const nextDay = new Date(date);
+  nextDay.setDate(nextDay.getDate() + 1);
+
+  while (true) {
+    const dayOfWeek = nextDay.getDay();
+    const dateString = nextDay.toISOString().split("T")[0];
+
+    if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayDates.has(dateString)) {
+      break;
+    }
+
+    nextDay.setDate(nextDay.getDate() + 1);
+  }
+
+  return nextDay;
 }

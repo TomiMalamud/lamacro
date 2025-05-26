@@ -7,7 +7,7 @@ import {
   calculateTEM,
   calculateTEA,
 } from "@/lib/fija-calculations";
-import { parseLocalDate } from "@/lib/utils";
+import { parseLocalDate, getNextBusinessDay } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { useMemo } from "react";
 
@@ -29,9 +29,12 @@ export function useFijaData({ letras, bonos }: UseFijaDataProps) {
   };
 
   const tableData = useMemo((): FijaTableRow[] => {
+    const baseDate = getNextBusinessDay();
+
     return FIJA_TABLE_CONFIG.map((config) => {
       const fechaVencimiento = parseLocalDate(config.fechaVencimiento);
-      const liquiSecuDate = parseLocalDate(config.liquidacionSecundaria);
+      const liquiSecuDate =
+        baseDate > fechaVencimiento ? fechaVencimiento : baseDate;
       const px = getPriceForTicker(config.ticker);
 
       const dias = calculateDaysDifference(fechaVencimiento, liquiSecuDate);
@@ -46,7 +49,6 @@ export function useFijaData({ letras, bonos }: UseFijaDataProps) {
       return {
         ticker: config.ticker,
         fechaVencimiento: formatDate(fechaVencimiento, "dd/MM/yyyy"),
-        liquiSecu: formatDate(liquiSecuDate, "dd/MM/yyyy"),
         dias,
         meses,
         px,

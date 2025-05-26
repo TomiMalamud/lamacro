@@ -13,7 +13,6 @@ export interface SecurityData {
 export interface FijaTableRow {
   ticker: string;
   fechaVencimiento: string;
-  liquiSecu: string;
   dias: number;
   meses: number;
   px: number;

@@ -1,3 +1,4 @@
+import InlineLink from "./inline-link";
 import { ThemeToggle } from "./theme-toggle";
 
 export function Footer() {
@@ -7,28 +8,22 @@ export function Footer() {
         <div className="container py-4 px-6 sm:px-16 flex items-center justify-between">
           <div className="text-balance text-sm leading-loose text-muted-foreground md:text-left">
             Creado por{" "}
-            <a
-              href={"https://x.com/tomasmalamud"}
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
+            <InlineLink href={"https://x.com/tomasmalamud"}>
               Tomás Malamud
-            </a>
+            </InlineLink>
             . Código disponible en{" "}
-            <a
-              href={"https://github.com/TomiMalamud/bcraenvivo"}
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium underline underline-offset-4"
-            >
+            <InlineLink href={"https://github.com/TomiMalamud/bcraenvivo"}>
               GitHub
-            </a>
+            </InlineLink>
+            . Utiliza la API del BCRA y de{" "}
+            <InlineLink href="https://data912.com">
+              Milton Casco Data Center
+            </InlineLink>
             .
           </div>
           <ThemeToggle />
         </div>
       </div>
     </footer>
-  )
+  );
 }
