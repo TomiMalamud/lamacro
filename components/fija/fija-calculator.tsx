@@ -216,7 +216,7 @@ export default function FijaCalculator({
   ]);
 
   const tickerOptions = tableData
-    .filter((row) => row.px > 0)
+    .filter((row) => row.px > 0 && row.ticker !== "TO26")
     .map((row) => ({
       value: row.ticker,
       label: `${row.ticker} - ${row.fechaVencimiento} (${row.dias}d)`,
