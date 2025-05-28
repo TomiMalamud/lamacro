@@ -1,6 +1,6 @@
 import CocosLogo from "@/components/cocos-logo";
 import FijaDashboard from "@/components/fija/fija-dashboard";
-import { getBonos, getLetras, getBilleteras } from "@/lib/fija";
+import { getBonos, getLetras, getBilleteras, getFondos } from "@/lib/fija";
 
 export const metadata = {
   title: "Renta Fija",
@@ -20,10 +20,11 @@ async function fetchDataSafely<T>(
 }
 
 export default async function FijaPage() {
-  const [letras, bonos, billeteras] = await Promise.all([
+  const [letras, bonos, billeteras, fondos] = await Promise.all([
     fetchDataSafely(() => getLetras(), []),
     fetchDataSafely(() => getBonos(), []),
     fetchDataSafely(() => getBilleteras(), []),
+    fetchDataSafely(() => getFondos(), []),
   ]);
 
   if (letras.length === 0 && bonos.length === 0 && billeteras.length === 0) {
@@ -44,7 +45,12 @@ export default async function FijaPage() {
         </div>
         <CocosLogo className="h-8 pb-2 w-auto sm:hidden block mt-2 dark:grayscale dark:invert" />
       </div>
-      <FijaDashboard letras={letras} bonos={bonos} billeteras={billeteras} />
+      <FijaDashboard
+        letras={letras}
+        bonos={bonos}
+        billeteras={billeteras}
+        fondos={fondos}
+      />
     </div>
   );
 }

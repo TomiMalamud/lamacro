@@ -33,3 +33,14 @@ export interface ComparatasasOption {
   currency: string;
   fundName?: string;
 }
+
+export interface FundData {
+  nombre: string;
+  patrimonio: number;
+  ultimoVcp: number;
+  penultimoVcp: number;
+  days: number;
+  ultimoDate: string;
+  penultimoDate: string;
+  tna: number;
+}

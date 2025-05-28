@@ -30,6 +30,17 @@ export async function getBilleteras() {
   return filteredData;
 }
 
+export async function getFondos() {
+  const response = await fetch(
+    "https://api.comparatasas.ar/funds/rm?name=Cocos%20Daruma%20Renta%20Mixta%20-%20Clase%20A",
+    {
+      next: { revalidate: 21600 },
+    },
+  );
+  const data = await response.json();
+  return data;
+}
+
 export const Holidays = [
   {
     fecha: "2025-01-01",

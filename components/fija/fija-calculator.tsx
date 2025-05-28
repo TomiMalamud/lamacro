@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/popover";
 import { FIJA_TABLE_CONFIG } from "@/lib/fija-data";
 import { cn, formatNumber } from "@/lib/utils";
-import { FijaTableRow, ComparatasasOption } from "@/types/fija";
+import { FijaTableRow, ComparatasasOption, FundData } from "@/types/fija";
 import { Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -87,9 +87,11 @@ function validateCaucho(value: string): { isValid: boolean; error?: string } {
 export default function FijaCalculator({
   tableData,
   billeteras,
+  fondos,
 }: {
   tableData: FijaTableRow[];
   billeteras: ComparatasasOption[];
+  fondos: FundData[];
 }) {
   const [pesosIniciales, setPesosIniciales] = useState(100000);
   const [pesosInicialesDisplay, setPesosInicialesDisplay] = useState("100.000");
@@ -150,14 +152,27 @@ export default function FijaCalculator({
       setIsCustomAlternative(true);
     } else {
       setIsCustomAlternative(false);
-      const selectedOption = billeteras.find(
+
+      const billeteraOption = billeteras.find(
         (option) => option.prettyName === value,
       );
-      if (selectedOption) {
-        const tnaValue = selectedOption.tna.toString();
+
+      if (billeteraOption) {
+        const tnaValue = billeteraOption.tna.toString();
         setCauchoDisplay(tnaValue);
-        setCaucho(selectedOption.tna);
+        setCaucho(billeteraOption.tna);
         setCauchoError(undefined);
+      } else {
+        const fondoOption = fondos.find(
+          (fondo) => fondo.nombre.replace(" - Clase A", "") === value,
+        );
+
+        if (fondoOption) {
+          const tnaValue = fondoOption.tna.toString();
+          setCauchoDisplay(tnaValue);
+          setCaucho(fondoOption.tna);
+          setCauchoError(undefined);
+        }
       }
     }
   };
@@ -231,7 +246,17 @@ export default function FijaCalculator({
       tna: option.tna,
       logoUrl: option.logoUrl,
     })),
-  ];
+    ...fondos.map((fondo) => ({
+      value: fondo.nombre.replace(" - Clase A", ""),
+      label: fondo.nombre.replace(" - Clase A", ""),
+      tna: parseFloat(fondo.tna.toFixed(2)),
+      logoUrl: "https://compara.b-cdn.net/bancos-png/cocos.png",
+    })),
+  ].sort((a, b) => {
+    if (a.value === "custom") return -1;
+    if (b.value === "custom") return 1;
+    return (b.tna || 0) - (a.tna || 0);
+  });
 
   return (
     <Card>
@@ -395,12 +420,16 @@ export default function FijaCalculator({
                               ) : null;
                             })()}
                             <span className="truncate">
-                              {selectedAlternative} ({caucho}%)
+                              {selectedAlternative} (
+                              {formatNumber(caucho / 100, 2, "percentage")})
                             </span>
                           </div>
                         )}
                       {isCustomAlternative && (
-                        <span>Personalizado ({caucho}%)</span>
+                        <span>
+                          Personalizado (
+                          {formatNumber(caucho / 100, 2, "percentage")})
+                        </span>
                       )}
                       {!selectedAlternative && (
                         <span>Seleccioná la alternativa...</span>
@@ -448,7 +477,12 @@ export default function FijaCalculator({
                                 </div>
                                 {option.tna && (
                                   <div className="text-xs text-muted-foreground">
-                                    TNA: {option.tna}%
+                                    TNA:{" "}
+                                    {formatNumber(
+                                      option.tna / 100,
+                                      2,
+                                      "percentage",
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -489,12 +523,16 @@ export default function FijaCalculator({
                               ) : null;
                             })()}
                             <span className="truncate">
-                              {selectedAlternative} ({caucho}%)
+                              {selectedAlternative} (
+                              {formatNumber(caucho / 100, 2, "percentage")})
                             </span>
                           </div>
                         )}
                       {isCustomAlternative && (
-                        <span>Personalizado ({caucho}%)</span>
+                        <span>
+                          Personalizado (
+                          {formatNumber(caucho / 100, 2, "percentage")})
+                        </span>
                       )}
                       {!selectedAlternative && (
                         <span>Seleccioná la alternativa...</span>
@@ -542,7 +580,13 @@ export default function FijaCalculator({
                                 <span className="truncate">{option.label}</span>
                                 {option.tna && (
                                   <span className="text-xs text-muted-foreground ml-1">
-                                    ({option.tna}%)
+                                    (
+                                    {formatNumber(
+                                      option.tna / 100,
+                                      2,
+                                      "percentage",
+                                    )}
+                                    )
                                   </span>
                                 )}
                               </div>
