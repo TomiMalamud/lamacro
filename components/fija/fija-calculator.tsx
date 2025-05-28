@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,7 +34,7 @@ import {
 } from "@/components/ui/popover";
 import { FIJA_TABLE_CONFIG } from "@/lib/fija";
 import { cn, formatNumber } from "@/lib/utils";
-import { FijaTableRow, ComparatasasOption, FundData } from "@/types/fija";
+import { ComparatasasOption, FijaTableRow, FundData } from "@/types/fija";
 import { Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
@@ -197,8 +198,35 @@ export default function FijaCalculator({
     const precio = selectedData.px;
     const nominales = (pesosIniciales * 100) / precio;
     const alVencimiento = (configData.pagoFinal * nominales) / 100;
-    const montoCaucho =
-      pesosIniciales * Math.pow(1 + caucho / 100 / 365, selectedData.dias);
+
+    let montoCaucho: number;
+    let efectiveAmount = pesosIniciales;
+    let limitExceeded = false;
+    let limitAmount: number | null = null;
+
+    if (selectedAlternative !== "custom" && !isCustomAlternative) {
+      const billeteraOption = billeteras.find(
+        (option) => option.prettyName === selectedAlternative,
+      );
+
+      if (billeteraOption && billeteraOption.limit) {
+        limitAmount = billeteraOption.limit;
+        if (pesosIniciales > billeteraOption.limit) {
+          efectiveAmount = billeteraOption.limit;
+          limitExceeded = true;
+        }
+      }
+    }
+
+    if (limitExceeded && limitAmount) {
+      const limitedReturns =
+        limitAmount * Math.pow(1 + caucho / 100 / 365, selectedData.dias);
+      const excessAmount = pesosIniciales - limitAmount;
+      montoCaucho = limitedReturns + excessAmount;
+    } else {
+      montoCaucho =
+        pesosIniciales * Math.pow(1 + caucho / 100 / 365, selectedData.dias);
+    }
 
     const diferenciaGanancia = alVencimiento - montoCaucho;
     const porDia = diferenciaGanancia / selectedData.dias;
@@ -219,6 +247,9 @@ export default function FijaCalculator({
       tea,
       teaCaucho,
       dias: selectedData.dias,
+      limitExceeded,
+      limitAmount,
+      efectiveAmount,
     };
   }, [
     selectedTicker,
@@ -228,6 +259,8 @@ export default function FijaCalculator({
     tableData,
     pesosInicialesError,
     cauchoError,
+    billeteras,
+    isCustomAlternative,
   ]);
 
   const tickerOptions = tableData
@@ -239,18 +272,26 @@ export default function FijaCalculator({
     .sort((a, b) => a.value.localeCompare(b.value));
 
   const alternativeOptions = [
-    { value: "custom", label: "Personalizado", tna: null, logoUrl: null },
+    {
+      value: "custom",
+      label: "Personalizado",
+      tna: null,
+      logoUrl: null,
+      limit: null,
+    },
     ...billeteras.map((option) => ({
       value: option.prettyName,
       label: option.prettyName,
       tna: option.tna,
       logoUrl: option.logoUrl,
+      limit: option.limit,
     })),
     ...fondos.map((fondo) => ({
       value: fondo.nombre.replace(" - Clase A", ""),
       label: fondo.nombre.replace(" - Clase A", ""),
       tna: parseFloat(fondo.tna.toFixed(2)),
       logoUrl: "https://compara.b-cdn.net/bancos-png/cocos.png",
+      limit: null,
     })),
   ].sort((a, b) => {
     if (a.value === "custom") return -1;
@@ -271,6 +312,7 @@ export default function FijaCalculator({
           </InlineLink>
           , como Mercado Pago, Ualá, Cocos, Plazos Fijos, etc., o usar una tasa
           personalizada.
+          <p>Ojo</p>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -453,39 +495,48 @@ export default function FijaCalculator({
                               handleAlternativeSelect(option.value)
                             }
                           >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedAlternative === option.value
-                                  ? "opacity-100"
-                                  : "opacity-0",
-                              )}
-                            />
-                            <div className="flex items-center gap-2 min-w-0">
-                              {option.logoUrl && (
-                                <Image
-                                  src={option.logoUrl}
-                                  alt={option.label}
-                                  width={20}
-                                  height={20}
-                                  className="rounded-sm flex-shrink-0"
-                                />
-                              )}
-                              <div className="min-w-0">
-                                <div className="text-sm font-medium truncate">
-                                  {option.label}
-                                </div>
-                                {option.tna && (
-                                  <div className="text-xs text-muted-foreground">
-                                    TNA:{" "}
-                                    {formatNumber(
-                                      option.tna / 100,
-                                      2,
-                                      "percentage",
+                            <div className="flex items-center gap-2 justify-between w-full">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {option.logoUrl && (
+                                  <Image
+                                    src={option.logoUrl}
+                                    alt={option.label}
+                                    width={20}
+                                    height={20}
+                                    className="rounded-sm flex-shrink-0"
+                                  />
+                                )}
+                                <div className="min-w-0">
+                                  <div className="text-sm font-medium truncate">
+                                    {option.label}{" "}
+                                    <span className="text-xs ml-4 text-muted-foreground">
+                                      TNA{" "}
+                                      {option.tna
+                                        ? formatNumber(
+                                            option.tna / 100,
+                                            2,
+                                            "percentage",
+                                          )
+                                        : "N/A"}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col gap-1">
+                                    {option.limit && (
+                                      <div className="text-xs text-orange-600">
+                                        Límite: ${formatNumber(option.limit)}
+                                      </div>
                                     )}
                                   </div>
-                                )}
+                                </div>
                               </div>
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedAlternative === option.value
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
                             </div>
                           </Button>
                         </DrawerClose>
@@ -558,38 +609,47 @@ export default function FijaCalculator({
                               setAlternativeOpen(false);
                             }}
                           >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                selectedAlternative === option.value
-                                  ? "opacity-100"
-                                  : "opacity-0",
-                              )}
-                            />
-                            <div className="flex items-center gap-2 min-w-0">
-                              {option.logoUrl && (
-                                <Image
-                                  src={option.logoUrl}
-                                  alt={option.label}
-                                  width={16}
-                                  height={16}
-                                  className="rounded-sm flex-shrink-0"
-                                />
-                              )}
-                              <div className="min-w-0">
-                                <span className="truncate">{option.label}</span>
-                                {option.tna && (
-                                  <span className="text-xs text-muted-foreground ml-1">
-                                    (
-                                    {formatNumber(
-                                      option.tna / 100,
-                                      2,
-                                      "percentage",
-                                    )}
-                                    )
-                                  </span>
+                            <div className="flex items-center gap-2 justify-between w-full">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {option.logoUrl && (
+                                  <Image
+                                    src={option.logoUrl}
+                                    alt={option.label}
+                                    width={16}
+                                    height={16}
+                                    className="rounded-sm flex-shrink-0"
+                                  />
                                 )}
+                                <div className="min-w-0">
+                                  <div className="text-sm font-medium truncate">
+                                    {option.label}{" "}
+                                    <span className="text-xs ml-2 text-muted-foreground">
+                                      {option.tna
+                                        ? formatNumber(
+                                            option.tna / 100,
+                                            2,
+                                            "percentage",
+                                          )
+                                        : "N/A"}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-col gap-1">
+                                    {option.limit && (
+                                      <div className="text-xs text-orange-600">
+                                        Límite: ${formatNumber(option.limit)}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedAlternative === option.value
+                                    ? "opacity-100"
+                                    : "opacity-0",
+                                )}
+                              />
                             </div>
                           </CommandItem>
                         ))}
@@ -621,6 +681,22 @@ export default function FijaCalculator({
 
         {calculations && (
           <div className="space-y-6 border-t pt-6">
+            {calculations &&
+              calculations.limitExceeded &&
+              calculations.limitAmount && (
+                <Alert className="bg-orange-50 dark:bg-yellow-950 border border-orange-200 dark:border-yellow-800 rounded-lg p-3">
+                  <AlertTitle>Ojo!</AlertTitle>
+                  <AlertDescription>
+                    {selectedAlternative} tiene un límite de $
+                    {formatNumber(calculations.limitAmount)}. Solo se aplicará
+                    la tasa del {formatNumber(caucho / 100, 2, "percentage")} a
+                    los primeros ${formatNumber(calculations.limitAmount)}, el
+                    resto ($
+                    {formatNumber(pesosIniciales - calculations.limitAmount)})
+                    no generará intereses.
+                  </AlertDescription>
+                </Alert>
+              )}
             <div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-1">
