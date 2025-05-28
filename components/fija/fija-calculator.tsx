@@ -31,7 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FIJA_TABLE_CONFIG } from "@/lib/fija-data";
+import { FIJA_TABLE_CONFIG } from "@/lib/fija";
 import { cn, formatNumber } from "@/lib/utils";
 import { FijaTableRow, ComparatasasOption, FundData } from "@/types/fija";
 import { Check, ChevronsUpDown } from "lucide-react";

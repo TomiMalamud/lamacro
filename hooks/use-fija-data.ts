@@ -1,12 +1,12 @@
 import { SecurityData, FijaTableRow } from "@/types/fija";
-import { FIJA_TABLE_CONFIG } from "@/lib/fija-data";
+import { FIJA_TABLE_CONFIG } from "@/lib/fija";
 import {
   calculateDaysDifference,
   calculateDays360,
   calculateTNA,
   calculateTEM,
   calculateTEA,
-} from "@/lib/fija-calculations";
+} from "@/lib/fija";
 import { parseLocalDate, getNextBusinessDay } from "@/lib/utils";
 import { formatDate } from "date-fns";
 import { useMemo } from "react";
