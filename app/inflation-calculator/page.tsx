@@ -1,21 +1,44 @@
-"use client";
-
 import { InflationForm } from "@/components/inflation/form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
 
-function InflationCalculatorContent() {
-  const searchParams = useSearchParams();
+interface SearchParams {
+  startMonth?: string;
+  startYear?: string;
+  startValue?: string;
+  endMonth?: string;
+  endYear?: string;
+}
 
-  // Parse URL parameters with fallbacks
-  const startMonth = searchParams.get("startMonth") ? parseInt(searchParams.get("startMonth")!) : undefined;
-  const startYear = searchParams.get("startYear") ? parseInt(searchParams.get("startYear")!) : undefined;
-  const startValue = searchParams.get("startValue") ? parseFloat(searchParams.get("startValue")!) : undefined;
-  const endMonth = searchParams.get("endMonth") ? parseInt(searchParams.get("endMonth")!) : undefined;
-  const endYear = searchParams.get("endYear") ? parseInt(searchParams.get("endYear")!) : undefined;
+interface InflationCalculatorPageProps {
+  searchParams: SearchParams;
+}
+
+export default function InflationCalculatorPage({
+  searchParams,
+}: InflationCalculatorPageProps) {
+  const startMonth = searchParams.startMonth
+    ? parseInt(searchParams.startMonth)
+    : undefined;
+  const startYear = searchParams.startYear
+    ? parseInt(searchParams.startYear)
+    : undefined;
+  const startValue = searchParams.startValue
+    ? parseFloat(searchParams.startValue)
+    : undefined;
+  const endMonth = searchParams.endMonth
+    ? parseInt(searchParams.endMonth)
+    : undefined;
+  const endYear = searchParams.endYear
+    ? parseInt(searchParams.endYear)
+    : undefined;
 
   return (
     <div className="container mx-auto text-center py-8 px-4 md:px-16">
@@ -31,27 +54,27 @@ function InflationCalculatorContent() {
         <CardHeader>
           <CardTitle>Fuente</CardTitle>
           <CardDescription>
-            Este cálculo se basa en datos históricos de la inflación y la actualización de precios con la inflación del BCRA.
+            Este cálculo se basa en datos históricos de la inflación y la
+            actualización de precios con la inflación del BCRA.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p>
-          </p>
-          <Button variant="link" asChild className="text-blue-500 hover:text-blue-600">
-            <Link href="https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp" target="_blank" rel="noopener noreferrer">
+          <p></p>
+          <Button
+            variant="link"
+            asChild
+            className="text-blue-500 hover:text-blue-600"
+          >
+            <Link
+              href="https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Fuente de datos oficial del BCRA
             </Link>
           </Button>
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-export default function InflationCalculatorPage() {
-  return (
-    <Suspense fallback={<div>Cargando...</div>}>
-      <InflationCalculatorContent />
-    </Suspense>
   );
 }
