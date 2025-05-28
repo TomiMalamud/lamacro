@@ -34,7 +34,7 @@ export async function getFondos() {
   const response = await fetch(
     "https://api.comparatasas.ar/funds/rm?name=Cocos%20Daruma%20Renta%20Mixta%20-%20Clase%20A",
     {
-      next: { revalidate: 21600 },
+      next: { revalidate: 300 },
     },
   );
   const data = await response.json();

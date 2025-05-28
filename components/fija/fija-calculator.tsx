@@ -312,7 +312,10 @@ export default function FijaCalculator({
           </InlineLink>
           , como Mercado Pago, Ualá, Cocos, Plazos Fijos, etc., o usar una tasa
           personalizada.
-          <p>Ojo</p>
+          <p className="text-sm text-muted-foreground font-bold">
+            Ojo: hay instrumentos que tienen más riesgo que otros. Sólo los que
+            tienen límite (ej. Ualá) tienen retornos 100% garantizados.
+          </p>
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
