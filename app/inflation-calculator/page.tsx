@@ -9,21 +9,22 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-interface SearchParams {
+type SearchParams = Promise<{
   startMonth?: string;
   startYear?: string;
   startValue?: string;
   endMonth?: string;
   endYear?: string;
-}
+}>;
 
 interface InflationCalculatorPageProps {
   searchParams: SearchParams;
 }
 
-export default function InflationCalculatorPage({
-  searchParams,
-}: InflationCalculatorPageProps) {
+export default async function InflationCalculatorPage(
+  props: InflationCalculatorPageProps,
+) {
+  const searchParams = await props.searchParams;
   const startMonth = searchParams.startMonth
     ? parseInt(searchParams.startMonth)
     : undefined;
