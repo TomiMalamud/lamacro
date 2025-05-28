@@ -6,21 +6,22 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { PostHogProvider } from "./providers";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"]
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
-  subsets: ["latin"]
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   title: {
     template: "%s | La Macro",
-    default: "La Macro - Datos de la Macroeconomía Argentina"
+    default: "La Macro - Datos de la Macroeconomía Argentina",
   },
   description:
     "Central de deudores, inflación, reservas, dólar, tasas, y calculadora de carry trade.",
@@ -36,9 +37,9 @@ export const metadata: Metadata = {
         url: "/opengraph-image.jpg",
         width: 1200,
         height: 630,
-        alt: "La Macro"
-      }
-    ]
+        alt: "La Macro",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -51,22 +52,22 @@ export const metadata: Metadata = {
         url: "/twitter-image.jpg",
         width: 1200,
         height: 630,
-        alt: "La Macro"
-      }
-    ]
-  }
+        alt: "La Macro",
+      },
+    ],
+  },
 };
 
 export const viewport: Viewport = {
   colorScheme: "light dark",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#000000" }
-  ]
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
@@ -86,6 +87,7 @@ export default function RootLayout({
             {children}
             <Footer />
             <Toaster />
+            <SpeedInsights />
           </ThemeProvider>
         </PostHogProvider>
       </body>
