@@ -85,6 +85,12 @@ function validateCaucho(value: string): { isValid: boolean; error?: string } {
   return { isValid: true };
 }
 
+function getAlternativeDisplayName(selectedAlternative: string): string {
+  return selectedAlternative === "custom"
+    ? "Personalizado"
+    : selectedAlternative;
+}
+
 export default function FijaCalculator({
   tableData,
   billeteras,
@@ -465,17 +471,12 @@ export default function FijaCalculator({
                               ) : null;
                             })()}
                             <span className="truncate">
-                              {selectedAlternative} (
+                              {getAlternativeDisplayName(selectedAlternative)} (
                               {formatNumber(caucho / 100, 2, "percentage")})
                             </span>
                           </div>
                         )}
-                      {isCustomAlternative && (
-                        <span>
-                          Personalizado (
-                          {formatNumber(caucho / 100, 2, "percentage")})
-                        </span>
-                      )}
+                      {isCustomAlternative && <span>Personalizado</span>}
                       {!selectedAlternative && (
                         <span>Seleccioná la alternativa...</span>
                       )}
@@ -577,17 +578,12 @@ export default function FijaCalculator({
                               ) : null;
                             })()}
                             <span className="truncate">
-                              {selectedAlternative} (
+                              {getAlternativeDisplayName(selectedAlternative)} (
                               {formatNumber(caucho / 100, 2, "percentage")})
                             </span>
                           </div>
                         )}
-                      {isCustomAlternative && (
-                        <span>
-                          Personalizado (
-                          {formatNumber(caucho / 100, 2, "percentage")})
-                        </span>
-                      )}
+                      {isCustomAlternative && <span>Personalizado</span>}
                       {!selectedAlternative && (
                         <span>Seleccioná la alternativa...</span>
                       )}
@@ -690,11 +686,11 @@ export default function FijaCalculator({
                 <Alert className="bg-orange-50 dark:bg-yellow-950 border border-orange-200 dark:border-yellow-800 rounded-lg p-3">
                   <AlertTitle>Ojo!</AlertTitle>
                   <AlertDescription>
-                    {selectedAlternative} tiene un límite de $
-                    {formatNumber(calculations.limitAmount)}. Solo se aplicará
-                    la tasa del {formatNumber(caucho / 100, 2, "percentage")} a
-                    los primeros ${formatNumber(calculations.limitAmount)}, el
-                    resto ($
+                    {getAlternativeDisplayName(selectedAlternative)} tiene un
+                    límite de ${formatNumber(calculations.limitAmount)}. Solo se
+                    aplicará la tasa del{" "}
+                    {formatNumber(caucho / 100, 2, "percentage")} a los primeros
+                    ${formatNumber(calculations.limitAmount)}, el resto ($
                     {formatNumber(pesosIniciales - calculations.limitAmount)})
                     no generará intereses.
                   </AlertDescription>
@@ -728,7 +724,7 @@ export default function FijaCalculator({
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
-                    Monto {selectedAlternative}
+                    Monto {getAlternativeDisplayName(selectedAlternative)}
                   </Label>
                   <div className="text-lg font-medium">
                     ${formatNumber(calculations.montoCaucho)}
@@ -791,8 +787,8 @@ export default function FijaCalculator({
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <Label className="text-sm text-muted-foreground">
-                    TEA {selectedAlternative}
+                  <Label className="text-sm text-muted-foreground whitespace-nowrap">
+                    TEA {getAlternativeDisplayName(selectedAlternative)}
                   </Label>
                   <div className="text-lg font-medium">
                     {formatNumber(calculations.teaCaucho, 2, "percentage")}
@@ -807,11 +803,11 @@ export default function FijaCalculator({
                   <span className="text-green-600 font-medium">
                     {selectedTicker} rinde $
                     {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
-                    más que {selectedAlternative}
+                    más que {getAlternativeDisplayName(selectedAlternative)}
                   </span>
                 ) : (
                   <span className="text-blue-600 font-medium">
-                    {selectedAlternative} rinde $
+                    {getAlternativeDisplayName(selectedAlternative)} rinde $
                     {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
                     más que {selectedTicker}
                   </span>
