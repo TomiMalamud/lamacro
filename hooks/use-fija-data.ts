@@ -57,7 +57,9 @@ export function useFijaData({ letras, bonos }: UseFijaDataProps) {
         tem,
         tea,
       };
-    }).sort((a, b) => a.dias - b.dias);
+    })
+      .filter((item) => item.dias > 0)
+      .sort((a, b) => a.dias - b.dias);
   }, [letras, bonos, getPriceForTicker]);
 
   return { tableData };
