@@ -1,26 +1,28 @@
 import {
-  ChartArea,
-  Search,
-  Calculator,
-  DollarSign,
   BarChart3,
-  ChartPie,
+  Calculator,
+  ChartArea,
+  DollarSign,
+  LucideIcon,
+  PieChart,
+  Search,
 } from "lucide-react";
 import Link from "next/link";
+import { MobileNav } from "./mobile-nav";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
 } from "./ui/navigation-menu";
-import { LucideIcon } from "lucide-react";
-import { MobileNav } from "./mobile-nav";
 
 interface NavigationLink {
   href: string;
   label: string;
   description: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
+  iconSrc: string;
+  iconAlt: string;
   prefetch?: boolean;
 }
 
@@ -29,14 +31,18 @@ export const navigationLinks: NavigationLink[] = [
     href: "/variables",
     label: "Estadísticas",
     description:
-      "Accedé a las principales estadísticas del BCRA: inflación, reservas, dólar, etc.",
+      "Mirá las principales estadísticas del BCRA: inflación, reservas, dólar, etc.",
     icon: ChartArea,
+    iconSrc: "/trending.png",
+    iconAlt: "Trending chart icon",
   },
   {
     href: "/debts/search",
     label: "Central de Deudores",
     description: "Consultá información sobre deudores del sistema financiero",
     icon: Search,
+    iconSrc: "/magnifying.png",
+    iconAlt: "Magnifying glass icon",
     prefetch: true,
   },
   {
@@ -45,27 +51,34 @@ export const navigationLinks: NavigationLink[] = [
     description:
       "Mirá cuánto vale hoy tu compra, inversión o deuda del pasado.",
     icon: Calculator,
+    iconSrc: "/calculator.png",
+    iconAlt: "Calculator icon",
     prefetch: true,
   },
   {
     href: "/carry-trade",
     label: "Carry Trade",
-    description:
-      "Fijate cuál es el mejor bono para hacer carry trade. Se actualiza casi a tiempo real. ",
+    description: "Fijate cuál es el mejor bono para hacer carry trade.",
     icon: DollarSign,
+    iconSrc: "/money.png",
+    iconAlt: "Money icon",
   },
   {
     href: "/duales",
     label: "Duales TAMAR",
-    description: "Análisis avanzado de duales TAMAR.",
+    description: "Mirá un análisis avanzado de duales TAMAR.",
     icon: BarChart3,
+    iconSrc: "/excel.png",
+    iconAlt: "Excel chart icon",
     prefetch: false,
   },
   {
     href: "/fija",
     label: "Renta Fija",
-    description: "Análisis de letras y bonos con cálculos de TNA, TEM y TEA",
-    icon: ChartPie,
+    description: "Encontrá el mejor bono para invertir en renta fija.",
+    icon: PieChart,
+    iconSrc: "/charts.png",
+    iconAlt: "Charts icon",
   },
 ];
 
