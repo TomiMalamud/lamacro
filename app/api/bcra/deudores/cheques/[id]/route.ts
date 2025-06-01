@@ -21,11 +21,7 @@ export async function GET(
         });
 
         res.on("end", () => {
-          // For cheques endpoint, treat any error status as "no data found"
           if (res.statusCode !== 200) {
-            console.log(
-              `BCRA cheques API returned ${res.statusCode} for ID ${id} - treating as no data`,
-            );
             resolve(
               NextResponse.json(
                 {

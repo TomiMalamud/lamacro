@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
       new URL("https://compara.b-cdn.net/**"),
     ],
   },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 export default nextConfig;

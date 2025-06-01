@@ -1,64 +1,53 @@
 import https, { RequestOptions } from "https";
 import { NextResponse } from "next/server";
-
-// Rate limiting configuration
 const RATE_LIMIT = {
-  maxRequests: 60, // Maximum requests per window
-  timeWindow: 60 * 1000, // Time window in milliseconds (1 minute)
+  maxRequests: 60,
+  timeWindow: 60 * 1000,
   requestQueue: [] as (() => void)[],
   requestCount: 0,
   lastReset: Date.now(),
 };
 
-// Circuit breaker configuration
 const CIRCUIT_BREAKER = {
-  failureThreshold: 5, // Number of failures before opening circuit
-  resetTimeout: 60 * 1000, // Time before attempting to close circuit (1 minute)
+  failureThreshold: 5,
+  resetTimeout: 60 * 1000,
   failures: 0,
   lastFailure: 0,
   isOpen: false,
 };
 
-// Cache configuration
-const CACHE_TTL = 3600 * 1000; // 1 hour in milliseconds (reduced from 12 hours)
-const ERROR_CACHE_TTL = 300 * 1000; // 5 minutes for error caching
+const CACHE_TTL = 3600 * 1000;
+const ERROR_CACHE_TTL = 300 * 1000;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cache: { [key: string]: any } = {};
 
-// Retry configuration
 const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
+const RETRY_DELAY = 1000;
 
-// Cache refresh strategy: Refresh at specific times
-const REFRESH_HOURS = [1, 7, 13, 19]; // 1AM, 7AM, 1PM, 7PM (check several times a day)
+const SIMULATE_API_DOWN = false;
 
-/**
- * Rate limiter implementation
- */
+const REFRESH_HOURS = [1, 7, 13, 19];
+
 function checkRateLimit(): Promise<void> {
   return new Promise((resolve) => {
     const now = Date.now();
 
-    // Reset counter if time window has passed
     if (now - RATE_LIMIT.lastReset >= RATE_LIMIT.timeWindow) {
       RATE_LIMIT.requestCount = 0;
       RATE_LIMIT.lastReset = now;
     }
 
-    // If under rate limit, resolve immediately
     if (RATE_LIMIT.requestCount < RATE_LIMIT.maxRequests) {
       RATE_LIMIT.requestCount++;
       resolve();
       return;
     }
 
-    // Queue the request
     RATE_LIMIT.requestQueue.push(() => {
       RATE_LIMIT.requestCount++;
       resolve();
     });
 
-    // Set timeout to process queue
     setTimeout(
       () => {
         const nextRequest = RATE_LIMIT.requestQueue.shift();
@@ -69,9 +58,6 @@ function checkRateLimit(): Promise<void> {
   });
 }
 
-/**
- * Circuit breaker check
- */
 function checkCircuitBreaker(): void {
   if (!CIRCUIT_BREAKER.isOpen) return;
 
@@ -85,21 +71,15 @@ function checkCircuitBreaker(): void {
   throw new Error("Circuit breaker is open - too many recent failures");
 }
 
-/**
- * Check if cache needs to be refreshed based on time
- */
 function shouldRefreshCache(timestamp: number): boolean {
   const now = new Date();
   const lastCacheDate = new Date(timestamp);
 
-  // If cache is older than maximum TTL, refresh it
   if (now.getTime() - timestamp >= CACHE_TTL) return true;
 
-  // Check if we've passed any of our refresh hours since the last cache
   const currentHour = now.getHours();
   const lastCacheHour = lastCacheDate.getHours();
 
-  // If it's a different day, refresh
   if (
     now.getDate() !== lastCacheDate.getDate() ||
     now.getMonth() !== lastCacheDate.getMonth() ||
@@ -108,7 +88,6 @@ function shouldRefreshCache(timestamp: number): boolean {
     return true;
   }
 
-  // Check if we've passed any of our refresh checkpoints
   for (const hour of REFRESH_HOURS) {
     if (lastCacheHour < hour && currentHour >= hour) {
       return true;
@@ -118,9 +97,6 @@ function shouldRefreshCache(timestamp: number): boolean {
   return false;
 }
 
-/**
- * Creates standard request options for BCRA API
- */
 export function createBCRARequestOptions(path: string): RequestOptions {
   return {
     hostname: "api.bcra.gob.ar",
@@ -153,27 +129,25 @@ export async function makeBCRADataRequest(
   retryCount = 0,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
-  // Generate cache key from options
   const cacheKey = `BCRA_data_${options.hostname}_${options.path}`;
 
-  // Check cache
   if (cache[cacheKey]) {
     if (cache[cacheKey].error) {
       if (Date.now() - cache[cacheKey].timestamp < ERROR_CACHE_TTL) {
-        console.log(`Using cached error for ${options.path}`);
         throw new Error(cache[cacheKey].error.message);
       }
     } else if (!shouldRefreshCache(cache[cacheKey].timestamp)) {
-      console.log(`Using cached data for ${options.path}`);
       return cache[cacheKey].data;
     }
   }
 
   try {
-    // Check circuit breaker
+    if (SIMULATE_API_DOWN) {
+      throw new Error("Simulated BCRA API failure - API appears to be down");
+    }
+
     checkCircuitBreaker();
 
-    // Apply rate limiting
     await checkRateLimit();
 
     return new Promise((resolve, reject) => {
@@ -187,7 +161,6 @@ export async function makeBCRADataRequest(
             CIRCUIT_BREAKER.isOpen = true;
           }
 
-          // Cache the error
           cache[cacheKey] = {
             timestamp: Date.now(),
             error,
@@ -204,10 +177,8 @@ export async function makeBCRADataRequest(
         res.on("end", () => {
           try {
             const jsonData = JSON.parse(data);
-            // Reset circuit breaker on success
             CIRCUIT_BREAKER.failures = 0;
 
-            // Cache the successful response
             cache[cacheKey] = {
               timestamp: Date.now(),
               data: jsonData,
@@ -269,25 +240,19 @@ export async function makeBCRADataRequest(
       req.setTimeout(15000);
     });
   } catch (error) {
-    // Handle retries
     if (retryCount < MAX_RETRIES) {
-      console.log(
-        `Retrying request (attempt ${retryCount + 1}/${MAX_RETRIES})`,
-      );
       await new Promise((resolve) =>
         setTimeout(resolve, RETRY_DELAY * (retryCount + 1)),
       );
       return makeBCRADataRequest(options, errorMessage, retryCount + 1);
     }
 
-    // Update circuit breaker
     CIRCUIT_BREAKER.failures++;
     CIRCUIT_BREAKER.lastFailure = Date.now();
     if (CIRCUIT_BREAKER.failures >= CIRCUIT_BREAKER.failureThreshold) {
       CIRCUIT_BREAKER.isOpen = true;
     }
 
-    // Cache the error
     cache[cacheKey] = {
       timestamp: Date.now(),
       error,
@@ -303,20 +268,15 @@ export async function makeBCRADataRequest(
 export async function makeBCRARequest(path: string): Promise<Response> {
   const cacheKey = `BCRA_route_${path}`;
 
-  // Check cache
   if (cache[cacheKey]) {
     if (cache[cacheKey].error) {
       if (Date.now() - cache[cacheKey].timestamp < ERROR_CACHE_TTL) {
-        console.log(`Using cached error for ${path}`);
         return NextResponse.json(
           { error: cache[cacheKey].error.message },
           { status: 500 },
         );
       }
     } else if (!shouldRefreshCache(cache[cacheKey].timestamp)) {
-      console.log(`Using cached data for ${path}`);
-
-      // Calculate time left until next refresh
       const cacheAge = Math.floor(
         (Date.now() - cache[cacheKey].timestamp) / 1000,
       );
@@ -335,9 +295,7 @@ export async function makeBCRARequest(path: string): Promise<Response> {
   return new Promise<Response>((resolve) => {
     const requestOptions = createBCRARequestOptions(path);
 
-    // Use https.get with the configured options
     const req = https.get(requestOptions, (res) => {
-      // Handle unauthorized errors
       if (res.statusCode === 401) {
         console.error("UNAUTHORIZED: BCRA API returned 401");
         const response = NextResponse.json(
@@ -350,7 +308,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
           { status: 401 },
         );
 
-        // Cache the error
         cache[cacheKey] = {
           timestamp: Date.now(),
           error: new Error("BCRA API unauthorized access"),
@@ -360,7 +317,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
         return;
       }
 
-      // Handle not found errors
       if (res.statusCode === 404) {
         console.error("NOT FOUND: BCRA API returned 404");
         const response = NextResponse.json(
@@ -372,7 +328,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
           { status: 404 },
         );
 
-        // Cache the error
         cache[cacheKey] = {
           timestamp: Date.now(),
           error: new Error("BCRA API resource not found"),
@@ -384,23 +339,18 @@ export async function makeBCRARequest(path: string): Promise<Response> {
 
       let data = "";
 
-      // Collect data chunks
       res.on("data", (chunk) => {
         data += chunk;
       });
-
-      // Process complete response
       res.on("end", () => {
         try {
           const jsonData = JSON.parse(data);
 
-          // Cache the successful response
           cache[cacheKey] = {
             timestamp: Date.now(),
             data: jsonData,
           };
 
-          // Set cache headers for browsers and CDNs
           const maxAge = Math.floor(CACHE_TTL / 1000);
 
           resolve(
@@ -416,7 +366,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
           console.error("Error parsing JSON:", error);
           console.error("First 100 chars of data:", data.substring(0, 100));
 
-          // Cache the error
           cache[cacheKey] = {
             timestamp: Date.now(),
             error: new Error("Failed to parse BCRA data"),
@@ -427,7 +376,7 @@ export async function makeBCRARequest(path: string): Promise<Response> {
               {
                 error: "Failed to parse BCRA data",
                 details: error instanceof Error ? error.message : String(error),
-                rawData: data.substring(0, 500), // First 500 chars to avoid huge responses
+                rawData: data.substring(0, 500),
               },
               { status: 500 },
             ),
@@ -435,11 +384,9 @@ export async function makeBCRARequest(path: string): Promise<Response> {
         }
       });
 
-      // Handle response errors
       res.on("error", (error) => {
         console.error("Response error:", error);
 
-        // Cache the error
         cache[cacheKey] = {
           timestamp: Date.now(),
           error: new Error("Error in BCRA API response"),
@@ -457,11 +404,9 @@ export async function makeBCRARequest(path: string): Promise<Response> {
       });
     });
 
-    // Handle request errors
     req.on("error", (error) => {
       console.error("Request error:", error);
 
-      // Cache the error
       cache[cacheKey] = {
         timestamp: Date.now(),
         error: new Error("Failed to fetch BCRA data"),
@@ -478,12 +423,10 @@ export async function makeBCRARequest(path: string): Promise<Response> {
       );
     });
 
-    // Handle request timeout
     req.on("timeout", () => {
       console.error("Request timed out");
       req.destroy();
 
-      // Cache the error
       cache[cacheKey] = {
         timestamp: Date.now(),
         error: new Error("BCRA API request timed out"),

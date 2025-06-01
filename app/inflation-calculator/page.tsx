@@ -9,48 +9,11 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 
-type SearchParams = Promise<{
-  startMonth?: string;
-  startYear?: string;
-  startValue?: string;
-  endMonth?: string;
-  endYear?: string;
-}>;
-
-interface InflationCalculatorPageProps {
-  searchParams: SearchParams;
-}
-
-export default async function InflationCalculatorPage(
-  props: InflationCalculatorPageProps,
-) {
-  const searchParams = await props.searchParams;
-  const startMonth = searchParams.startMonth
-    ? parseInt(searchParams.startMonth)
-    : undefined;
-  const startYear = searchParams.startYear
-    ? parseInt(searchParams.startYear)
-    : undefined;
-  const startValue = searchParams.startValue
-    ? parseFloat(searchParams.startValue)
-    : undefined;
-  const endMonth = searchParams.endMonth
-    ? parseInt(searchParams.endMonth)
-    : undefined;
-  const endYear = searchParams.endYear
-    ? parseInt(searchParams.endYear)
-    : undefined;
-
+export default function InflationCalculatorPage() {
   return (
     <div className="container mx-auto text-center py-8 px-4 md:px-16">
       <h1 className="text-3xl font-bold mb-6">Calculadora de Inflación</h1>
-      <InflationForm
-        defaultStartMonth={startMonth}
-        defaultStartYear={startYear}
-        defaultStartValue={startValue}
-        defaultEndMonth={endMonth}
-        defaultEndYear={endYear}
-      />
+      <InflationForm />
       <Card className="mt-4">
         <CardHeader>
           <CardTitle>Fuente</CardTitle>

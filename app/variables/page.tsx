@@ -1,6 +1,6 @@
 import BCRADashboard from "@/components/bcra/dashboard";
 import { fetchBCRADirect } from "@/lib/bcra-fetch";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Clock } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -49,6 +49,21 @@ export default async function Stats() {
 
   return (
     <main className="min-h-screen mx-auto px-6 sm:px-16">
+      <div className="container mx-auto pt-8">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock size={12} />
+            Se actualiza una vez por día
+          </div>
+          <h1 className="text-4xl font-bold text-primary tracking-tight">
+            Estadísticas BCRA
+          </h1>
+          <p className="text-primary ">
+            Variables económicas, monetarias y cambiarias del Banco Central de
+            la República Argentina.
+          </p>
+        </div>
+      </div>
       <BCRADashboard initialVariables={data?.results ?? []} />
     </main>
   );
