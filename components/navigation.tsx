@@ -72,7 +72,7 @@ export const navigationLinks: NavigationLink[] = [
 export function Navigation() {
   return (
     <nav className="border-b bg-background">
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
         <MobileNav />
 
         <div className="flex items-center sm:flex-initial flex-1 justify-center sm:justify-start">
