@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -10,8 +9,9 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { useState } from "react";
 import { navigationLinks } from "./navigation";
+import { Button } from "./ui/button";
 
 export function MobileNav() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -37,11 +37,12 @@ export function MobileNav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-2xl font-medium"
+                className="flex items-center space-x-4 text-xl font-medium"
                 prefetch={link.prefetch}
                 onClick={handleLinkClick}
               >
-                {link.label}
+                {link.icon && <link.icon className="h-4 w-4" />}
+                <span>{link.label}</span>
               </Link>
             ))}
           </div>
