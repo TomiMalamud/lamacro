@@ -36,14 +36,6 @@ import InflationCalculator, {
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
 
-interface InflationFormProps {
-  defaultStartMonth?: number;
-  defaultStartYear?: number;
-  defaultStartValue?: number;
-  defaultEndMonth?: number;
-  defaultEndYear?: number;
-}
-
 interface ResponsiveSelectProps {
   value: number;
   onValueChange: (value: number) => void;
@@ -141,20 +133,34 @@ function ResponsiveSelect({
   );
 }
 
-export function InflationForm({
-  defaultStartMonth = new Date().getMonth() + 1,
-  defaultStartYear = new Date().getFullYear() - 1,
-  defaultStartValue = 1000,
-  defaultEndMonth = new Date().getMonth() + 1,
-  defaultEndYear = new Date().getFullYear(),
-}: InflationFormProps) {
+export function InflationForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [startMonth, setStartMonth] = useState<number>(defaultStartMonth);
-  const [startYear, setStartYear] = useState<number>(defaultStartYear);
-  const [startValue, setStartValue] = useState<number>(defaultStartValue);
-  const [endMonth, setEndMonth] = useState<number>(defaultEndMonth);
-  const [endYear, setEndYear] = useState<number>(defaultEndYear);
+
+  const getDefaultValue = (param: string, fallback: number) => {
+    const value = searchParams.get(param);
+    return value
+      ? param === "startValue"
+        ? parseFloat(value)
+        : parseInt(value)
+      : fallback;
+  };
+
+  const [startMonth, setStartMonth] = useState<number>(() =>
+    getDefaultValue("startMonth", new Date().getMonth() + 1),
+  );
+  const [startYear, setStartYear] = useState<number>(() =>
+    getDefaultValue("startYear", new Date().getFullYear() - 1),
+  );
+  const [startValue, setStartValue] = useState<number>(() =>
+    getDefaultValue("startValue", 1000),
+  );
+  const [endMonth, setEndMonth] = useState<number>(() =>
+    getDefaultValue("endMonth", new Date().getMonth() + 1),
+  );
+  const [endYear, setEndYear] = useState<number>(() =>
+    getDefaultValue("endYear", new Date().getFullYear()),
+  );
   const [result, setResult] = useState<InflationResultType | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [error, setError] = useState<string | null>(null);
