@@ -1,65 +1,16 @@
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
-import {
-  BarChart3,
-  Calculator,
-  ChartArea,
-  ChartPie,
-  DollarSign,
-  Search,
-} from "lucide-react";
 import Link from "next/link";
+import { navigationLinks } from "./navigation";
 
 export default function LinksFeed() {
-  const features = [
-    {
-      title: "Estadísticas",
-      description:
-        "Accedé a las principales estadísticas del BCRA: inflación, reservas, dólar, etc.",
-      icon: ChartArea,
-      href: "/variables",
-    },
-    {
-      title: "Central de Deudores",
-      description: "Consultá información sobre deudores del sistema financiero",
-      icon: Search,
-      href: "/debts/search",
-    },
-    {
-      title: "Calculadora de Inflación",
-      description:
-        "Mirá cuánto vale hoy tu compra, inversión o deuda del pasado.",
-      icon: Calculator,
-      href: "/inflation-calculator",
-    },
-    {
-      title: "Carry Trade",
-      description:
-        "Fijate cuál es el mejor bono para hacer carry trade. Se actualiza casi a tiempo real. ",
-      icon: DollarSign,
-      href: "/carry-trade",
-    },
-    {
-      title: "Duales TAMAR",
-      description: "Análisis avanzado de duales TAMAR.",
-      icon: BarChart3,
-      href: "/duales",
-    },
-    {
-      title: "Renta Fija",
-      description: "Análisis de letras y bonos con cálculos de TNA, TEM y TEA",
-      icon: ChartPie,
-      href: "/fija",
-    },
-  ];
-
   return (
     <div className="py-8">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:max-w-4xl">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {features.map((feature) => (
+            {navigationLinks.map((feature) => (
               <Link
-                key={feature.title}
+                key={feature.label}
                 href={feature.href}
                 className="block transition-transform"
               >
@@ -72,7 +23,7 @@ export default function LinksFeed() {
                       />
                     </div>
                     <h3 className="mt-4 text-lg font-semibold leading-7 text-gray-900 dark:text-gray-50">
-                      {feature.title}
+                      {feature.label}
                     </h3>
                     <CardDescription className="text-sm text-gray-600 dark:text-gray-400">
                       {feature.description}

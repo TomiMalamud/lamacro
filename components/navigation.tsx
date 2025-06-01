@@ -1,20 +1,81 @@
-import { Menu } from "lucide-react";
+import {
+  ChartArea,
+  Search,
+  Calculator,
+  DollarSign,
+  BarChart3,
+  ChartPie,
+} from "lucide-react";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { Drawer, DrawerClose, DrawerContent, DrawerTrigger } from "./ui/drawer";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
 } from "./ui/navigation-menu";
+import { LucideIcon } from "lucide-react";
+import { MobileNav } from "./mobile-nav";
+
+interface NavigationLink {
+  href: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+  prefetch?: boolean;
+}
+
+export const navigationLinks: NavigationLink[] = [
+  {
+    href: "/variables",
+    label: "Estadísticas",
+    description:
+      "Accedé a las principales estadísticas del BCRA: inflación, reservas, dólar, etc.",
+    icon: ChartArea,
+  },
+  {
+    href: "/debts/search",
+    label: "Central de Deudores",
+    description: "Consultá información sobre deudores del sistema financiero",
+    icon: Search,
+    prefetch: true,
+  },
+  {
+    href: "/inflation-calculator",
+    label: "Calculadora de Inflación",
+    description:
+      "Mirá cuánto vale hoy tu compra, inversión o deuda del pasado.",
+    icon: Calculator,
+    prefetch: true,
+  },
+  {
+    href: "/carry-trade",
+    label: "Carry Trade",
+    description:
+      "Fijate cuál es el mejor bono para hacer carry trade. Se actualiza casi a tiempo real. ",
+    icon: DollarSign,
+  },
+  {
+    href: "/duales",
+    label: "Duales TAMAR",
+    description: "Análisis avanzado de duales TAMAR.",
+    icon: BarChart3,
+    prefetch: false,
+  },
+  {
+    href: "/fija",
+    label: "Renta Fija",
+    description: "Análisis de letras y bonos con cálculos de TNA, TEM y TEA",
+    icon: ChartPie,
+  },
+];
 
 export function Navigation() {
   return (
     <nav className="border-b bg-background">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center">
+        <MobileNav />
+
+        <div className="flex items-center sm:flex-initial flex-1 justify-center sm:justify-start">
           <Link href="/" className="flex items-center" prefetch={true}>
             <span className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r dark:from-blue-400 dark:via-yellow-100 dark:to-blue-400 from-blue-500 via-sky-400 to-blue-500">
               La Macro
@@ -25,127 +86,19 @@ export function Navigation() {
         <div className="hidden sm:flex">
           <NavigationMenu className="ml-2 text-left">
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/variables" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Estadísticas
+              {navigationLinks.map((link) => (
+                <NavigationMenuItem key={link.href}>
+                  <NavigationMenuLink asChild className="font-medium">
+                    <Link href={link.href} prefetch={link.prefetch}>
+                      {link.label}
+                    </Link>
                   </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link
-                  href="/debts/search"
-                  prefetch={true}
-                  legacyBehavior
-                  passHref
-                >
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Central de Deudores
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link
-                  href="/inflation-calculator"
-                  prefetch={true}
-                  legacyBehavior
-                  passHref
-                >
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Calculadora de Inflación
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/carry-trade" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Carry Trade
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/duales" legacyBehavior passHref prefetch={false}>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Duales TAMAR
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link href="/fija" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Renta Fija
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
+                </NavigationMenuItem>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-
-        <div className="sm:hidden">
-          <Drawer>
-            <DrawerTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Menu className="h-4 w-4" />
-              </Button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <div className="mx-auto w-full pb-16 pt-6 px-4 max-w-sm">
-                <nav className="flex flex-col space-y-8">
-                  <DrawerClose asChild>
-                    <Link
-                      href="/variables"
-                      className="text-lg font-medium hover:underline"
-                    >
-                      Estadísticas
-                    </Link>
-                  </DrawerClose>
-                  <DrawerClose asChild>
-                    <Link
-                      href="/debts/search"
-                      prefetch={true}
-                      className="text-lg font-medium hover:underline"
-                    >
-                      Central de Deudores
-                    </Link>
-                  </DrawerClose>
-                  <DrawerClose asChild>
-                    <Link
-                      href="/inflation-calculator"
-                      className="text-lg font-medium hover:underline"
-                    >
-                      Calculadora de Inflación
-                    </Link>
-                  </DrawerClose>
-                  <DrawerClose asChild>
-                    <Link
-                      href="/carry-trade"
-                      className="text-lg font-medium hover:underline"
-                    >
-                      Carry Trade
-                    </Link>
-                  </DrawerClose>
-                  <DrawerClose asChild>
-                    <Link
-                      href="/duales"
-                      className="text-lg font-medium hover:underline"
-                      prefetch={false}
-                    >
-                      Duales TAMAR
-                    </Link>
-                  </DrawerClose>
-                  <DrawerClose asChild>
-                    <Link
-                      href="/fija"
-                      className="text-lg font-medium hover:underline"
-                    >
-                      Renta Fija
-                    </Link>
-                  </DrawerClose>
-                </nav>
-              </div>
-            </DrawerContent>
-          </Drawer>
-        </div>
+        <div className="sm:hidden w-10"></div>
       </div>
     </nav>
   );
