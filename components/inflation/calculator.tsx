@@ -1,5 +1,3 @@
-// This component handles the calculation logic for inflation
-// Using historical data and BCRA API for recent data
 import historicalInflation from "@/lib/historical-inflation.json";
 import { fetchVariableTimeSeries, BCRAResponse } from "@/lib/bcra-fetch";
 import { useEffect, useState } from "react";
@@ -282,7 +280,6 @@ const InflationCalculator = (
   };
 };
 
-// React component version that uses hooks - use this in React components
 export const InflationCalculatorComponent = (
   props: InflationCalculatorProps,
 ): InflationResult => {

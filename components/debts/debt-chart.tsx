@@ -128,7 +128,7 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
       <ComposedChart
         accessibilityLayer
         data={chartData}
-        margin={{ top: 0, right: 0, left: 0, bottom: 60 }}
+        margin={{ top: 0, right: 0, left: -10, bottom: 60 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis

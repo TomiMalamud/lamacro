@@ -1,14 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  XAxis,
-  YAxis
-} from "recharts";
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "../ui/chart";
 import { getMonthName, useInflationData } from "./calculator";
 
 interface ChartData {
@@ -27,8 +26,8 @@ interface InflationChartProps {
 const chartConfig = {
   value: {
     label: "Evolución",
-    color: "hsl(var(--chart-2))"
-  }
+    color: "hsl(var(--chart-2))",
+  },
 } satisfies ChartConfig;
 
 export function InflationChart({
@@ -36,7 +35,7 @@ export function InflationChart({
   startYear,
   startValue,
   endMonth,
-  endYear
+  endYear,
 }: InflationChartProps) {
   const { inflationData } = useInflationData();
 
@@ -80,19 +79,21 @@ export function InflationChart({
 
   return (
     <ChartContainer config={chartConfig} className="h-[300px] w-full my-12">
-      <AreaChart data={chartData}
+      <AreaChart
+        data={chartData}
         accessibilityLayer
         margin={{
-          left: 12,
-          right: 12,
-        }}>
+          left: -10,
+          right: 0,
+        }}
+      >
         <CartesianGrid vertical={false} />
         <XAxis
           dataKey="date"
           tickLine={false}
           axisLine={false}
           tickMargin={8}
-          interval='equidistantPreserveStart'
+          interval="equidistantPreserveStart"
           tickFormatter={(value) => {
             const [month, year] = value.split(" ");
             return `${month.slice(0, 3)}-${year.slice(2)}`;
@@ -112,16 +113,16 @@ export function InflationChart({
           content={<ChartTooltipContent indicator="line" />}
         />
         <defs>
-              <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-value)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-value)"
-                  stopOpacity={0.1}
+          <linearGradient id="fillValue" x1="0" y1="0" x2="0" y2="1">
+            <stop
+              offset="5%"
+              stopColor="var(--color-value)"
+              stopOpacity={0.8}
+            />
+            <stop
+              offset="95%"
+              stopColor="var(--color-value)"
+              stopOpacity={0.1}
             />
           </linearGradient>
         </defs>
@@ -135,4 +136,4 @@ export function InflationChart({
       </AreaChart>
     </ChartContainer>
   );
-} 
+}
