@@ -25,7 +25,7 @@ export default async function AccionesPage() {
       <div className="mb-8 space-y-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock size={12} />
-          Datos nuevos cada una hora
+          Se actualiza al cierre de la rueda
         </div>
         <h1 className="text-3xl font-bold">{metadata.title}</h1>
         <p className="text-muted-foreground">{metadata.description}</p>

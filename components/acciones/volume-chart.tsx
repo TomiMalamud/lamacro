@@ -45,7 +45,7 @@ export function VolumeChart({ acciones }: VolumeChartProps) {
           tickFormatter={(value) => `${value / 1000000}M`}
         />
         <CartesianGrid vertical={false} />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+        <ChartTooltip content={<ChartTooltipContent />} />
         <Bar dataKey="volume" radius={4} fill="hsl(var(--primary))">
           <LabelList
             position="top"

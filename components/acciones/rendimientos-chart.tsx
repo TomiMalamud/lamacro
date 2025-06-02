@@ -95,7 +95,6 @@ export function AccionesChart({ acciones }: AccionesChartProps) {
         <CartesianGrid vertical={false} />
         <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" />
         <ChartTooltip
-          cursor={false}
           content={
             <ChartTooltipContent
               formatter={(value, name) => (
