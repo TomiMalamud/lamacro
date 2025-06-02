@@ -1,18 +1,17 @@
+"use client";
+
 import { Accion } from "@/lib/acciones";
 import { cn, formatNumber } from "@/lib/utils";
-import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardDescription,
-} from "../ui/card";
+import { useState } from "react";
+import { Card, CardContent } from "../ui/card";
 
 interface GainersLosersProps {
   acciones: Accion[];
 }
 
 export function GainersLosers({ acciones }: GainersLosersProps) {
+  const [showAbsolute, setShowAbsolute] = useState(false);
+
   const gainers = acciones
     .filter((accion) => accion.pct_change > 0)
     .sort((a, b) => b.pct_change - a.pct_change)
@@ -22,6 +21,10 @@ export function GainersLosers({ acciones }: GainersLosersProps) {
     .filter((accion) => accion.pct_change < 0)
     .sort((a, b) => a.pct_change - b.pct_change)
     .slice(0, 5);
+
+  const calculateAbsoluteChange = (accion: Accion) => {
+    return (accion.c * accion.pct_change) / 100;
+  };
 
   const renderAccionList = (
     acciones: Accion[],
@@ -43,19 +46,39 @@ export function GainersLosers({ acciones }: GainersLosersProps) {
             <div className="flex justify-between">
               <span className="font-semibold">{accion.symbol}</span>
               <span className="font-bold">
-                {formatNumber(accion.c, 2, "number", false)}
+                $ {formatNumber(accion.c, 2, "number", false)}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">
                 {accion.name}
               </span>
-              <span
-                className={`font-bold text-xs text-white ${colorClass} px-2 py-0.5 rounded-md`}
+              <button
+                onClick={() => setShowAbsolute(!showAbsolute)}
+                className={`font-bold text-xs text-white ${colorClass} px-2 py-0.5 rounded-md hover:opacity-80 transition-opacity cursor-pointer`}
               >
-                {accion.pct_change > 0 ? "+" : ""}
-                {formatNumber(accion.pct_change / 100, 2, "percentage")}
-              </span>
+                {showAbsolute ? (
+                  <>
+                    {accion.pct_change > 0 ? "+" : ""}
+                    {formatNumber(
+                      calculateAbsoluteChange(accion),
+                      2,
+                      "number",
+                      false,
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {accion.pct_change > 0 ? "+" : ""}
+                    {formatNumber(
+                      accion.pct_change / 100,
+                      2,
+                      "percentage",
+                      false,
+                    )}
+                  </>
+                )}
+              </button>
             </div>
           </div>
         ))}
@@ -75,11 +98,7 @@ export function GainersLosers({ acciones }: GainersLosersProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Top 5 Ganadores y Perdedores</CardTitle>
-        <CardDescription>De la última rueda</CardDescription>
-      </CardHeader>
-      <CardContent className="gap-8 md:gap-16 grid grid-cols-1 md:grid-cols-2">
+      <CardContent className="pt-8 gap-8 md:gap-16 grid grid-cols-1 md:grid-cols-2">
         {renderAccionList(gainers, "Ganadores", "bg-[#35C759]")}
         {renderAccionList(losers, "Perdedores", "bg-[#FF3B2F]")}
       </CardContent>

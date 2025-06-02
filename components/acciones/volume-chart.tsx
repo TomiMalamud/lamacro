@@ -50,9 +50,8 @@ export function VolumeChart({ acciones }: VolumeChartProps) {
           <LabelList
             position="top"
             dataKey="ticker"
-            fillOpacity={1}
-            angle={-90}
-            offset={20}
+            className="hidden lg:block fill-muted-foreground"
+            offset={12}
           />
         </Bar>
       </BarChart>

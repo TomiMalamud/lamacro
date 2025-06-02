@@ -1,13 +1,7 @@
-import { AccionesChart } from "@/components/acciones/rendimientos-chart";
 import { GainersLosers } from "@/components/acciones/gainers-losers";
+import { AccionesChart } from "@/components/acciones/rendimientos-chart";
 import { VolumeChart } from "@/components/acciones/volume-chart";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAccionesWithYTD } from "@/lib/acciones";
 import { Clock } from "lucide-react";
 
@@ -25,7 +19,7 @@ export default async function AccionesPage() {
       <div className="mb-8 space-y-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock size={12} />
-          Se actualiza al cierre de la rueda
+          Se actualiza cada 20 minutos
         </div>
         <h1 className="text-3xl font-bold">{metadata.title}</h1>
         <p className="text-muted-foreground">{metadata.description}</p>
@@ -40,13 +34,14 @@ export default async function AccionesPage() {
           </CardContent>
         </Card>
         <div className="block sm:hidden space-y-8">
-          <div>
-            <h2 className="text-lg font-bold mb-2">
+          <div className="space-y-1 mt-12">
+            <h2 className="text-lg font-bold">
               Rendimientos del Panel Líder en {year}
             </h2>
             <p className="text-sm text-muted-foreground">
-              Se muestran las 6 mejores y las 6 peores acciones. Para ver todas,
-              entrá desde la compu.
+              Se muestran las 6 mejores y las 6 peores acciones.
+              <br />
+              Para ver todas, entrá desde la compu.
             </p>
           </div>
           <AccionesChart acciones={acciones} />
@@ -55,9 +50,6 @@ export default async function AccionesPage() {
         <Card className="hidden sm:block col-span-2">
           <CardHeader>
             <CardTitle>Volumen diario</CardTitle>
-            <CardDescription>
-              Volumen de acciones negociadas en la última rueda
-            </CardDescription>
           </CardHeader>
           <CardContent className="h-full">
             <VolumeChart acciones={acciones} />
@@ -71,3 +63,6 @@ export default async function AccionesPage() {
     </div>
   );
 }
+
+export const dynamic = "force-static";
+export const revalidate = 1200;

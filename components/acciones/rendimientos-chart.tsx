@@ -107,7 +107,10 @@ export function AccionesChart({ acciones }: AccionesChartProps) {
                       Number(value) < 0 && "text-[var(--negative)]",
                     )}
                   >
-                    {value}
+                    {value.toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                     <span className="text-muted-foreground font-normal">%</span>
                   </div>
                 </div>

@@ -23,7 +23,7 @@ type AccionWithoutYTD = RawAccionData & {
 export async function getAcciones() {
   try {
     const response = await fetch("https://data912.com/live/arg_stocks", {
-      next: { revalidate: 3600 },
+      next: { revalidate: 1200 },
     });
     const data = await response.json();
     return data;

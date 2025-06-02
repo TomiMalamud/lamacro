@@ -22,9 +22,7 @@ export function formatNumber(
 
   if (type === "percentage") {
     const percentageValue = value * 100;
-    const isPercentageInteger = percentageValue % 1 === 0;
-    const percentageDecimals = isPercentageInteger ? 0 : decimals;
-    return `${percentageValue.toLocaleString("es-AR", { minimumFractionDigits: percentageDecimals, maximumFractionDigits: percentageDecimals })}%`;
+    return `${percentageValue.toLocaleString("es-AR", { minimumFractionDigits: actualDecimals, maximumFractionDigits: actualDecimals })}%`;
   }
   return value.toLocaleString("es-AR", {
     minimumFractionDigits: actualDecimals,
