@@ -23,7 +23,6 @@ export default function InflationCalculatorPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p></p>
           <Button
             variant="link"
             asChild

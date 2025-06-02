@@ -666,7 +666,16 @@ export function VariableTimeSeriesChart({
                   className="w-full h-[350px] aspect-auto"
                 >
                   {chartType === "bar" ? (
-                    <BarChart data={combinedChartData} accessibilityLayer>
+                    <BarChart
+                      data={combinedChartData}
+                      accessibilityLayer
+                      margin={{
+                        top: 0,
+                        right: 0,
+                        left: -30,
+                        bottom: 10,
+                      }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis
                         dataKey="fecha"
@@ -721,7 +730,15 @@ export function VariableTimeSeriesChart({
                       )}
                     </BarChart>
                   ) : (
-                    <LineChart data={combinedChartData}>
+                    <LineChart
+                      data={combinedChartData}
+                      margin={{
+                        top: 0,
+                        right: 0,
+                        left: -30,
+                        bottom: 10,
+                      }}
+                    >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis
                         dataKey="fecha"

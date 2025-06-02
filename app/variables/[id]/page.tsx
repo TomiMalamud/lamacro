@@ -26,17 +26,14 @@ export async function generateStaticParams() {
   ];
 }
 
-// Page component for variable details
 export default async function VariableDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // Since params is a Promise, we need to await it
   const resolvedParams = await params;
   const id = parseInt(resolvedParams.id);
 
-  // Validate ID
   if (isNaN(id)) {
     return notFound();
   }
@@ -62,7 +59,7 @@ export default async function VariableDetailPage({
 // Skeleton loader for the variable detail
 function VariableDetailSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:px-16 px-6">
       <div className="h-10 w-2/3 bg-muted rounded animate-pulse"></div>
       <Card>
         <CardHeader>

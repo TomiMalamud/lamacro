@@ -10,7 +10,7 @@ import {
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { navigationLinks } from "./navigation";
+import { navMain } from "./navigation";
 import { Button } from "./ui/button";
 
 export function MobileNav() {
@@ -29,21 +29,28 @@ export function MobileNav() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-10/12">
-          <SheetHeader>
+          <SheetHeader className="px-6">
             <SheetTitle>Menú</SheetTitle>
           </SheetHeader>
-          <div className="flex flex-col space-y-6 p-4">
-            {navigationLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="flex items-center space-x-4 text-xl font-medium"
-                prefetch={link.prefetch}
-                onClick={handleLinkClick}
-              >
-                {link.icon && <link.icon className="h-4 w-4" />}
-                <span>{link.label}</span>
-              </Link>
+          <div className="flex flex-col gap-12 p-6 ">
+            {navMain.map((group) => (
+              <div key={group.title} className="flex flex-col gap-4">
+                <span className="text-muted-foreground text-sm font-medium">
+                  {group.title}
+                </span>
+                {group.items.map((item) => (
+                  <Link
+                    key={item.url}
+                    href={item.url}
+                    className="flex items-center space-x-4 text-xl font-medium"
+                    prefetch={item.prefetch}
+                    onClick={handleLinkClick}
+                  >
+                    {item.icon && <item.icon className="h-4 w-4" />}
+                    <span>{item.title}</span>
+                  </Link>
+                ))}
+              </div>
             ))}
           </div>
         </SheetContent>

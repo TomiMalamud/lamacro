@@ -15,9 +15,10 @@ export function formatNumber(
   value: number,
   decimals: number = 2,
   type: "percentage" | "number" = "number",
+  removeDecimals: boolean = true,
 ): string {
   const isInteger = value % 1 === 0;
-  const actualDecimals = isInteger ? 0 : decimals;
+  const actualDecimals = removeDecimals && isInteger ? 0 : decimals;
 
   if (type === "percentage") {
     const percentageValue = value * 100;
