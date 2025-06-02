@@ -6,7 +6,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Accion } from "@/lib/acciones";
-import { fetchVariableTimeSeries } from "@/lib/bcra-fetch";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import {
@@ -28,37 +27,13 @@ const chartConfig = {
 
 interface AccionesChartProps {
   acciones: Accion[];
+  inflacion: number;
 }
 
-async function calculateAccumulatedInflation(): Promise<number> {
-  try {
-    const today = new Date().toISOString().split("T")[0];
-    const response = await fetchVariableTimeSeries(27, "2025-01-01", today);
-
-    if (!response.results || response.results.length === 0) {
-      return 0;
-    }
-
-    let accumulatedInflation = 1;
-    response.results.forEach((item) => {
-      const monthlyRate = item.valor / 100;
-      accumulatedInflation *= 1 + monthlyRate;
-    });
-
-    return (accumulatedInflation - 1) * 100;
-  } catch (error) {
-    console.error("Error fetching inflation data:", error);
-    return 0;
-  }
-}
-
-export function AccionesChart({ acciones }: AccionesChartProps) {
-  const [inflationRate, setInflationRate] = useState<number>(0);
+export function AccionesChart({ acciones, inflacion }: AccionesChartProps) {
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   useEffect(() => {
-    calculateAccumulatedInflation().then(setInflationRate);
-
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -79,18 +54,24 @@ export function AccionesChart({ acciones }: AccionesChartProps) {
     ? [...allData.slice(0, 6), ...allData.slice(-6)]
     : allData;
 
+  const minReturn = Math.min(...chartData.map((d) => d.ytdReturn));
+  const maxReturn = Math.max(...chartData.map((d) => d.ytdReturn));
+  const yAxisMin = Math.min(minReturn, 0) - 5;
+  const yAxisMax = Math.max(maxReturn, inflacion) + 5;
+
   return (
     <ChartContainer config={chartConfig} className="max-h-[700px]">
       <BarChart
         accessibilityLayer
         data={chartData}
-        margin={{ top: 20, right: 0, bottom: 20, left: -20 }}
+        margin={{ top: 20, right: 10, bottom: 20, left: -20 }}
       >
         <XAxis dataKey="ticker" />
         <YAxis
           dataKey="ytdReturn"
-          tickFormatter={(value) => `${value}%`}
+          tickFormatter={(value) => `${value.toFixed(0)}%`}
           tickCount={10}
+          domain={[yAxisMin, yAxisMax]}
         />
         <CartesianGrid vertical={false} />
         <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" />
@@ -119,11 +100,11 @@ export function AccionesChart({ acciones }: AccionesChartProps) {
           }
         />
         <ReferenceLine
-          y={inflationRate}
+          y={inflacion}
           stroke="hsl(var(--muted-foreground))"
           strokeDasharray="5 5"
           label={{
-            value: `Inflación: ${inflationRate.toFixed(1)}%`,
+            value: `Inflación: ${inflacion.toFixed(1)}%`,
             position: "top",
           }}
         />

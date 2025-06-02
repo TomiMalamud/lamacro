@@ -1,3 +1,5 @@
+import { fetchVariableTimeSeries } from "./bcra-fetch";
+
 interface RawAccionData {
   symbol: string;
   q_bid: number;
@@ -19,6 +21,27 @@ type AccionWithoutYTD = RawAccionData & {
   name: null;
   ytdReturn: null;
 };
+
+export async function calculateAccumulatedInflation(): Promise<number> {
+  try {
+    const today = new Date().toISOString().split("T")[0];
+    const response = await fetchVariableTimeSeries(27, "2025-01-01", today);
+
+    if (!response.results || response.results.length === 0) {
+      return 0;
+    }
+
+    let accumulatedInflation = 1;
+    response.results.forEach((item) => {
+      const monthlyRate = item.valor / 100;
+      accumulatedInflation *= 1 + monthlyRate;
+    });
+    return Number(((accumulatedInflation - 1) * 100).toFixed(1));
+  } catch (error) {
+    console.error("Error fetching inflation data:", error);
+    return 0;
+  }
+}
 
 export async function getAcciones() {
   try {

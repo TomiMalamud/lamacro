@@ -2,7 +2,10 @@ import { GainersLosers } from "@/components/acciones/gainers-losers";
 import { AccionesChart } from "@/components/acciones/rendimientos-chart";
 import { VolumeChart } from "@/components/acciones/volume-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAccionesWithYTD } from "@/lib/acciones";
+import {
+  calculateAccumulatedInflation,
+  getAccionesWithYTD,
+} from "@/lib/acciones";
 import { Clock } from "lucide-react";
 
 export const metadata = {
@@ -13,7 +16,7 @@ export const metadata = {
 export default async function AccionesPage() {
   const acciones = await getAccionesWithYTD();
   const year = new Date().getFullYear();
-
+  const inflacion = await calculateAccumulatedInflation();
   return (
     <div className="container mx-auto px-6 md:px-16 py-8">
       <div className="mb-8 space-y-2">
@@ -30,7 +33,7 @@ export default async function AccionesPage() {
             <CardTitle>Rendimientos del Panel Líder en {year}</CardTitle>
           </CardHeader>
           <CardContent>
-            <AccionesChart acciones={acciones} />
+            <AccionesChart acciones={acciones} inflacion={inflacion} />
           </CardContent>
         </Card>
         <div className="block sm:hidden space-y-8">
@@ -44,7 +47,7 @@ export default async function AccionesPage() {
               Para ver todas, entrá desde la compu.
             </p>
           </div>
-          <AccionesChart acciones={acciones} />
+          <AccionesChart acciones={acciones} inflacion={inflacion} />
         </div>
         <GainersLosers acciones={acciones} />
         <Card className="hidden sm:block col-span-2">
