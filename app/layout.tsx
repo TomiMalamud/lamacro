@@ -32,14 +32,6 @@ export const metadata: Metadata = {
     locale: "es_AR",
     url: "https://lamacro.ar",
     siteName: "La Macro",
-    images: [
-      {
-        url: "/opengraph-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "La Macro",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -47,14 +39,6 @@ export const metadata: Metadata = {
     description:
       "Central de deudores, inflación, reservas, dólar, tasas, y calculadora de carry trade.",
     creator: "@tomasmalamud",
-    images: [
-      {
-        url: "/twitter-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "La Macro",
-      },
-    ],
   },
 };
 
