@@ -26,7 +26,6 @@ export const metadata: Metadata = {
   description:
     "Central de deudores, inflación, reservas, dólar, tasas, y calculadora de carry trade.",
   authors: [{ name: "Tomas Malamud" }],
-  metadataBase: new URL("https://lamacro.ar"),
   openGraph: {
     type: "website",
     locale: "es_AR",
