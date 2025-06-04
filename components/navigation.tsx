@@ -90,7 +90,7 @@ export const navMain: NavigationGroup[] = [
       },
       {
         title: "Central de Deudores",
-        url: "/debts/search",
+        url: "/deudores",
         description:
           "Consultá información sobre deudores del sistema financiero",
         icon: Search,

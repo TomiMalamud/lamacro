@@ -1,3 +1,5 @@
+import { makeBCRARequest } from "./bcra-api-helper";
+
 interface DeudaEntidad {
   entidad: string | null;
   situacion: number | null;
@@ -88,16 +90,9 @@ export interface ChequeResponse {
 
 export async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const url = `${baseUrl}/api/bcra/deudores/${id}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 86400 },
-    });
+    const response = await makeBCRARequest(
+      `/centraldedeudores/v1.0/Deudas/${id}`,
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -117,16 +112,9 @@ export async function fetchHistorial(
   id: string,
 ): Promise<HistorialResponse | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const url = `${baseUrl}/api/bcra/deudores/historicas/${id}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 86400 },
-    });
+    const response = await makeBCRARequest(
+      `/centraldedeudores/v1.0/Deudas/Historicas/${id}`,
+    );
 
     if (!response.ok) {
       if (response.status === 404) {
@@ -144,16 +132,9 @@ export async function fetchHistorial(
 
 export async function fetchCheques(id: string): Promise<ChequeResponse | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const url = `${baseUrl}/api/bcra/deudores/cheques/${id}`;
-
-    const response = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 86400 },
-    });
+    const response = await makeBCRARequest(
+      `/centraldedeudores/v1.0/Deudas/Historicas/${id}`,
+    );
 
     if (!response.ok) {
       if (response.status === 404) {

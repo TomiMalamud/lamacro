@@ -7,6 +7,15 @@ const nextConfig: NextConfig = {
       new URL("https://compara.b-cdn.net/**"),
     ],
   },
+  redirects: async () => {
+    return [
+      {
+        source: "/debts/search",
+        destination: "/deudores",
+        permanent: true,
+      },
+    ];
+  },
   logging: {
     fetches: {
       fullUrl: true,

@@ -1,6 +1,5 @@
 import { GainersLosers } from "@/components/acciones/gainers-losers";
 import { AccionesChart } from "@/components/acciones/rendimientos-chart";
-import { VolumeChart } from "@/components/acciones/volume-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   calculateAccumulatedInflation,
@@ -50,18 +49,6 @@ export default async function AccionesPage() {
           <AccionesChart acciones={acciones} inflacion={inflacion} />
         </div>
         <GainersLosers acciones={acciones} />
-        <Card className="hidden sm:block col-span-2">
-          <CardHeader>
-            <CardTitle>Volumen diario</CardTitle>
-          </CardHeader>
-          <CardContent className="h-full">
-            <VolumeChart acciones={acciones} />
-          </CardContent>
-        </Card>
-        <div className="block sm:hidden space-y-4">
-          <h2 className="text-lg font-bold">Volumen diario</h2>
-          <VolumeChart acciones={acciones} />
-        </div>
       </div>
     </div>
   );
