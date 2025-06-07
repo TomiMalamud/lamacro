@@ -60,8 +60,7 @@ export default async function AccionesPage() {
           <CardHeader>
             <CardTitle>Más activos</CardTitle>
             <CardDescription>
-              Las acciones con mayor volumen de transacciones durante la sesión
-              actual.
+              Acciones con mayor volumen de transacciones
             </CardDescription>
           </CardHeader>
           <CardContent className="h-full">

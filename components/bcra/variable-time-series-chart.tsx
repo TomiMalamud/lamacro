@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { BCRAVariable } from "@/lib/bcra-fetch";
 import { getVariableDataForRange } from "@/lib/actions";
-import { cn } from "@/lib/utils";
+import { BCRAVariable } from "@/lib/bcra-fetch";
+import { cn, formatDateAR, formatNumber } from "@/lib/utils";
 import { endOfDay, format, startOfDay, subMonths, subYears } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -32,7 +32,7 @@ import {
   Loader,
   TableIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useState, startTransition } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 import {
   Bar,
@@ -44,15 +44,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { toast } from "sonner";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
-import { toast } from "sonner";
-import { formatDate } from "date-fns";
-import { formatNumber } from "@/lib/utils";
 
 // Extended interface for chart data with comparison values
 interface ChartDataWithComparison extends BCRAVariable {
@@ -427,7 +425,7 @@ export function VariableTimeSeriesChart({
       const csvContent = [
         headers.join(","),
         ...combinedChartData.map((row) => {
-          const date = formatDate(row.fecha, "dd/MM/yyyy");
+          const date = formatDateAR(row.fecha);
           const currentValue = formatNumber(row.valor).replace(",", ".");
 
           return showComparison && row.prevValor !== undefined
@@ -703,7 +701,7 @@ export function VariableTimeSeriesChart({
                           return [`${formatNumber(value)}`, label];
                         }}
                         labelFormatter={(label) =>
-                          formatDate(label as string, "dd/MM/yyyy")
+                          formatDateAR(label as string)
                         }
                         cursor={false}
                         content={
@@ -775,7 +773,7 @@ export function VariableTimeSeriesChart({
                           return [`${formatNumber(value)}`, label];
                         }}
                         labelFormatter={(label) =>
-                          formatDate(label as string, "dd/MM/yyyy")
+                          formatDateAR(label as string)
                         }
                         cursor={false}
                         content={
@@ -836,9 +834,7 @@ export function VariableTimeSeriesChart({
 
                       return (
                         <TableRow key={row.fecha}>
-                          <TableCell>
-                            {formatDate(row.fecha, "dd/MM/yyyy")}
-                          </TableCell>
+                          <TableCell>{formatDateAR(row.fecha)}</TableCell>
                           <TableCell className="text-right font-medium">
                             {formatNumber(row.valor)}
                           </TableCell>
@@ -884,7 +880,7 @@ export function VariableTimeSeriesChart({
       <div className="text-xs text-muted-foreground text-center">
         Mostrando {chartData.length} registros • Último dato:{" "}
         {chartData[chartData.length - 1]?.fecha
-          ? formatDate(chartData[chartData.length - 1].fecha, "dd/MM/yyyy")
+          ? formatDateAR(chartData[chartData.length - 1].fecha)
           : "N/A"}
         {stats && ` • Promedio: ${formatNumber(stats.average, 2)}`}
         {stats &&

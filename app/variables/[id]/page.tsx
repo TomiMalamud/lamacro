@@ -4,7 +4,8 @@ import { VariableDetailClient } from "@/components/bcra/variable-detail-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchBCRADirect, fetchVariableTimeSeries } from "@/lib/bcra-fetch";
-import { format, formatDate, subMonths } from "date-fns";
+import { formatDateAR } from "@/lib/utils";
+import { format, subMonths } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -108,8 +109,7 @@ async function VariableDetail({ id }: { id: number }) {
           {variableDescription.replace("n.a.", "TNA").replace("e.a.", "TEA")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Última actualización:{" "}
-          {formatDate(latestDataPoint.fecha, "dd/MM/yyyy")}
+          Última actualización: {formatDateAR(latestDataPoint.fecha)}
         </p>
 
         <VariableDetailClient

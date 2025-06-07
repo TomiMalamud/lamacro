@@ -1,6 +1,5 @@
 import { ChequeResponse } from "@/lib/debts";
-import { formatNumber } from "@/lib/utils";
-import { formatDate } from "date-fns";
+import { formatDateAR, formatNumber } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -9,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import { Skeleton } from "../ui/skeleton";
 import {
   Table,
   TableBody,
@@ -17,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Skeleton } from "../ui/skeleton";
 
 export default function DebtCheques({
   id,
@@ -62,12 +61,12 @@ export default function DebtCheques({
                         <TableRow key={chequeIndex}>
                           <TableCell>{cheque.nroCheque}</TableCell>
                           <TableCell>
-                            {formatDate(cheque.fechaRechazo, "dd/MM/yyyy")}
+                            {formatDateAR(cheque.fechaRechazo)}
                           </TableCell>
                           <TableCell>{formatNumber(cheque.monto, 2)}</TableCell>
                           {cheque.fechaPago && (
                             <TableCell>
-                              {formatDate(cheque.fechaPago, "dd/MM/yyyy")}
+                              {formatDateAR(cheque.fechaPago)}
                             </TableCell>
                           )}
                           <TableCell>
