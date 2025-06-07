@@ -6,8 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BCRAVariable } from "@/lib/bcra-fetch";
-import { formatNumber } from "@/lib/utils";
-import { formatDate } from "date-fns";
+import { formatDateAR, formatNumber } from "@/lib/utils";
 import Link from "next/link";
 
 interface VariableCardProps {
@@ -35,7 +34,7 @@ export function VariableCard({
             {variable.descripcion.replace("n.a.", "TNA").replace("e.a.", "TEA")}
           </CardTitle>
           <CardDescription>
-            Últ. act: {formatDate(variable.fecha, "dd/MM/yyyy")}
+            Últ. act: {formatDateAR(variable.fecha)}
           </CardDescription>
         </CardHeader>
         <CardContent className="grow flex flex-col justify-end">

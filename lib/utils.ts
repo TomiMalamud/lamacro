@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { formatDate, parseISO } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import { Holidays } from "./fija";
 
@@ -6,9 +7,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function parseLocalDate(dateString: string): Date {
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year, month - 1, day);
+export function formatDateAR(date: string): string {
+  return formatDate(parseISO(date), "dd/MM/yyyy");
 }
 
 export function formatNumber(

@@ -1,14 +1,14 @@
-import { SecurityData, FijaTableRow } from "@/types/fija";
-import { FIJA_TABLE_CONFIG } from "@/lib/fija";
 import {
-  calculateDaysDifference,
   calculateDays360,
-  calculateTNA,
-  calculateTEM,
+  calculateDaysDifference,
   calculateTEA,
+  calculateTEM,
+  calculateTNA,
+  FIJA_TABLE_CONFIG,
 } from "@/lib/fija";
-import { parseLocalDate, getNextBusinessDay } from "@/lib/utils";
-import { formatDate } from "date-fns";
+import { formatDateAR, getNextBusinessDay } from "@/lib/utils";
+import { FijaTableRow, SecurityData } from "@/types/fija";
+import { parseISO } from "date-fns";
 import { useMemo } from "react";
 
 interface UseFijaDataProps {
@@ -32,7 +32,7 @@ export function useFijaData({ letras, bonos }: UseFijaDataProps) {
     const baseDate = getNextBusinessDay();
 
     return FIJA_TABLE_CONFIG.map((config) => {
-      const fechaVencimiento = parseLocalDate(config.fechaVencimiento);
+      const fechaVencimiento = parseISO(config.fechaVencimiento);
       const liquiSecuDate =
         baseDate > fechaVencimiento ? fechaVencimiento : baseDate;
       const px = getPriceForTicker(config.ticker);
@@ -48,7 +48,7 @@ export function useFijaData({ letras, bonos }: UseFijaDataProps) {
 
       return {
         ticker: config.ticker,
-        fechaVencimiento: formatDate(fechaVencimiento, "dd/MM/yyyy"),
+        fechaVencimiento: formatDateAR(fechaVencimiento.toISOString()),
         dias,
         meses,
         px,

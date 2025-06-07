@@ -5,8 +5,7 @@ import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BCRAVariable } from "@/lib/bcra-fetch";
-import { formatNumber } from "@/lib/utils";
-import { formatDate } from "date-fns";
+import { formatDateAR, formatNumber } from "@/lib/utils";
 import { Download, Loader, Search } from "lucide-react";
 import { useState } from "react";
 
@@ -103,7 +102,7 @@ export default function BCRADashboard({
       const csvContent = [
         headers.join(","),
         ...sectionVariables.map((variable) => {
-          const date = formatDate(variable.fecha, "dd/MM/yyyy");
+          const date = formatDateAR(variable.fecha);
           const value = formatNumber(variable.valor).replace(",", ".");
           return [variable.descripcion.replace(/,/g, ";"), date, value].join(
             ",",
