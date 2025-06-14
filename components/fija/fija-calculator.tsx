@@ -467,6 +467,7 @@ export default function FijaCalculator({
                                   width={16}
                                   height={16}
                                   className="rounded-sm"
+                                  unoptimized
                                 />
                               ) : null;
                             })()}
@@ -508,6 +509,7 @@ export default function FijaCalculator({
                                     width={20}
                                     height={20}
                                     className="rounded-sm flex-shrink-0"
+                                    unoptimized
                                   />
                                 )}
                                 <div className="min-w-0">
@@ -574,6 +576,7 @@ export default function FijaCalculator({
                                   width={16}
                                   height={16}
                                   className="rounded-sm"
+                                  unoptimized
                                 />
                               ) : null;
                             })()}
@@ -617,6 +620,7 @@ export default function FijaCalculator({
                                     width={16}
                                     height={16}
                                     className="rounded-sm flex-shrink-0"
+                                    unoptimized
                                   />
                                 )}
                                 <div className="min-w-0">
