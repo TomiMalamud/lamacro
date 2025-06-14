@@ -25,9 +25,8 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ShareCalculationDialog } from "./share-calculation-dialog";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import InflationCalculator, {
   getMonthName,
@@ -35,6 +34,7 @@ import InflationCalculator, {
 } from "./calculator";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
+import { ShareCalculationDialog } from "./share-calculation-dialog";
 
 interface ResponsiveSelectProps {
   value: number;
@@ -134,7 +134,6 @@ function ResponsiveSelect({
 }
 
 export function InflationForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const getDefaultValue = (param: string, fallback: number) => {
@@ -244,25 +243,6 @@ export function InflationForm() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Update URL when values change
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
-    params.set("startMonth", startMonth.toString());
-    params.set("startYear", startYear.toString());
-    params.set("startValue", startValue.toString());
-    params.set("endMonth", endMonth.toString());
-    params.set("endYear", endYear.toString());
-    router.replace(`/inflation-calculator?${params.toString()}`);
-  }, [
-    startMonth,
-    startYear,
-    startValue,
-    endMonth,
-    endYear,
-    router,
-    searchParams,
-  ]);
-
   return (
     <>
       <Card>
@@ -367,7 +347,13 @@ export function InflationForm() {
         </CardContent>
         {result && result.totalIncrement > 0 && (
           <CardFooter className="flex justify-center pb-4">
-            <ShareCalculationDialog />
+            <ShareCalculationDialog
+              startMonth={startMonth}
+              startYear={startYear}
+              startValue={startValue}
+              endMonth={endMonth}
+              endYear={endYear}
+            />
           </CardFooter>
         )}
       </Card>

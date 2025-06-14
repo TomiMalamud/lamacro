@@ -25,17 +25,45 @@ import { cn } from "@/lib/utils";
 import { Copy, Share } from "lucide-react";
 import * as React from "react";
 import { FaWhatsapp, FaXTwitter } from "react-icons/fa6";
+import { useRouter } from "next/navigation";
 
-export function ShareCalculationDialog() {
+interface ShareCalculationDialogProps {
+  startMonth: number;
+  startYear: number;
+  startValue: number;
+  endMonth: number;
+  endYear: number;
+}
+
+export function ShareCalculationDialog({
+  startMonth,
+  startYear,
+  startValue,
+  endMonth,
+  endYear,
+}: ShareCalculationDialogProps) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const router = useRouter();
 
   const handleShare = async (type: "copy" | "twitter" | "whatsapp") => {
-    const currentUrl = window.location.href;
+    // Update URL with current form values first
+    const params = new URLSearchParams();
+    params.set("startMonth", startMonth.toString());
+    params.set("startYear", startYear.toString());
+    params.set("startValue", startValue.toString());
+    params.set("endMonth", endMonth.toString());
+    params.set("endYear", endYear.toString());
+
+    const newUrl = `/inflation-calculator?${params.toString()}`;
+    router.replace(newUrl, { scroll: false });
+
+    // Use the updated URL for sharing
+    const shareUrl = `${window.location.origin}${newUrl}`;
 
     if (type === "copy") {
       try {
-        await navigator.clipboard.writeText(currentUrl);
+        await navigator.clipboard.writeText(shareUrl);
         toast.success("¡URL copiada al portapapeles!", {
           description: "Compartí el cálculo con tus amigos y familiares.",
         });
@@ -47,10 +75,10 @@ export function ShareCalculationDialog() {
         console.error("Error copying to clipboard:", err);
       }
     } else if (type === "twitter") {
-      const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent("Calculadora de Inflación - La Macro")}`;
+      const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent("Calculadora de Inflación - La Macro")}`;
       window.open(twitterUrl, "_blank");
     } else if (type === "whatsapp") {
-      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent("Calculadora de Inflación - La Macro: " + currentUrl)}`;
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent("Calculadora de Inflación - La Macro: " + shareUrl)}`;
       window.open(whatsappUrl, "_blank");
     }
 
