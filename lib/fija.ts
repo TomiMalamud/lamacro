@@ -166,6 +166,11 @@ export const FIJA_TABLE_CONFIG = [
     pagoFinal: 146.61,
   },
   {
+    ticker: "S10L5",
+    fechaVencimiento: "2025-07-10",
+    pagoFinal: 101.8855614,
+  },
+  {
     ticker: "S31L5",
     fechaVencimiento: "2025-07-31",
     pagoFinal: 147.74,
