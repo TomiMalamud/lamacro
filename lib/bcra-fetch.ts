@@ -69,7 +69,8 @@ function validateParams(
 
 export async function fetchBCRADirect(): Promise<BCRAResponse> {
   const cacheKey = "BCRADirect";
-  const redisKey = "bcra_direct";
+  // Use the Redis key that actually exists (with bcra: prefix)
+  const redisKey = "bcra:BCRADirect";
 
   if (cache[cacheKey]) {
     if (cache[cacheKey].error) {
@@ -121,7 +122,7 @@ export async function fetchVariableTimeSeries(
     hasta || ""
   }_${offset}_${limit}`;
 
-  const redisKey = `ts_${variableId}_${desde || ""}_${hasta || ""}_${offset}_${limit}`;
+  const redisKey = `bcra:details_${variableId}`;
 
   if (cache[cacheKey]) {
     if (cache[cacheKey].error) {

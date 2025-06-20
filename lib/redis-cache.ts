@@ -1,39 +1,33 @@
 import { Redis } from "@upstash/redis";
 import { BCRAResponse } from "./bcra-fetch";
 
-let redis: Redis | null = null;
-
-try {
-  if (
-    process.env.UPSTASH_REDIS_REST_URL &&
-    process.env.UPSTASH_REDIS_REST_TOKEN
-  ) {
-    redis = Redis.fromEnv();
-  }
-} catch {
-  console.warn("Redis not available during build/static generation");
-}
+const redis = Redis.fromEnv();
 
 const REDIS_TTL = 7 * 24 * 60 * 60;
-const REDIS_FALLBACK_PREFIX = "bcra_fallback:";
+const REDIS_FALLBACK_PREFIX = "";
 
 function isStaticGeneration(): boolean {
-  return (
-    !redis ||
-    (typeof window === "undefined" && process.env.NODE_ENV !== "development")
-  );
+  // Only disable Redis during build time, not runtime
+  return process.env.NEXT_PHASE === "phase-production-build";
 }
 
 export async function setRedisCache(
   key: string,
   data: BCRAResponse,
 ): Promise<void> {
-  if (isStaticGeneration() || !redis) {
+  if (isStaticGeneration()) {
+    return;
+  }
+
+  if (!redis) {
+    console.warn("Redis not configured - data will not be cached for fallback");
     return;
   }
 
   try {
-    const redisKey = `${REDIS_FALLBACK_PREFIX}${key}`;
+    const redisKey = key.startsWith("bcra:")
+      ? key
+      : `${REDIS_FALLBACK_PREFIX}${key}`;
     await redis.setex(redisKey, REDIS_TTL, JSON.stringify(data));
   } catch (error) {
     console.warn(
@@ -44,12 +38,19 @@ export async function setRedisCache(
 }
 
 export async function getRedisCache(key: string): Promise<BCRAResponse | null> {
-  if (isStaticGeneration() || !redis) {
+  if (isStaticGeneration()) {
+    return null;
+  }
+
+  if (!redis) {
+    console.warn("Redis not configured - cannot retrieve fallback data");
     return null;
   }
 
   try {
-    const redisKey = `${REDIS_FALLBACK_PREFIX}${key}`;
+    const redisKey = key.startsWith("bcra:")
+      ? key
+      : `${REDIS_FALLBACK_PREFIX}${key}`;
     const cachedData = await redis.get(redisKey);
 
     if (cachedData) {
@@ -60,8 +61,8 @@ export async function getRedisCache(key: string): Promise<BCRAResponse | null> {
 
     return null;
   } catch (error) {
-    console.warn(
-      "Failed to retrieve data from Redis (non-critical):",
+    console.error(
+      "Failed to retrieve fallback data from Redis:",
       error instanceof Error ? error.message : error,
     );
     return null;
