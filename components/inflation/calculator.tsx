@@ -1,3 +1,4 @@
+"use client";
 import historicalInflation from "@/lib/historical-inflation.json";
 import { fetchVariableTimeSeries, BCRAResponse } from "@/lib/bcra-fetch";
 import { useEffect, useState } from "react";

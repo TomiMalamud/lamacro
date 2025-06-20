@@ -11,8 +11,15 @@ import {
 import { useFijaData } from "@/hooks/use-fija-data";
 import { formatNumber } from "@/lib/utils";
 import { FijaTableRow, SecurityData } from "@/types/fija";
-import { ArrowDown, ArrowUp, ArrowUpDown, Search } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
+  Download,
+  Search,
+} from "lucide-react";
 import { useState } from "react";
+import * as XLSX from "xlsx";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -43,6 +50,7 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [searchTicker, setSearchTicker] = useState("");
+  const [exportLoading, setExportLoading] = useState(false);
 
   const { tableData: calculatedData } = useFijaData({ letras, bonos });
 
@@ -110,10 +118,62 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
   const filteredData = filterData(calculatedData);
   const tableData = sortData(filteredData);
 
+  // Export data to Excel
+  const exportToExcel = () => {
+    setExportLoading(true);
+
+    try {
+      // Create Excel workbook data
+      const worksheetData = [
+        [
+          "Tipo",
+          "Ticker",
+          "Vencimiento",
+          "Días",
+          "Meses",
+          "Pago Final",
+          "Precio Actual",
+          "TNA",
+          "TEM",
+          "TEA",
+        ],
+        ...tableData.map((row) => [
+          getSecurityType(row.ticker),
+          row.ticker,
+          row.fechaVencimiento,
+          row.dias,
+          row.meses,
+          row.pagoFinal,
+          row.px > 0 ? row.px : 0,
+          row.px > 0 && row.tna < 1 ? row.tna : 0,
+          row.px > 0 && row.meses > 0 && row.tna < 1 ? row.tem : 0,
+          row.px > 0 && row.tna < 1 ? row.tea : 0,
+        ]),
+      ];
+
+      // Create workbook and worksheet
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Renta Fija");
+
+      // Export file
+      XLSX.writeFile(
+        workbook,
+        `renta_fija_${new Date().toISOString().split("T")[0]}.xlsx`,
+      );
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 items-center">
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative flex-1 w-full max-w-sm">
           <Search
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
             size={16}
@@ -130,7 +190,7 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
           value={filterType}
           onValueChange={(value) => setFilterType(value as FilterType)}
         >
-          <SelectTrigger className="w-[180px] dark:bg-neutral-900">
+          <SelectTrigger className="md:w-[180px] dark:bg-neutral-900 w-full">
             <SelectValue placeholder="Todos los tipos" />
           </SelectTrigger>
           <SelectContent>
@@ -140,6 +200,24 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
             <SelectItem value="Dual">Duales</SelectItem>
           </SelectContent>
         </Select>
+
+        <Button
+          variant="outline"
+          size="default"
+          onClick={exportToExcel}
+          disabled={exportLoading || tableData.length === 0}
+          className="whitespace-nowrap md:w-[180px] w-full dark:bg-neutral-900 dark:hover:bg-neutral-800"
+        >
+          {exportLoading ? (
+            "Exportando..."
+          ) : (
+            <>
+              <Download className="h-4 w-4 mr-2" />
+              <span className="hidden md:block">Exportar Excel</span>
+              <span className="block md:hidden">Excel</span>
+            </>
+          )}
+        </Button>
       </div>
       <TooltipProvider>
         <Table>

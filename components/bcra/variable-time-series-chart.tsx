@@ -33,6 +33,7 @@ import {
   TableIcon,
 } from "lucide-react";
 import { startTransition, useEffect, useMemo, useState } from "react";
+import * as XLSX from "xlsx";
 import { DateRange } from "react-day-picker";
 import {
   Bar,
@@ -412,44 +413,44 @@ export function VariableTimeSeriesChart({
     return { minValue, maxValue };
   }, [chartData, comparisonData, showComparison]);
 
-  // Export data to CSV
-  const exportToCSV = () => {
+  // Export data to Excel
+  const exportToExcel = () => {
     setExportLoading(true);
 
     try {
-      // Create CSV content
+      // Create Excel workbook data
       const headers = showComparison
         ? ["Fecha", "Valor Actual", "Valor Período Anterior"]
         : ["Fecha", "Valor"];
 
-      const csvContent = [
-        headers.join(","),
+      const worksheetData = [
+        headers,
         ...combinedChartData.map((row) => {
           const date = formatDateAR(row.fecha);
-          const currentValue = formatNumber(row.valor).replace(",", ".");
+          const currentValue = row.valor;
 
           return showComparison && row.prevValor !== undefined
-            ? [
-                date,
-                currentValue,
-                formatNumber(row.prevValor).replace(",", "."),
-              ].join(",")
-            : [date, currentValue].join(",");
+            ? [date, currentValue, row.prevValor]
+            : [date, currentValue];
         }),
-      ].join("\n");
+      ];
 
-      // Create and download file
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `datos_variable_${variableId}_${format(new Date(), "yyyy-MM-dd")}.csv`,
+      // Create workbook and worksheet
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        `Variable ${variableId}`,
       );
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+
+      // Export file
+      XLSX.writeFile(
+        workbook,
+        `datos_variable_${variableId}_${format(new Date(), "yyyy-MM-dd")}.xlsx`,
+      );
     } catch (error) {
       console.error("Error exporting data:", error);
     } finally {
@@ -617,7 +618,7 @@ export function VariableTimeSeriesChart({
           <Button
             variant="outline"
             size="sm"
-            onClick={exportToCSV}
+            onClick={exportToExcel}
             disabled={exportLoading || !chartData.length}
             className="hidden sm:flex"
           >
@@ -626,7 +627,7 @@ export function VariableTimeSeriesChart({
             ) : (
               <>
                 <Download className="h-4 w-4 mr-1" />
-                Exportar CSV
+                Exportar Excel
               </>
             )}
           </Button>

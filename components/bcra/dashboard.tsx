@@ -5,9 +5,10 @@ import { VariableCard } from "@/components/bcra/variable-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BCRAVariable } from "@/lib/bcra-fetch";
-import { formatDateAR, formatNumber } from "@/lib/utils";
+import { formatDateAR } from "@/lib/utils";
 import { Download, Loader, Search } from "lucide-react";
 import { useState } from "react";
+import * as XLSX from "xlsx";
 
 interface BCRADashboardProps {
   initialVariables: BCRAVariable[];
@@ -97,31 +98,28 @@ export default function BCRADashboard({
         ...variablesPrivados,
       ];
 
-      // Create CSV content
-      const headers = ["Variable", "Fecha", "Valor"];
-      const csvContent = [
-        headers.join(","),
-        ...sectionVariables.map((variable) => {
-          const date = formatDateAR(variable.fecha);
-          const value = formatNumber(variable.valor).replace(",", ".");
-          return [variable.descripcion.replace(/,/g, ";"), date, value].join(
-            ",",
-          );
-        }),
-      ].join("\n");
+      // Create Excel workbook data
+      const worksheetData = [
+        ["Variable", "Fecha", "Valor"],
+        ...sectionVariables.map((variable) => [
+          variable.descripcion,
+          formatDateAR(variable.fecha),
+          variable.valor,
+        ]),
+      ];
 
-      // Create and download file
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `variables_bcra_${new Date().toISOString().split("T")[0]}.csv`,
+      // Create workbook and worksheet
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Variables BCRA");
+
+      // Export file
+      XLSX.writeFile(
+        workbook,
+        `variables_bcra_${new Date().toISOString().split("T")[0]}.xlsx`,
       );
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     } catch (error) {
       console.error("Error exporting data:", error);
     } finally {
@@ -154,8 +152,8 @@ export default function BCRADashboard({
           ) : (
             <>
               <Download className="h-4 w-4 mr-2" />
-              <span className="hidden md:block">Exportar a CSV</span>
-              <span className="block md:hidden">CSV</span>
+              <span className="hidden md:block">Exportar a Excel</span>
+              <span className="block md:hidden">Excel</span>
             </>
           )}
         </Button>
