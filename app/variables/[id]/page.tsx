@@ -4,6 +4,7 @@ import { VariableDetailClient } from "@/components/bcra/variable-detail-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchBCRADirect, fetchVariableTimeSeries } from "@/lib/bcra-fetch";
+import { STATIC_VARIABLE_IDS } from "@/lib/constants";
 import { formatDateAR } from "@/lib/utils";
 import { format, subMonths } from "date-fns";
 import { ArrowLeft } from "lucide-react";
@@ -12,56 +13,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 export async function generateStaticParams() {
-  return [
-    // Divisas
-    { id: "1" },
-    { id: "4" },
-    { id: "5" },
-    // Tasas de Interés
-    { id: "6" },
-    { id: "7" },
-    { id: "8" },
-    { id: "9" },
-    { id: "11" },
-    { id: "12" },
-    { id: "13" },
-    { id: "14" },
-    { id: "34" },
-    { id: "35" },
-    { id: "43" },
-    { id: "44" },
-    { id: "45" },
-    // Base Monetaria
-    { id: "15" },
-    { id: "16" },
-    { id: "17" },
-    { id: "18" },
-    { id: "19" },
-    // Depósitos
-    { id: "21" },
-    { id: "22" },
-    { id: "23" },
-    { id: "24" },
-    // Privados
-    { id: "25" },
-    { id: "26" },
-    // Inflación
-    { id: "27" },
-    { id: "28" },
-    { id: "29" },
-    // Índices
-    { id: "30" },
-    { id: "31" },
-    { id: "32" },
-    { id: "40" },
-    // Additional variables
-    { id: "136" },
-    { id: "137" },
-    { id: "139" },
-    { id: "140" },
-    { id: "160" },
-    { id: "161" },
-  ];
+  return STATIC_VARIABLE_IDS.map((id) => ({ id: id.toString() }));
 }
 
 export default async function VariableDetailPage({
