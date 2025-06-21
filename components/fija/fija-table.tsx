@@ -161,7 +161,7 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
       // Export file
       XLSX.writeFile(
         workbook,
-        `renta_fija_${new Date().toISOString().split("T")[0]}.xlsx`,
+        `La_Macro_renta_fija_${new Date().toISOString().split("T")[0]}.xlsx`,
       );
     } catch (error) {
       console.error("Error exporting data:", error);

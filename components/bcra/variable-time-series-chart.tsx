@@ -449,7 +449,7 @@ export function VariableTimeSeriesChart({
       // Export file
       XLSX.writeFile(
         workbook,
-        `datos_variable_${variableId}_${format(new Date(), "yyyy-MM-dd")}.xlsx`,
+        `La_Macro_datos_variable_${variableId}_${format(new Date(), "yyyy-MM-dd")}.xlsx`,
       );
     } catch (error) {
       console.error("Error exporting data:", error);

@@ -118,7 +118,7 @@ export default function BCRADashboard({
       // Export file
       XLSX.writeFile(
         workbook,
-        `variables_bcra_${new Date().toISOString().split("T")[0]}.xlsx`,
+        `La_Macro_variables_bcra_${new Date().toISOString().split("T")[0]}.xlsx`,
       );
     } catch (error) {
       console.error("Error exporting data:", error);
