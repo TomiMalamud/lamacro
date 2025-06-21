@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/bcra-cache",
+      "schedule": "0 19 */2 * *" 
+    }
+  ]
+} 

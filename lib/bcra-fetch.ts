@@ -2,7 +2,7 @@ import {
   createBCRARequestOptions,
   makeBCRADataRequest,
 } from "./bcra-api-helper";
-import { setRedisCache, getRedisCache } from "./redis-cache";
+import { getRedisCache } from "./redis-cache";
 
 export interface BCRAVariable {
   idVariable: number;
@@ -91,8 +91,6 @@ export async function fetchBCRADirect(): Promise<BCRAResponse> {
     );
     cache[cacheKey] = { timestamp: Date.now(), data };
 
-    await setRedisCache(redisKey, data);
-
     return data;
   } catch (error) {
     const fallbackData = await getRedisCache(redisKey);
@@ -151,8 +149,6 @@ export async function fetchVariableTimeSeries(
       "Failed to parse BCRA time series data",
     );
     cache[cacheKey] = { timestamp: Date.now(), data };
-
-    await setRedisCache(redisKey, data);
 
     return data;
   } catch (error) {

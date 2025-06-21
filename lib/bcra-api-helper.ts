@@ -21,7 +21,7 @@ const ERROR_CACHE_TTL = 300 * 1000;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cache: { [key: string]: any } = {};
 
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 2;
 const RETRY_DELAY = 1000;
 
 const SIMULATE_API_DOWN = false;

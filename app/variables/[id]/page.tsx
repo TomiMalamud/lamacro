@@ -13,17 +13,54 @@ import { Suspense } from "react";
 
 export async function generateStaticParams() {
   return [
-    { id: "1" }, // Common exchange rate
-    { id: "4" }, // Another exchange rate
-    { id: "27" }, // Inflation
-    { id: "28" }, // Inflation
-    { id: "29" }, // Inflation
-    { id: "160" }, // Monetary
-    { id: "161" }, // Monetary
-    { id: "136" }, // Monetary
-    { id: "137" }, // Monetary
-    { id: "139" }, // Monetary
-    { id: "140" }, // Monetary
+    // Divisas
+    { id: "1" },
+    { id: "4" },
+    { id: "5" },
+    // Tasas de Interés
+    { id: "6" },
+    { id: "7" },
+    { id: "8" },
+    { id: "9" },
+    { id: "11" },
+    { id: "12" },
+    { id: "13" },
+    { id: "14" },
+    { id: "34" },
+    { id: "35" },
+    { id: "43" },
+    { id: "44" },
+    { id: "45" },
+    // Base Monetaria
+    { id: "15" },
+    { id: "16" },
+    { id: "17" },
+    { id: "18" },
+    { id: "19" },
+    // Depósitos
+    { id: "21" },
+    { id: "22" },
+    { id: "23" },
+    { id: "24" },
+    // Privados
+    { id: "25" },
+    { id: "26" },
+    // Inflación
+    { id: "27" },
+    { id: "28" },
+    { id: "29" },
+    // Índices
+    { id: "30" },
+    { id: "31" },
+    { id: "32" },
+    { id: "40" },
+    // Additional variables
+    { id: "136" },
+    { id: "137" },
+    { id: "139" },
+    { id: "140" },
+    { id: "160" },
+    { id: "161" },
   ];
 }
 

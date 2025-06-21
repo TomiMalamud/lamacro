@@ -6,19 +6,10 @@ const redis = Redis.fromEnv();
 const REDIS_TTL = 7 * 24 * 60 * 60;
 const REDIS_FALLBACK_PREFIX = "";
 
-function isStaticGeneration(): boolean {
-  // Only disable Redis during build time, not runtime
-  return process.env.NEXT_PHASE === "phase-production-build";
-}
-
 export async function setRedisCache(
   key: string,
   data: BCRAResponse,
 ): Promise<void> {
-  if (isStaticGeneration()) {
-    return;
-  }
-
   if (!redis) {
     console.warn("Redis not configured - data will not be cached for fallback");
     return;
@@ -38,10 +29,6 @@ export async function setRedisCache(
 }
 
 export async function getRedisCache(key: string): Promise<BCRAResponse | null> {
-  if (isStaticGeneration()) {
-    return null;
-  }
-
   if (!redis) {
     console.warn("Redis not configured - cannot retrieve fallback data");
     return null;
