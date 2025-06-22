@@ -64,7 +64,7 @@
     "lint-staged": "^16.0.0",
     "postcss": "^8",
     "prettier": "3.5.3",
-    "tailwindcss": "^4.1.8",
+    "tailwindcss": "^4.1.10",
     "typescript": "^5",
     "vitest": "^3.2.4"
   },
