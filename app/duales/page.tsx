@@ -4,7 +4,6 @@ import CallValueComponent, {
 import DualesClient from "@/components/duales-tamar/duales-client";
 import InlineLink from "@/components/inline-link";
 import { getDualBondSimulationData } from "@/lib/duales";
-import { getTamarCallValueData } from "@/lib/tamar-actions";
 
 export const metadata = {
   title: "Análisis de Bonos Duales TAMAR",
@@ -15,10 +14,7 @@ export const metadata = {
 const INITIAL_TAMAR_TEM = 0.02;
 
 export default async function CallsPage() {
-  const [initialDualesData, callValueData] = await Promise.all([
-    getDualBondSimulationData(),
-    getTamarCallValueData(DEFAULT_CALL_VALUE_REQUEST),
-  ]);
+  const initialDualesData = await getDualBondSimulationData();
 
   return (
     <main className="container mx-auto px-6 md:px-16 py-8">
@@ -37,7 +33,7 @@ export default async function CallsPage() {
       <div className="mt-12">
         <CallValueComponent
           initialRequest={DEFAULT_CALL_VALUE_REQUEST}
-          initialResponse={callValueData}
+          initialResponse={null}
         />
       </div>
     </main>
