@@ -102,6 +102,31 @@ External APIs → bcra-api-helper → bcra-fetch → Domain Logic → UI Compone
 - **page.tsx**: Always Server Components for route handlers and initial data fetching
 - **loading.tsx**: Use for streaming UI and better perceived performance, only if main data fetching is made in page.tsx. Otherwise, use Suspense.
 - **error.tsx**: Server-side error boundaries for graceful error handling
+- **Client Components**: Suffix with `-client.tsx` when the entire component needs client-side behavior
+
+### Component Naming Conventions
+- **Server components**: `[feature]-[component].tsx`
+- **Client components**: `[feature]-[component]-client.tsx`
+- **UI components**: Located in `components/ui/` (shadcn/ui)
+- **Domain components**: Grouped by feature in `components/[feature]/`
+
+### TypeScript Best Practices
+- **No 'any' types**: Always provide proper type definitions
+- **Interface over type**: Prefer interfaces for object definitions
+- **No TypeScript enums**: Use constant objects/maps instead
+- **Domain types**: Complex business types in `/types` directory
+
+### UI and Styling Guidelines
+- **shadcn/ui**: Primary UI component library - never recreate existing components
+- **Lucide React**: Icon library over custom SVGs
+- **Tailwind CSS**: Primary styling approach with design tokens
+- **Dark/light mode**: Support via next-themes
+- **Mobile-first**: Responsive design approach
+
+### Error Handling Patterns
+- **Toast notifications**: User feedback via Sonner (only works on client components)
+- **Graceful degradation**: Fall back to cached data when APIs fail
+- **User-friendly messages**: Convert technical errors to readable messages
 
 ## Key Business Rules
 - All financial calculations must handle Argentine business days and holidays
