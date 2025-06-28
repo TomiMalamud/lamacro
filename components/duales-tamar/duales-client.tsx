@@ -49,20 +49,19 @@ export default function DualesClient({
   });
 
   useEffect(() => {
-    if (currentTamarTEM === initialTamarTEM) {
-      return;
-    }
-
     let isMounted = true;
 
     async function fetchData() {
       if (!isMounted) return;
 
-      setSimulacion((prev) => ({
-        ...prev,
-        isLoading: true,
-        error: null,
-      }));
+      // Only show loading if we don't have initial data or if TEM changed
+      if (!initialData || currentTamarTEM !== initialTamarTEM) {
+        setSimulacion((prev) => ({
+          ...prev,
+          isLoading: true,
+          error: null,
+        }));
+      }
 
       try {
         const result = await getDualBondSimulationData();
@@ -104,7 +103,7 @@ export default function DualesClient({
     return () => {
       isMounted = false;
     };
-  }, [currentTamarTEM, initialTamarTEM]);
+  }, [currentTamarTEM, initialTamarTEM, initialData]);
 
   const handleTEMChange = (value: string) => {
     setCurrentTamarTEM(parseFloat(value));
