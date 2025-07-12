@@ -208,7 +208,7 @@ export default function FijaCalculator({
       value: fondo.nombre.replace(" - Clase A", ""),
       label: fondo.nombre.replace(" - Clase A", ""),
       tna: parseFloat(fondo.tna.toFixed(2)),
-      logoUrl: "https://compara.b-cdn.net/bancos-png/cocos.png",
+      logoUrl: "https://images.compara.ar/cocos.png",
       limit: null,
     })),
   ].sort((a, b) => {
@@ -607,22 +607,6 @@ export default function FijaCalculator({
 
         {calculations && (
           <div className="space-y-6 border-t pt-6">
-            {calculations &&
-              calculations.limitExceeded &&
-              calculations.limitAmount && (
-                <Alert className="bg-orange-50 dark:bg-yellow-950 border border-orange-200 dark:border-yellow-800 rounded-lg p-3">
-                  <AlertTitle>Ojo!</AlertTitle>
-                  <AlertDescription>
-                    {getAlternativeDisplayName(selectedAlternative)} tiene un
-                    límite de ${formatNumber(calculations.limitAmount)}. Solo se
-                    aplicará la tasa del{" "}
-                    {formatNumber(caucho / 100, 2, "percentage")} a los primeros
-                    ${formatNumber(calculations.limitAmount)}, el resto ($
-                    {formatNumber(pesosIniciales - calculations.limitAmount)})
-                    no generará intereses.
-                  </AlertDescription>
-                </Alert>
-              )}
             <div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-1">
@@ -695,13 +679,7 @@ export default function FijaCalculator({
                   <Label className="text-sm text-muted-foreground">
                     Diferencia en Ganancia
                   </Label>
-                  <div
-                    className={`text-lg font-medium ${
-                      calculations.diferenciaGanancia >= 0
-                        ? "text-green-600"
-                        : "text-blue-600"
-                    }`}
-                  >
+                  <div className="text-lg font-medium">
                     <NumberFlow
                       value={calculations.diferenciaGanancia}
                       locales="es-AR"
@@ -717,13 +695,7 @@ export default function FijaCalculator({
                   <Label className="text-sm text-muted-foreground">
                     Por Día
                   </Label>
-                  <div
-                    className={`text-lg font-medium ${
-                      calculations.porDia >= 0
-                        ? "text-green-600"
-                        : "text-blue-600"
-                    }`}
-                  >
+                  <div className="text-lg font-medium">
                     <NumberFlow
                       value={calculations.porDia}
                       locales="es-AR"
@@ -739,13 +711,7 @@ export default function FijaCalculator({
                   <Label className="text-sm text-muted-foreground">
                     Tasa Ganancia
                   </Label>
-                  <div
-                    className={`text-lg font-medium ${
-                      calculations.tasaGanancia >= 0
-                        ? "text-green-600"
-                        : "text-blue-600"
-                    }`}
-                  >
+                  <div className="text-lg font-medium">
                     <NumberFlow
                       value={calculations.tasaGanancia}
                       locales="es-AR"
@@ -768,7 +734,6 @@ export default function FijaCalculator({
                       format={{
                         style: "percent",
                         maximumFractionDigits: 2,
-                        signDisplay: "always",
                       }}
                     />
                   </div>
@@ -784,7 +749,6 @@ export default function FijaCalculator({
                       format={{
                         style: "percent",
                         maximumFractionDigits: 2,
-                        signDisplay: "always",
                       }}
                     />
                   </div>
@@ -795,7 +759,7 @@ export default function FijaCalculator({
             <div className="bg-muted/50 p-4 rounded-lg">
               <div className="text-base">
                 {calculations.diferenciaGanancia >= 0 ? (
-                  <span className="text-green-600 font-medium">
+                  <span className="font-bold">
                     {selectedTicker} rinde{" "}
                     <NumberFlow
                       value={Math.abs(calculations.diferenciaGanancia)}
@@ -809,7 +773,7 @@ export default function FijaCalculator({
                     más que {getAlternativeDisplayName(selectedAlternative)}
                   </span>
                 ) : (
-                  <span className="text-blue-600 font-medium">
+                  <span className="font-medium">
                     {getAlternativeDisplayName(selectedAlternative)} rinde{" "}
                     <NumberFlow
                       value={Math.abs(calculations.diferenciaGanancia)}
@@ -833,6 +797,22 @@ export default function FijaCalculator({
                 </span>
               </div>
             </div>
+            {calculations &&
+              calculations.limitExceeded &&
+              calculations.limitAmount && (
+                <Alert className="bg-orange-50 dark:bg-yellow-950 border border-orange-200 dark:border-yellow-800 rounded-lg p-3">
+                  <AlertTitle>Ojo!</AlertTitle>
+                  <AlertDescription>
+                    {getAlternativeDisplayName(selectedAlternative)} tiene un
+                    límite de ${formatNumber(calculations.limitAmount)}. Solo se
+                    aplicará la tasa del{" "}
+                    {formatNumber(caucho / 100, 2, "percentage")} a los primeros
+                    ${formatNumber(calculations.limitAmount)}, el resto ($
+                    {formatNumber(pesosIniciales - calculations.limitAmount)})
+                    no generará intereses.
+                  </AlertDescription>
+                </Alert>
+              )}
           </div>
         )}
       </CardContent>
