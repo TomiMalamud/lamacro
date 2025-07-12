@@ -10,7 +10,8 @@ export function ThemeToggle() {
 
   // After mounting, we can access the theme
   useEffect(() => {
-    setMounted(true);
+    const timeoutId = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timeoutId);
   }, []);
 
   if (!mounted) {

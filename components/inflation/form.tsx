@@ -10,7 +10,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Input } from "@/components/ui/input";
+import { NumericInput } from "@/components/numeric-input";
 import {
   Popover,
   PopoverContent,
@@ -26,15 +26,13 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
-import InflationCalculator, {
-  getMonthName,
-  InflationResult as InflationResultType,
-} from "./calculator";
+import InflationCalculator, { getMonthName } from "./calculator";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
 import { ShareCalculationDialog } from "./share-calculation-dialog";
+import NumberFlow from "@number-flow/react";
 
 interface ResponsiveSelectProps {
   value: number;
@@ -160,9 +158,10 @@ export function InflationForm() {
   const [endYear, setEndYear] = useState<number>(() =>
     getDefaultValue("endYear", new Date().getFullYear()),
   );
-  const [result, setResult] = useState<InflationResultType | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  // Track previous values for state adjustment
+  const [prevEndValues, setPrevEndValues] = useState({ endYear, endMonth });
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
@@ -186,48 +185,56 @@ export function InflationForm() {
     return months;
   };
 
-  // Adjust start date if it's after end date
-  useEffect(() => {
-    const startDate = new Date(startYear, startMonth - 1);
-    const endDate = new Date(endYear, endMonth - 1);
+  // Adjust start date if it's after end date (during render)
+  let adjustedStartYear = startYear;
+  let adjustedStartMonth = startMonth;
 
-    if (startDate > endDate) {
-      setStartYear(endYear);
-      setStartMonth(endMonth);
-    }
-  }, [startYear, startMonth, endYear, endMonth]);
+  const startDate = new Date(startYear, startMonth - 1);
+  const endDate = new Date(endYear, endMonth - 1);
 
-  // Calculate results whenever any input changes
-  useEffect(() => {
-    const canCalculate = (() => {
-      if (
-        endYear > currentYear ||
-        (endYear === currentYear && endMonth > currentMonth)
-      ) {
-        setError("La fecha final no puede ser en el futuro");
-        return false;
-      }
-      setError(null);
-      return true;
-    })();
+  if (startDate > endDate) {
+    adjustedStartYear = endYear;
+    adjustedStartMonth = endMonth;
 
-    if (canCalculate) {
-      const calculationResult = InflationCalculator({
-        startMonth,
-        startYear,
-        startValue,
-        endMonth,
-        endYear,
+    // Update state if end values changed
+    if (
+      prevEndValues.endYear !== endYear ||
+      prevEndValues.endMonth !== endMonth
+    ) {
+      setPrevEndValues({ endYear, endMonth });
+      // Schedule state updates
+      Promise.resolve().then(() => {
+        setStartYear(endYear);
+        setStartMonth(endMonth);
       });
-      setResult(calculationResult);
-    } else {
-      setResult(null);
     }
+  }
+
+  // Calculate error and result with useMemo
+  const error = useMemo(() => {
+    if (
+      endYear > currentYear ||
+      (endYear === currentYear && endMonth > currentMonth)
+    ) {
+      return "La fecha final no puede ser en el futuro";
+    }
+    return null;
+  }, [endYear, endMonth, currentYear, currentMonth]);
+
+  const result = useMemo(() => {
+    if (error) return null;
+
+    return InflationCalculator({
+      startMonth: adjustedStartMonth,
+      startYear: adjustedStartYear,
+      startValue,
+      endMonth,
+      endYear,
+    });
   }, [
-    currentYear,
-    currentMonth,
-    startMonth,
-    startYear,
+    error,
+    adjustedStartMonth,
+    adjustedStartYear,
     startValue,
     endMonth,
     endYear,
@@ -237,10 +244,11 @@ export function InflationForm() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
+    const handleResize = () => checkMobile();
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
@@ -256,17 +264,18 @@ export function InflationForm() {
               <div className="flex flex-col md:flex-row items-center gap-2">
                 <span className="text-muted-foreground">Si compré algo a</span>
                 <div className="relative w-48">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 z-10">
                     $
                   </span>
-                  <Input
-                    type="number"
-                    min="0"
-                    step="10"
+                  <NumericInput
                     value={startValue}
-                    onChange={(e) => setStartValue(parseFloat(e.target.value))}
+                    onValueChange={(values) =>
+                      setStartValue(values.floatValue || 0)
+                    }
                     className="pl-8 bg-white dark:bg-black font-medium"
-                    required
+                    placeholder="0"
+                    allowNegative={false}
+                    decimalScale={2}
                     tabIndex={0}
                     aria-label="Valor inicial"
                   />
@@ -321,10 +330,11 @@ export function InflationForm() {
                     ese mismo ítem valdría
                   </span>
                   <span className="text-xl font-bold">
-                    {new Intl.NumberFormat("es-AR", {
-                      style: "currency",
-                      currency: "ARS",
-                    }).format(result.endValue)}
+                    <NumberFlow
+                      value={result.endValue}
+                      locales="es-AR"
+                      format={{ style: "currency", currency: "ARS" }}
+                    />
                   </span>
                 </div>
               )}

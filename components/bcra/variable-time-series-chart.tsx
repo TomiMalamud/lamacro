@@ -451,8 +451,14 @@ export function VariableTimeSeriesChart({
         workbook,
         `La_Macro_datos_variable_${variableId}_${format(new Date(), "yyyy-MM-dd")}.xlsx`,
       );
+      toast.success("Archivo exportado correctamente", {
+        description: "Revisá tu carpeta de descargas",
+      });
     } catch (error) {
       console.error("Error exporting data:", error);
+      toast.error("Error al exportar el archivo", {
+        description: "Intenta nuevamente",
+      });
     } finally {
       setExportLoading(false);
     }

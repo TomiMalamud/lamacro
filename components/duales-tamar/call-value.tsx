@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { NumericInput } from "@/components/numeric-input";
 import { Label } from "@/components/ui/label";
 import type { CallValueRequest, CallValueResponse } from "@/lib/duales";
 import { getTamarCallValueAction } from "@/lib/tamar-actions";
@@ -72,8 +72,11 @@ export default function CallValueComponent({
     }
   };
 
-  const handleInputChange = (field: keyof CallValueRequest, value: string) => {
-    const numValue = parseFloat(value);
+  const handleInputChange = (
+    field: keyof CallValueRequest,
+    value: string | number,
+  ) => {
+    const numValue = typeof value === "string" ? parseFloat(value) : value;
     if (!isNaN(numValue) && numValue >= 0 && numValue <= 1) {
       setRequest((prev) => ({ ...prev, [field]: numValue }));
     }
@@ -101,18 +104,15 @@ export default function CallValueComponent({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="target_mean">Mediana estimada de TAMAR</Label>
-                <Input
+                <NumericInput
                   className="mt-2 bg-white dark:bg-black"
                   id="target_mean"
-                  type="number"
-                  step="0.0001"
-                  min="0"
-                  max="1"
+                  decimalScale={4}
                   value={request.target_mean}
-                  onChange={(e) =>
-                    handleInputChange("target_mean", e.target.value)
+                  onValueChange={(values) =>
+                    handleInputChange("target_mean", values.floatValue || 0)
                   }
-                  placeholder="0.0143"
+                  placeholder="0,0143"
                 />
               </div>
 
@@ -120,35 +120,29 @@ export default function CallValueComponent({
                 <Label htmlFor="target_prob">
                   Probabilidad asignada a máximo estimado
                 </Label>
-                <Input
+                <NumericInput
                   className="mt-2 bg-white dark:bg-black"
                   id="target_prob"
-                  type="number"
-                  step="0.0001"
-                  min="0"
-                  max="1"
+                  decimalScale={4}
                   value={request.target_prob}
-                  onChange={(e) =>
-                    handleInputChange("target_prob", e.target.value)
+                  onValueChange={(values) =>
+                    handleInputChange("target_prob", values.floatValue || 0)
                   }
-                  placeholder="0.0244"
+                  placeholder="0,0244"
                 />
               </div>
 
               <div>
                 <Label htmlFor="threshold">Máximo valor esperado</Label>
-                <Input
+                <NumericInput
                   className="mt-2 bg-white dark:bg-black"
                   id="threshold"
-                  type="number"
-                  step="0.0001"
-                  min="0"
-                  max="1"
+                  decimalScale={4}
                   value={request.threshold}
-                  onChange={(e) =>
-                    handleInputChange("threshold", e.target.value)
+                  onValueChange={(values) =>
+                    handleInputChange("threshold", values.floatValue || 0)
                   }
-                  placeholder="0.0271"
+                  placeholder="0,0271"
                 />
               </div>
 
@@ -166,16 +160,15 @@ export default function CallValueComponent({
                     </Tooltip>
                   </TooltipProvider>
                 </Label>
-                <Input
+                <NumericInput
                   className="mt-2 bg-white dark:bg-black"
                   id="min_val"
-                  type="number"
-                  step="0.0001"
-                  min="0"
-                  max="1"
+                  decimalScale={4}
                   value={request.min_val}
-                  onChange={(e) => handleInputChange("min_val", e.target.value)}
-                  placeholder="0.0049"
+                  onValueChange={(values) =>
+                    handleInputChange("min_val", values.floatValue || 0)
+                  }
+                  placeholder="0,0049"
                 />
               </div>
             </div>

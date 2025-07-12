@@ -1,6 +1,5 @@
-import { formatNumber } from "@/lib/utils";
+import NumberFlow from "@number-flow/react";
 import { InflationResult as InflationResultType } from "./calculator";
-
 export function InflationResult({
   totalIncrement,
   totalIncrementPercentage,
@@ -13,9 +12,22 @@ export function InflationResult({
         <div className="p-4 border rounded-lg">
           <p className="text-sm text-muted-foreground mb-1">Incremento Total</p>
           <p className="text-2xl font-bold">
-            {formatNumber(totalIncrementPercentage, 2, "percentage")}{" "}
+            <NumberFlow
+              value={totalIncrementPercentage}
+              locales="es-AR"
+              format={{
+                style: "percent",
+                signDisplay: "always",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }}
+            />{" "}
             <span className="text-muted-foreground text-xl font-normal ml-1">
-              $ {formatNumber(totalIncrement)}
+              <NumberFlow
+                value={totalIncrement}
+                locales="es-AR"
+                format={{ style: "currency", currency: "ARS" }}
+              />
             </span>
           </p>
         </div>
@@ -25,7 +37,15 @@ export function InflationResult({
             Incremento Mensual Promedio
           </p>
           <p className="text-2xl font-bold">
-            {formatNumber(monthlyAveragePercentage, 2, "percentage")}
+            <NumberFlow
+              value={monthlyAveragePercentage}
+              locales="es-AR"
+              format={{
+                style: "percent",
+                maximumFractionDigits: 2,
+                signDisplay: "always",
+              }}
+            />
           </p>
         </div>
 
@@ -34,7 +54,15 @@ export function InflationResult({
             Incremento Anualizado
           </p>
           <p className="text-2xl font-bold">
-            {formatNumber(annualizedPercentage, 2, "percentage")}
+            <NumberFlow
+              value={annualizedPercentage}
+              locales="es-AR"
+              format={{
+                style: "percent",
+                maximumFractionDigits: 2,
+                signDisplay: "always",
+              }}
+            />
           </p>
         </div>
       </div>

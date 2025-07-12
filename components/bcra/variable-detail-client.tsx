@@ -1,6 +1,7 @@
 "use client";
 
 import { BCRAVariable } from "@/lib/bcra-fetch";
+import NumberFlow from "@number-flow/react";
 import { useState } from "react";
 import { VariableTimeSeriesChart } from "./variable-time-series-chart";
 import { formatNumber } from "@/lib/utils";
@@ -22,11 +23,16 @@ export function VariableDetailClient({
       <div className="flex items-center gap-3">
         <div className="text-3xl font-bold">{formatNumber(initialValue)}</div>
         {percentChange !== null && (
-          <span>
-            {percentChange > 0
-              ? `+${formatNumber(percentChange, 2)}%`
-              : `${formatNumber(percentChange, 2)}%`}
-          </span>
+          <NumberFlow
+            value={(percentChange ?? 0) / 100}
+            locales="es-AR"
+            format={{
+              style: "percent",
+              maximumFractionDigits: 2,
+              signDisplay: "always",
+            }}
+            className="~text-lg/2xl"
+          />
         )}
       </div>
 

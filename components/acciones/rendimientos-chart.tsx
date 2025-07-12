@@ -35,9 +35,11 @@ export function AccionesChart({ acciones, inflacion }: AccionesChartProps) {
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const handleResize = () => checkMobile();
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const allData = acciones

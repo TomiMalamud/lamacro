@@ -8,6 +8,7 @@ import { BCRAVariable } from "@/lib/bcra-fetch";
 import { formatDateAR } from "@/lib/utils";
 import { Download, Loader, Search } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
 interface BCRADashboardProps {
@@ -120,8 +121,12 @@ export default function BCRADashboard({
         workbook,
         `La_Macro_variables_bcra_${new Date().toISOString().split("T")[0]}.xlsx`,
       );
+      toast.success("Archivo exportado correctamente", {
+        description: "Revisá tu carpeta de descargas",
+      });
     } catch (error) {
       console.error("Error exporting data:", error);
+      toast.error("Error al exportar el archivo");
     } finally {
       setExportLoading(false);
     }

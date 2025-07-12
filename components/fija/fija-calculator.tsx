@@ -1,5 +1,6 @@
 "use client";
 
+import { NumericInput } from "@/components/numeric-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +26,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Popover,
@@ -39,51 +39,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import InlineLink from "../inline-link";
-
-function parseFormattedNumber(value: string): number {
-  const cleanValue = value.replace(/\./g, "");
-  const parsed = parseInt(cleanValue, 10);
-  return isNaN(parsed) ? 0 : parsed;
-}
-
-function formatNumberInput(value: number): string {
-  return value.toLocaleString("es-AR");
-}
-
-function validatePesosIniciales(value: string): {
-  isValid: boolean;
-  error?: string;
-} {
-  if (value === "") return { isValid: true };
-  const cleanValue = value.replace(/\./g, "");
-  const numericValue = parseInt(cleanValue, 10);
-  if (isNaN(numericValue)) {
-    return { isValid: false, error: "Debe ser un número entero" };
-  }
-  if (numericValue < 0) {
-    return { isValid: false, error: "Debe ser un número positivo" };
-  }
-  return { isValid: true };
-}
-
-function validateCaucho(value: string): { isValid: boolean; error?: string } {
-  if (value === "") return { isValid: true };
-  const numericValue = parseFloat(value);
-  if (isNaN(numericValue)) {
-    return { isValid: false, error: "Debe ser un número válido" };
-  }
-  if (numericValue < 0) {
-    return { isValid: false, error: "Debe ser un número positivo" };
-  }
-  if (numericValue >= 100) {
-    return { isValid: false, error: "Debe ser menor a 100" };
-  }
-  const decimalParts = value.split(".");
-  if (decimalParts.length > 1 && decimalParts[1].length > 3) {
-    return { isValid: false, error: "Máximo 3 decimales" };
-  }
-  return { isValid: true };
-}
+import NumberFlow from "@number-flow/react";
 
 function getAlternativeDisplayName(selectedAlternative: string): string {
   return selectedAlternative === "custom"
@@ -101,56 +57,16 @@ export default function FijaCalculator({
   fondos: FundData[];
 }) {
   const [pesosIniciales, setPesosIniciales] = useState(100000);
-  const [pesosInicialesDisplay, setPesosInicialesDisplay] = useState("100.000");
   const [pesosInicialesError, setPesosInicialesError] = useState<
     string | undefined
   >();
-
   const [selectedTicker, setSelectedTicker] = useState("");
-
-  const [cauchoDisplay, setCauchoDisplay] = useState("23");
   const [caucho, setCaucho] = useState(23);
   const [cauchoError, setCauchoError] = useState<string | undefined>();
   const [selectedAlternative, setSelectedAlternative] = useState<string>("");
   const [isCustomAlternative, setIsCustomAlternative] = useState(false);
-
   const [open, setOpen] = useState(false);
   const [alternativeOpen, setAlternativeOpen] = useState(false);
-
-  const handlePesosInicialesChange = (value: string) => {
-    setPesosInicialesDisplay(value);
-    const validation = validatePesosIniciales(value);
-
-    if (validation.isValid) {
-      setPesosInicialesError(undefined);
-      if (value === "") {
-        setPesosIniciales(0);
-      } else {
-        const numericValue = parseFormattedNumber(value);
-        setPesosIniciales(numericValue);
-        setPesosInicialesDisplay(formatNumberInput(numericValue));
-      }
-    } else {
-      setPesosInicialesError(validation.error);
-    }
-  };
-
-  const handleCauchoChange = (value: string) => {
-    setCauchoDisplay(value);
-    const validation = validateCaucho(value);
-
-    if (validation.isValid) {
-      setCauchoError(undefined);
-      if (value === "") {
-        setCaucho(0);
-      } else {
-        const numericValue = parseFloat(value);
-        setCaucho(numericValue);
-      }
-    } else {
-      setCauchoError(validation.error);
-    }
-  };
 
   const handleAlternativeSelect = (value: string) => {
     setSelectedAlternative(value);
@@ -165,8 +81,6 @@ export default function FijaCalculator({
       );
 
       if (billeteraOption) {
-        const tnaValue = billeteraOption.tna.toString();
-        setCauchoDisplay(tnaValue);
         setCaucho(billeteraOption.tna);
         setCauchoError(undefined);
       } else {
@@ -175,8 +89,6 @@ export default function FijaCalculator({
         );
 
         if (fondoOption) {
-          const tnaValue = fondoOption.tna.toString();
-          setCauchoDisplay(tnaValue);
           setCaucho(fondoOption.tna);
           setCauchoError(undefined);
         }
@@ -425,16 +337,21 @@ export default function FijaCalculator({
           </div>
           <div className="space-y-2">
             <Label htmlFor="pesosIniciales">Pesos Iniciales</Label>
-            <Input
+            <NumericInput
               id="pesosIniciales"
-              type="text"
-              value={pesosInicialesDisplay}
-              onChange={(e) => handlePesosInicialesChange(e.target.value)}
+              value={pesosIniciales}
+              onValueChange={(values) => {
+                const newValue = values.floatValue || 0;
+                setPesosIniciales(newValue);
+                setPesosInicialesError(undefined);
+              }}
               className={cn(
                 "dark:bg-neutral-900",
                 pesosInicialesError && "border-red-500",
               )}
-              placeholder="Ej: 100.000"
+              placeholder="100.000"
+              allowNegative={false}
+              decimalScale={0}
             />
             {pesosInicialesError && (
               <p className="text-sm text-red-500">{pesosInicialesError}</p>
@@ -663,16 +580,22 @@ export default function FijaCalculator({
               </Popover>
 
               {isCustomAlternative && (
-                <Input
+                <NumericInput
                   id="caucho"
-                  type="text"
-                  value={cauchoDisplay}
-                  onChange={(e) => handleCauchoChange(e.target.value)}
+                  value={caucho}
+                  onValueChange={(values) => {
+                    const newValue = values.floatValue || 0;
+                    setCaucho(newValue);
+                    setCauchoError(undefined);
+                  }}
                   className={cn(
                     "dark:bg-neutral-900 flex-1",
                     cauchoError && "border-red-500",
                   )}
-                  placeholder="Ej: 23"
+                  placeholder="23"
+                  allowNegative={false}
+                  decimalScale={3}
+                  suffix="%"
                 />
               )}
             </div>
@@ -707,7 +630,15 @@ export default function FijaCalculator({
                     Precio {selectedTicker}
                   </Label>
                   <div className="text-lg font-medium">
-                    {formatNumber(calculations.precio)}
+                    <NumberFlow
+                      value={calculations.precio}
+                      locales="es-AR"
+                      format={{
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 2,
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -715,7 +646,11 @@ export default function FijaCalculator({
                     Nominales {selectedTicker}
                   </Label>
                   <div className="text-lg font-medium">
-                    {formatNumber(calculations.nominales, 0)}
+                    <NumberFlow
+                      value={calculations.nominales}
+                      locales="es-AR"
+                      format={{ maximumFractionDigits: 0 }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -723,7 +658,15 @@ export default function FijaCalculator({
                     {selectedTicker} Al Vencimiento
                   </Label>
                   <div className="text-lg font-medium">
-                    ${formatNumber(calculations.alVencimiento)}
+                    <NumberFlow
+                      value={calculations.alVencimiento}
+                      locales="es-AR"
+                      format={{
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 0,
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -731,7 +674,15 @@ export default function FijaCalculator({
                     Monto {getAlternativeDisplayName(selectedAlternative)}
                   </Label>
                   <div className="text-lg font-medium">
-                    ${formatNumber(calculations.montoCaucho)}
+                    <NumberFlow
+                      value={calculations.montoCaucho}
+                      locales="es-AR"
+                      format={{
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 0,
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -751,7 +702,15 @@ export default function FijaCalculator({
                         : "text-blue-600"
                     }`}
                   >
-                    ${formatNumber(calculations.diferenciaGanancia)}
+                    <NumberFlow
+                      value={calculations.diferenciaGanancia}
+                      locales="es-AR"
+                      format={{
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 0,
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -765,7 +724,15 @@ export default function FijaCalculator({
                         : "text-blue-600"
                     }`}
                   >
-                    ${formatNumber(calculations.porDia)}
+                    <NumberFlow
+                      value={calculations.porDia}
+                      locales="es-AR"
+                      format={{
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 0,
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -779,7 +746,15 @@ export default function FijaCalculator({
                         : "text-blue-600"
                     }`}
                   >
-                    {formatNumber(calculations.tasaGanancia, 2, "percentage")}
+                    <NumberFlow
+                      value={calculations.tasaGanancia}
+                      locales="es-AR"
+                      format={{
+                        style: "percent",
+                        maximumFractionDigits: 2,
+                        signDisplay: "always",
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -787,7 +762,15 @@ export default function FijaCalculator({
                     TEA {selectedTicker}
                   </Label>
                   <div className="text-lg font-medium">
-                    {formatNumber(calculations.tea, 2, "percentage")}
+                    <NumberFlow
+                      value={calculations.tea}
+                      locales="es-AR"
+                      format={{
+                        style: "percent",
+                        maximumFractionDigits: 2,
+                        signDisplay: "always",
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -795,7 +778,15 @@ export default function FijaCalculator({
                     TEA {getAlternativeDisplayName(selectedAlternative)}
                   </Label>
                   <div className="text-lg font-medium">
-                    {formatNumber(calculations.teaCaucho, 2, "percentage")}
+                    <NumberFlow
+                      value={calculations.teaCaucho}
+                      locales="es-AR"
+                      format={{
+                        style: "percent",
+                        maximumFractionDigits: 2,
+                        signDisplay: "always",
+                      }}
+                    />
                   </div>
                 </div>
               </div>
@@ -805,20 +796,40 @@ export default function FijaCalculator({
               <div className="text-base">
                 {calculations.diferenciaGanancia >= 0 ? (
                   <span className="text-green-600 font-medium">
-                    {selectedTicker} rinde $
-                    {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
+                    {selectedTicker} rinde{" "}
+                    <NumberFlow
+                      value={Math.abs(calculations.diferenciaGanancia)}
+                      locales="es-AR"
+                      format={{
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 0,
+                      }}
+                    />{" "}
                     más que {getAlternativeDisplayName(selectedAlternative)}
                   </span>
                 ) : (
                   <span className="text-blue-600 font-medium">
-                    {getAlternativeDisplayName(selectedAlternative)} rinde $
-                    {formatNumber(Math.abs(calculations.diferenciaGanancia))}{" "}
+                    {getAlternativeDisplayName(selectedAlternative)} rinde{" "}
+                    <NumberFlow
+                      value={Math.abs(calculations.diferenciaGanancia)}
+                      locales="es-AR"
+                      format={{
+                        style: "currency",
+                        currency: "ARS",
+                        maximumFractionDigits: 0,
+                      }}
+                    />{" "}
                     más que {selectedTicker}
                   </span>
                 )}
                 <span className="text-muted-foreground">
                   {" "}
-                  en {calculations.dias} días
+                  en <NumberFlow
+                    value={calculations.dias}
+                    locales="es-AR"
+                  />{" "}
+                  días
                 </span>
               </div>
             </div>

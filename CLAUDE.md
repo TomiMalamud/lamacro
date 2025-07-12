@@ -134,3 +134,15 @@ External APIs → bcra-api-helper → bcra-fetch → Domain Logic → UI Compone
 - Cache TTL is 7 days for fallback scenarios
 - Date calculations use business day logic for accuracy
 - Yield calculations follow Argentine financial market conventions
+
+## React Best Practices
+
+### useState and useEffect Best Practices
+- **Avoid Direct setState in useEffect**: 
+  - Disallow direct calls to the set function of useState in useEffect.
+  - Directly setting state in useEffect can lead to:
+    - Redundant state: Duplicating derived values that could be computed during render
+    - Unnecessary effects: Triggering re-renders that could be avoided
+    - Confusing logic: Making component behavior harder to reason about
+  - Prefer computing values during rendering or using useMemo for complex calculations
+  - Use event handlers, async functions, or other indirect methods for state updates when necessary

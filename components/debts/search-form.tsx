@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
 
 interface SearchFormProps {
   initialValue?: string;
@@ -25,6 +26,7 @@ export function SearchForm({ initialValue = "" }: SearchFormProps) {
 
   const [value, setValue] = useState(formatCUIT(initialValue));
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +46,7 @@ export function SearchForm({ initialValue = "" }: SearchFormProps) {
 
     // Clear error and navigate
     setError("");
+    setIsLoading(true);
     router.push(`/deudores/${sanitizedValue}`);
   };
 
@@ -85,7 +88,16 @@ export function SearchForm({ initialValue = "" }: SearchFormProps) {
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit">Buscar</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
+              Buscando...
+            </>
+          ) : (
+            "Buscar"
+          )}
+        </Button>
       </div>
     </form>
   );

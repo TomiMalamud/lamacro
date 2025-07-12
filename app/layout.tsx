@@ -68,7 +68,7 @@ export default function RootLayout({
             <Navigation />
             {children}
             <Footer />
-            <Toaster />
+            <Toaster richColors />
           </ThemeProvider>
         </PostHogProvider>
       </body>

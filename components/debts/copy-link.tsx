@@ -13,7 +13,6 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useCopyToClipboard } from "usehooks-ts";
 
-
 interface ClipboardLinkProps {
   href: string;
   id?: string;
@@ -21,7 +20,12 @@ interface ClipboardLinkProps {
   description?: string;
 }
 
-export function ClipboardLink({ href, id, children, description }: ClipboardLinkProps) {
+export function ClipboardLink({
+  href,
+  id,
+  children,
+  description,
+}: ClipboardLinkProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState(5);
   const [, copy] = useCopyToClipboard();
@@ -54,9 +58,17 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
   // Handle auto-navigation when countdown reaches zero
   useEffect(() => {
     if (timeLeft === 0) {
-      handleNavigate();
+      // Schedule state updates to avoid direct calls
+      const resetState = () => {
+        setIsDialogOpen(false);
+        setCopied(false);
+        setTimeLeft(5);
+      };
+
+      window.open(href, "_blank");
+      setTimeout(resetState, 0);
     }
-  }, [timeLeft, handleNavigate]);
+  }, [timeLeft, href]);
 
   const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!id) return;
@@ -81,7 +93,7 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
     if (!open) {
       setCopied(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -103,8 +115,8 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
             <DialogHeader>
               <DialogTitle>CUIT/CUIL copiado!</DialogTitle>
               <DialogDescription>
-                Copiamos el CUIT que consultaste! Sólo tenés que pegarlo (CTRL + V) en
-                la página de destino.
+                Copiamos el CUIT que consultaste! Sólo tenés que pegarlo (CTRL +
+                V) en la página de destino.
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col space-y-4">
@@ -126,9 +138,7 @@ export function ClipboardLink({ href, id, children, description }: ClipboardLink
                 </div>
               </div>
               <div className="flex justify-end">
-                <Button onClick={handleNavigate}>
-                  Ir ahora
-                </Button>
+                <Button onClick={handleNavigate}>Ir ahora</Button>
               </div>
             </div>
           </DialogContent>

@@ -35,6 +35,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import { toast } from "sonner";
 
 interface FijaTableProps {
   letras: SecurityData[];
@@ -163,8 +164,14 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
         workbook,
         `La_Macro_renta_fija_${new Date().toISOString().split("T")[0]}.xlsx`,
       );
+      toast.success("Archivo exportado correctamente", {
+        description: "Revisá tu carpeta de descargas",
+      });
     } catch (error) {
       console.error("Error exporting data:", error);
+      toast.error("Error al exportar el archivo", {
+        description: "Intenta nuevamente",
+      });
     } finally {
       setExportLoading(false);
     }
