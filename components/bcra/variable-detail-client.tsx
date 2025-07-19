@@ -18,20 +18,23 @@ export function VariableDetailClient({
 }) {
   const [percentChange, setPercentChange] = useState<number | null>(null);
 
+  const percentValue =
+    percentChange !== null ? Math.round((percentChange ?? 0) * 100) / 10000 : 0;
+
   return (
     <>
       <div className="flex items-center gap-3">
         <div className="text-3xl font-bold">{formatNumber(initialValue)}</div>
         {percentChange !== null && (
           <NumberFlow
-            value={(percentChange ?? 0) / 100}
+            value={percentValue}
             locales="es-AR"
             format={{
               style: "percent",
               maximumFractionDigits: 2,
               signDisplay: "always",
             }}
-            className="~text-lg/2xl"
+            className="text-lg"
           />
         )}
       </div>
