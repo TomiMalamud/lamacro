@@ -8,6 +8,8 @@ export const metadata = {
     "Calculadora y visualización de estrategias de carry trade con bonos argentinos.",
 };
 
+export const revalidate = 3600; // 1 hour
+
 export default async function CarryTradePage() {
   const [carryTradeResult, carryExitSimulation] = await Promise.all([
     getCarryTradeData(),

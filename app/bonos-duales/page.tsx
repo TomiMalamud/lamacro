@@ -11,6 +11,8 @@ export const metadata = {
     "Análisis y simulación de bonos duales TAMAR con diferentes escenarios de TEM.",
 };
 
+export const revalidate = 3600; // 1 hour
+
 const INITIAL_TAMAR_TEM = 0.02;
 
 export default async function CallsPage() {

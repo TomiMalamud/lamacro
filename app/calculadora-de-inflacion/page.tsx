@@ -10,6 +10,14 @@ import {
 import { getCombinedInflationData } from "@/lib/inflation";
 import Link from "next/link";
 
+export const revalidate = 3600; // 1 hour
+
+export const metadata = {
+  title: "Calculadora de Inflación",
+  description:
+    "Calculadora de inflación y actualización de precios con la inflación del BCRA.",
+};
+
 export default async function InflationCalculatorPage() {
   const inflationData = await getCombinedInflationData();
 
