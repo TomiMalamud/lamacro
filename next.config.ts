@@ -11,7 +11,17 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/debts/search",
-        destination: "/deudores",
+        destination: "/central-de-deudores",
+        permanent: true,
+      },
+      {
+        source: "/deudores/:path*",
+        destination: "/central-de-deudores/:path*",
+        permanent: true,
+      },
+      {
+        source: "/inflation-calculator",
+        destination: "/calculadora-de-inflacion",
         permanent: true,
       },
     ];

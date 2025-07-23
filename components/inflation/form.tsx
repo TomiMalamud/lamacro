@@ -28,7 +28,11 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
-import InflationCalculator, { getMonthName } from "./calculator";
+import {
+  calculateInflation,
+  getMonthName,
+  InflationRates,
+} from "@/lib/inflation";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
 import { ShareCalculationDialog } from "./share-calculation-dialog";
@@ -131,7 +135,11 @@ function ResponsiveSelect({
   );
 }
 
-export function InflationForm() {
+interface InflationFormProps {
+  inflationData: InflationRates;
+}
+
+export function InflationForm({ inflationData }: InflationFormProps) {
   const searchParams = useSearchParams();
 
   const getDefaultValue = (param: string, fallback: number) => {
@@ -224,13 +232,14 @@ export function InflationForm() {
   const result = useMemo(() => {
     if (error) return null;
 
-    return InflationCalculator({
-      startMonth: adjustedStartMonth,
-      startYear: adjustedStartYear,
+    return calculateInflation(
+      adjustedStartMonth,
+      adjustedStartYear,
       startValue,
       endMonth,
       endYear,
-    });
+      inflationData,
+    );
   }, [
     error,
     adjustedStartMonth,
@@ -238,6 +247,7 @@ export function InflationForm() {
     startValue,
     endMonth,
     endYear,
+    inflationData,
   ]);
 
   useEffect(() => {
@@ -374,6 +384,7 @@ export function InflationForm() {
           startValue={startValue}
           endMonth={endMonth}
           endYear={endYear}
+          inflationData={inflationData}
         />
       )}
     </>

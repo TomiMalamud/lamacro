@@ -7,13 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getCombinedInflationData } from "@/lib/inflation";
 import Link from "next/link";
 
-export default function InflationCalculatorPage() {
+export default async function InflationCalculatorPage() {
+  const inflationData = await getCombinedInflationData();
+
   return (
     <div className="container mx-auto text-center py-8 px-4 md:px-16">
       <h1 className="text-3xl font-bold mb-6">Calculadora de Inflación</h1>
-      <InflationForm />
+      <InflationForm inflationData={inflationData} />
       <Card className="mt-4">
         <CardHeader>
           <CardTitle>Fuente</CardTitle>

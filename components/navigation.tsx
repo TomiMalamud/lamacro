@@ -90,7 +90,7 @@ export const navMain: NavigationGroup[] = [
       },
       {
         title: "Central de Deudores",
-        url: "/deudores",
+        url: "/central-de-deudores",
         description:
           "Consultá información sobre deudores del sistema financiero",
         icon: Search,
@@ -100,13 +100,13 @@ export const navMain: NavigationGroup[] = [
       },
       {
         title: "Calculadora de Inflación",
-        url: "/inflation-calculator",
+        url: "/calculadora-de-inflacion",
         description:
           "Mirá cuánto vale hoy tu compra, inversión o deuda del pasado.",
         icon: Calculator,
         iconSrc: "/calculator.png",
         iconAlt: "Calculator icon",
-        prefetch: true,
+        prefetch: false,
       },
     ],
   },

@@ -55,7 +55,7 @@ export function ShareCalculationDialog({
     params.set("endMonth", endMonth.toString());
     params.set("endYear", endYear.toString());
 
-    const newUrl = `/inflation-calculator?${params.toString()}`;
+    const newUrl = `/calculadora-de-inflacion?${params.toString()}`;
     router.replace(newUrl, { scroll: false });
 
     // Use the updated URL for sharing

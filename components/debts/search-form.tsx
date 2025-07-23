@@ -47,7 +47,7 @@ export function SearchForm({ initialValue = "" }: SearchFormProps) {
     // Clear error and navigate
     setError("");
     setIsLoading(true);
-    router.push(`/deudores/${sanitizedValue}`);
+    router.push(`/central-de-deudores/${sanitizedValue}`);
   };
 
   // Handle input change and enable prefetching on valid input
@@ -62,7 +62,7 @@ export function SearchForm({ initialValue = "" }: SearchFormProps) {
     // Prefetch if valid CUIT/CUIL (11 digits)
     const sanitizedValue = getSanitizedValue(formattedValue);
     if (sanitizedValue.length === 11) {
-      router.prefetch(`/deudores/${sanitizedValue}`);
+      router.prefetch(`/central-de-deudores/${sanitizedValue}`);
     }
   };
 

@@ -8,7 +8,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "../ui/chart";
-import { getMonthName, useInflationData } from "./calculator";
+import { getMonthName, InflationRates } from "@/lib/inflation";
 
 interface ChartData {
   date: string;
@@ -21,6 +21,7 @@ interface InflationChartProps {
   startValue: number;
   endMonth: number;
   endYear: number;
+  inflationData: InflationRates;
 }
 
 const chartConfig = {
@@ -36,9 +37,8 @@ export function InflationChart({
   startValue,
   endMonth,
   endYear,
+  inflationData,
 }: InflationChartProps) {
-  const { inflationData } = useInflationData();
-
   const chartData = useMemo(() => {
     const data: ChartData[] = [];
     const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth);

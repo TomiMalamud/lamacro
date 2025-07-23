@@ -54,7 +54,7 @@ export default async function DebtorPage({
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
           <Link
-            href="/deudores"
+            href="/central-de-deudores"
             className="inline-flex items-center text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
           >
             <ChevronLeft className="mr-1" size={16} />

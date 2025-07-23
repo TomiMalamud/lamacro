@@ -1,5 +1,14 @@
 import NumberFlow from "@number-flow/react";
-import { InflationResult as InflationResultType } from "./calculator";
+type InflationResultType = {
+  startDate: string;
+  endDate: string;
+  startValue: number;
+  endValue: number;
+  totalIncrement: number;
+  totalIncrementPercentage: number;
+  monthlyAveragePercentage: number;
+  annualizedPercentage: number;
+};
 export function InflationResult({
   totalIncrement,
   totalIncrementPercentage,
