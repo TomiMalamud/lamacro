@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         destination: "/calculadora-de-inflacion",
         permanent: true,
       },
+      {
+        source: "/duales",
+        destination: "/bonos-duales",
+        permanent: true,
+      },
     ];
   },
   logging: {

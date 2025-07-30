@@ -58,7 +58,7 @@ export const navMain: NavigationGroup[] = [
       },
       {
         title: "Duales TAMAR",
-        url: "/duales",
+        url: "/bonos-duales",
         description: "Mirá un análisis avanzado de duales TAMAR.",
         icon: BarChart3,
         iconSrc: "/excel.png",
