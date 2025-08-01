@@ -258,7 +258,7 @@ export const FIJA_TABLE_CONFIG = [
   {
     ticker: "TTS26",
     fechaVencimiento: "2026-09-16",
-    pagoFinal: 152.08,
+    pagoFinal: 152.96,
   },
   {
     ticker: "TTD26",
