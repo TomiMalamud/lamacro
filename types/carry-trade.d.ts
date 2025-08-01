@@ -41,10 +41,10 @@ export interface ProcessedTamarData {
   TTD26?: number;
 }
 
-
 export interface CarryTradeData {
   carryData: ProcessedBondData[];
   mep: number;
+  actualMep: number;
 }
 
 export interface CarryExitData {

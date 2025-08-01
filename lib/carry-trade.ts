@@ -114,8 +114,14 @@ async function getBondData(): Promise<RawBondData[]> {
   return [...notes, ...bonds];
 }
 
-export async function getCarryTradeData(): Promise<CarryTradeData> {
-  const [mep, allBonds] = await Promise.all([getMepRate(), getBondData()]);
+export async function getCarryTradeData(
+  customMep?: number,
+): Promise<CarryTradeData> {
+  const [actualMep, allBonds] = await Promise.all([
+    getMepRate(),
+    getBondData(),
+  ]);
+  const mep = customMep ?? actualMep;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalize to start of day
@@ -182,7 +188,7 @@ export async function getCarryTradeData(): Promise<CarryTradeData> {
         a.days_to_exp - b.days_to_exp,
     ); // Sort by days to expiration
 
-  return { carryData, mep };
+  return { carryData, mep, actualMep };
 }
 
 // --- Early Exit Simulation ---

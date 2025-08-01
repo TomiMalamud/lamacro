@@ -20,6 +20,7 @@ import {
 
 interface MepBreakevenChartProps {
   data: ProcessedBondData[];
+  customMep?: number;
 }
 
 const chartConfig = {
@@ -156,7 +157,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
   return null;
 };
 
-export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
+export function MepBreakevenChart({ data, customMep }: MepBreakevenChartProps) {
   // Generate projection data
   const generateProjectionData = () => {
     const data = [];
