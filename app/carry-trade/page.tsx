@@ -1,7 +1,6 @@
-import CarryExitInput from "@/components/carry-trade/carry-exit-input";
 import { CarryExitTable } from "@/components/carry-trade/carry-exit-table";
 import { CarryTable } from "@/components/carry-trade/carry-table";
-import { MepBreakevenChart } from "@/components/carry-trade/mep-breakeven-chart";
+import { MepBreakeven } from "@/components/carry-trade/mep-breakeven";
 import InlineLink from "@/components/inline-link";
 import {
   Card,
@@ -34,18 +33,9 @@ function findBest<T>(items: T[], key: keyof T): T | null {
   );
 }
 
-interface CarryTradePageProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
-
-export default async function CarryTradePage({
-  searchParams,
-}: CarryTradePageProps) {
-  const { custom_mep } = await searchParams;
-  const customMep = custom_mep ? parseFloat(custom_mep as string) : undefined;
-
+export default async function CarryTradePage() {
   const [carryTradeResult, carryExitSimulation] = await Promise.all([
-    getCarryTradeData(customMep),
+    getCarryTradeData(),
     getCarryExitSimulation(),
   ]);
 
@@ -194,22 +184,17 @@ export default async function CarryTradePage({
             <CardDescription>
               Los instrumentos que están por encima de la banda de flotación son
               los que tienen mayor rendimiento.
-              {!customMep && (
-                <p className={`text-primary font-bold`}>
-                  MEP Actual utilizado para los cálculos: $
-                  {carryTradeResult.actualMep?.toFixed(2)}
-                </p>
-              )}
+              <p className={`text-primary font-bold`}>
+                MEP Actual utilizado para los cálculos: $
+                {carryTradeResult.actualMep?.toFixed(2)}
+              </p>
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="text-blue-500 text-xs">
-                Ingresá un valor del dólar personalizado:
-              </span>
-              <CarryExitInput />
-            </div>
-            <MepBreakevenChart data={carryTradeResult.carryData} />
+            <MepBreakeven
+              data={carryTradeResult.carryData}
+              defaultMep={carryTradeResult.mep}
+            />
           </CardContent>
         </Card>
 

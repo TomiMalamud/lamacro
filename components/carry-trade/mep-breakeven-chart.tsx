@@ -25,7 +25,7 @@ interface MepBreakevenChartProps {
 
 const chartConfig = {
   mep_breakeven: {
-    label: "MEP Breakeven",
+    label: "Breakeven",
     color: "hsl(var(--chart-1))",
   },
   band: {
@@ -88,7 +88,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
                           className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
                           style={{ backgroundColor: "hsl(var(--chart-1))" }}
                         />
-                        <p className="text-muted-foreground">MEP Breakeven:</p>
+                        <p className="text-muted-foreground">Breakeven:</p>
                         <p className="font-medium text-foreground">
                           $
                           {mepBreakeven.toLocaleString("es-AR", {
@@ -363,7 +363,6 @@ export function MepBreakevenChart({ data, customMep }: MepBreakevenChartProps) {
           dot={false}
           activeDot={false}
         />
-        {/* Show MEP Breakeven points */}
         {data.map((_, bondIndex) => (
           <Scatter
             key={`mep_breakeven_${bondIndex}`}
