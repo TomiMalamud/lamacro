@@ -114,9 +114,7 @@ export function CarryTable({ data, mep }: CarryTableProps) {
                 <TableCell
                   className={cn(
                     "text-right font-mono",
-                    bond.carry_mep > 0
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400",
+                    bond.carry_mep > 0 ? "text-positive" : "text-negative",
                   )}
                 >
                   {formatNumber(bond.carry_mep, 1, "percentage")}
