@@ -90,7 +90,18 @@ export default async function Image({ params }: { params: { id: string } }) {
           fontFamily: "Geist",
         }}
       >
-        <div style={{ fontSize: 36, marginBottom: "60px", fontWeight: 400 }}>
+        <div
+          style={{
+            fontSize: 36,
+            marginBottom: "60px",
+            fontWeight: 700,
+            background: "linear-gradient(to right, #3b82f6, #0ea5e9, #3b82f6)",
+            backgroundClip: "text",
+            color: "transparent",
+            textAlign: "center",
+            justifyContent: "center",
+          }}
+        >
           La Macro
         </div>
         <div
@@ -103,10 +114,17 @@ export default async function Image({ params }: { params: { id: string } }) {
             textAlign: "center",
           }}
         >
-          <div style={{ fontSize: 42, marginBottom: "30px", fontWeight: 400 }}>
+          <div
+            style={{
+              fontSize: 64,
+              marginBottom: "30px",
+              fontWeight: 400,
+              color: "#444444",
+            }}
+          >
             {description}
           </div>
-          <div style={{ fontSize: 72, fontWeight: 700 }}>{value}</div>
+          <div style={{ fontSize: 124, fontWeight: 700 }}>{value}</div>
         </div>
       </div>
     ),
