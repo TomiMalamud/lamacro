@@ -24,11 +24,11 @@ interface FijaChartProps {
 const chartConfig = {
   tem: {
     label: "TEM",
-    color: "hsl(var(--primary))",
+    color: "var(--primary)",
   },
   trendline: {
     label: "Tendencia",
-    color: "hsl(var(--chart-2))",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 

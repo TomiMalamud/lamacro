@@ -44,3 +44,11 @@ export interface FundData {
   penultimoDate: string;
   tna: number;
 }
+
+import { ComboboxDrawerOption } from "@/components/ui/combobox-drawer";
+
+export interface AlternativeOption extends ComboboxDrawerOption<string> {
+  tna: number | null;
+  logoUrl: string | null;
+  limit: number | null;
+}

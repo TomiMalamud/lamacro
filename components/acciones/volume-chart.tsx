@@ -18,7 +18,7 @@ import {
 const chartConfig = {
   volume: {
     label: "Volumen",
-    color: "var(--chart-1)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
@@ -46,7 +46,7 @@ export function VolumeChart({ acciones }: VolumeChartProps) {
         />
         <CartesianGrid vertical={false} />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="volume" radius={4} fill="hsl(var(--primary))">
+        <Bar dataKey="volume" radius={4} fill="var(--primary)">
           <LabelList
             position="top"
             dataKey="ticker"

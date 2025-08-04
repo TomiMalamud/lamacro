@@ -20,13 +20,13 @@ import {
 } from "../ui/chart";
 
 export const DUAL_BONDS_COLORS: Record<string, string> = {
-  tamar_tem_spot: "hsl(var(--primary))",
-  tamar_AVG: "hsl(var(--primary))",
+  tamar_tem_spot: "var(--primary)",
+  tamar_AVG: "var(--primary)",
   TTM26: "#ff8888",
   TTJ26: "#fb9f3f",
   TTS26: "#4af6c3",
   TTD26: "#66CCFF",
-  projection_AVG: "hsl(var(--primary))",
+  projection_AVG: "var(--primary)",
 };
 
 const chartConfig = {

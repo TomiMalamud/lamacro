@@ -61,11 +61,11 @@ interface ChartDataWithComparison extends BCRAVariable {
 const chartConfig = {
   valor: {
     label: "Valor actual",
-    color: "hsl(222 37% 22%)",
+    color: "var(--chart-1)",
   },
   prevValor: {
     label: "Período anterior",
-    color: "hsl(0 0% 60%)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
@@ -501,6 +501,7 @@ export function VariableTimeSeriesChart({
                 <Calendar
                   initialFocus
                   mode="range"
+                  captionLayout="dropdown"
                   defaultMonth={dateRange?.from ? dateRange.from : undefined}
                   selected={dateRange || { from: undefined, to: undefined }}
                   onSelect={(selected) => {
@@ -722,14 +723,18 @@ export function VariableTimeSeriesChart({
                       <Bar
                         dataKey="valor"
                         name="valor"
-                        fill="hsl(var(--primary))"
+                        fill="var(--primary)"
                         barSize={20}
                       />
                       {showComparison && (
                         <Bar
                           dataKey="prevValor"
                           name="prevValor"
-                          fill="hsl(0, 0%, 60%)"
+                          fill="var(--chart-2)"
+                          fillOpacity={0.1}
+                          stroke="var(--chart-2)"
+                          strokeDasharray="5 5"
+                          strokeOpacity={0.3}
                           barSize={20}
                         />
                       )}
@@ -793,7 +798,7 @@ export function VariableTimeSeriesChart({
                       <Line
                         dataKey="valor"
                         name="valor"
-                        stroke="hsl(var(--primary))"
+                        stroke="var(--primary)"
                         strokeWidth={2}
                         dot={false}
                         type="monotone"
@@ -802,7 +807,8 @@ export function VariableTimeSeriesChart({
                         <Line
                           dataKey="prevValor"
                           name="prevValor"
-                          stroke="hsl(0, 0%, 60%)"
+                          stroke="var(--chart-2)"
+                          strokeOpacity={0.3}
                           strokeWidth={2}
                           dot={false}
                           type="monotone"

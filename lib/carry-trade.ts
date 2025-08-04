@@ -9,6 +9,7 @@ import {
   differenceInDays as originalDifferenceInDays,
   parseISO,
 } from "date-fns";
+import { cache } from "react";
 
 const TICKERS: Record<string, string> = {
   S16A5: "2025-04-16",
@@ -66,6 +67,47 @@ const PAYOFF: Record<string, number> = {
 
 const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];
 
+function getCurrentUpperLimit(): number {
+  const startDate = new Date(2025, 3, 14); // April 14, 2025 (month is 0-indexed)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let upperValue = 1400;
+
+  // If today is before or on the start date, return the initial value
+  if (today <= startDate) {
+    return upperValue;
+  }
+
+  // Calculate first partial month (April 14 to May 1 = 17 days)
+  const may1 = new Date(2025, 4, 1); // May 1, 2025
+  if (today > startDate) {
+    const daysToMay1 = 17;
+    const partialMonthRatio = daysToMay1 / 30;
+    upperValue = upperValue * (1 + 0.01 * partialMonthRatio);
+
+    // If today is before May 1, calculate partial growth and return
+    if (today < may1) {
+      const daysFromStart = Math.ceil(
+        (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      const currentPartialRatio = daysFromStart / 30;
+      return 1400 * (1 + 0.01 * currentPartialRatio);
+    }
+  }
+
+  // Calculate full months from May 1, 2025 to today
+  const currentDate = new Date(2025, 4, 1); // Start from May 1, 2025
+  while (currentDate < today) {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    if (currentDate <= today) {
+      upperValue = upperValue * 1.01;
+    }
+  }
+
+  return Math.round(upperValue);
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   try {
     const response = await fetch(url, { next: { revalidate: 3600 } });
@@ -114,7 +156,7 @@ async function getBondData(): Promise<RawBondData[]> {
   return [...notes, ...bonds];
 }
 
-export async function getCarryTradeData(): Promise<CarryTradeData> {
+export const getCarryTradeData = cache(async (): Promise<CarryTradeData> => {
   const [actualMep, allBonds] = await Promise.all([
     getMepRate(),
     getBondData(),
@@ -123,7 +165,7 @@ export async function getCarryTradeData(): Promise<CarryTradeData> {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalize to start of day
-
+  const current = getCurrentUpperLimit();
   const carryData = allBonds
     .filter((bond) => TICKERS[bond.symbol]) // Filter only bonds we have data for
     .map((bond) => {
@@ -152,7 +194,9 @@ export async function getCarryTradeData(): Promise<CarryTradeData> {
           ? Math.pow(payoff / bond.px_ask, monthlyFactor) - 1
           : NaN;
 
-      const finish_worst = Math.round(1400 * Math.pow(1.01, days_to_exp / 30));
+      const finish_worst = Math.round(
+        current * Math.pow(1.01, days_to_exp / 30),
+      );
       const mep_breakeven = mep * ratio;
       const carry_worst = (ratio * mep) / finish_worst - 1;
       const carry_mep = ratio - 1; // Calculate carry assuming exit MEP equals current MEP
@@ -187,7 +231,7 @@ export async function getCarryTradeData(): Promise<CarryTradeData> {
     ); // Sort by days to expiration
 
   return { carryData, mep, actualMep };
-}
+});
 
 // --- Early Exit Simulation ---
 export const CPI_EST = 0.01; // Estimated general monthly interest rate (TEM)

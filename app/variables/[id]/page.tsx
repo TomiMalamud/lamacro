@@ -181,7 +181,7 @@ async function VariableDetail({ id }: { id: number }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button variant="secondary" className="gap-2">
+              <Button variant="default" className="gap-2">
                 Preguntar a ChatGPT
                 <ArrowLeft className="h-4 w-4 rotate-135" />
               </Button>

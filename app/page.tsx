@@ -2,7 +2,7 @@ import LinksFeed from "@/components/links-feed";
 
 export default function Home() {
   return (
-    <main className="pb-44 mx-auto px-6 sm:px-16 relative bg-linear-to-t from-sky-200/60 to-transparent dark:from-sky-400/20 dark:to-background">
+    <main className="pb-44 mx-auto px-6 sm:px-16 relative bg-linear-to-t from-sky-200/60 to-transparent dark:from-sky-200/20 dark:to-background">
       <div className="space-y-4">
         <h1 className="text-4xl font-bold text-center mt-10">
           Macroeconomía y Finanzas de Argentina

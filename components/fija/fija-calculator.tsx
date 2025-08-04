@@ -2,7 +2,6 @@
 
 import { NumericInput } from "@/components/numeric-input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,36 +9,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { ComboboxDrawer } from "@/components/ui/combobox-drawer";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { FIJA_TABLE_CONFIG } from "@/lib/fija";
 import { cn, formatNumber } from "@/lib/utils";
-import { ComparatasasOption, FijaTableRow, FundData } from "@/types/fija";
+import {
+  AlternativeOption,
+  ComparatasasOption,
+  FijaTableRow,
+  FundData,
+} from "@/types/fija";
+import NumberFlow from "@number-flow/react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import InlineLink from "../inline-link";
-import NumberFlow from "@number-flow/react";
 
 function getAlternativeDisplayName(selectedAlternative: string): string {
   return selectedAlternative === "custom"
@@ -65,8 +49,6 @@ export default function FijaCalculator({
   const [cauchoError, setCauchoError] = useState<string | undefined>();
   const [selectedAlternative, setSelectedAlternative] = useState<string>("");
   const [isCustomAlternative, setIsCustomAlternative] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [alternativeOpen, setAlternativeOpen] = useState(false);
 
   const handleAlternativeSelect = (value: string) => {
     setSelectedAlternative(value);
@@ -240,100 +222,16 @@ export default function FijaCalculator({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label>Ticker</Label>
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full justify-between dark:bg-neutral-900 sm:hidden"
-                >
-                  {selectedTicker
-                    ? tickerOptions.find(
-                        (option) => option.value === selectedTicker,
-                      )?.label
-                    : "Seleccionar ticker..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent className="max-h-[80vh] pb-16">
-                <DrawerHeader>
-                  <DrawerTitle>Seleccionar Ticker</DrawerTitle>
-                </DrawerHeader>
-                <div className="px-4 pb-4 overflow-y-auto">
-                  <div className="space-y-2">
-                    {tickerOptions.map((option) => (
-                      <DrawerClose asChild key={option.value}>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-start h-auto p-3 text-left"
-                          onClick={() => {
-                            setSelectedTicker(option.value);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedTicker === option.value
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                          <span className="text-sm">{option.label}</span>
-                        </Button>
-                      </DrawerClose>
-                    ))}
-                  </div>
-                </div>
-              </DrawerContent>
-            </Drawer>
-
-            <Popover open={open} onOpenChange={setOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={open}
-                  className="w-full justify-between dark:bg-neutral-900 hidden sm:flex"
-                >
-                  {selectedTicker
-                    ? tickerOptions.find(
-                        (option) => option.value === selectedTicker,
-                      )?.label
-                    : "Seleccionar ticker..."}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0">
-                <Command>
-                  <CommandInput placeholder="Buscar ticker..." />
-                  <CommandList>
-                    <CommandEmpty>No se encontró el ticker.</CommandEmpty>
-                    <CommandGroup>
-                      {tickerOptions.map((option) => (
-                        <CommandItem
-                          key={option.value}
-                          value={option.value}
-                          onSelect={() => {
-                            setSelectedTicker(option.value);
-                            setOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedTicker === option.value
-                                ? "opacity-100"
-                                : "opacity-0",
-                            )}
-                          />
-                          {option.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <ComboboxDrawer
+              value={selectedTicker}
+              onValueChange={setSelectedTicker}
+              options={tickerOptions}
+              placeholder="Seleccionar ticker..."
+              searchPlaceholder="Buscar ticker..."
+              emptyMessage="No se encontró el ticker."
+              title="Seleccionar Ticker"
+              className="dark:bg-neutral-900"
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="pesosIniciales">Pesos Iniciales</Label>
@@ -361,33 +259,32 @@ export default function FijaCalculator({
           <div className="space-y-2">
             <Label>Alternativa (TNA %)</Label>
             <div className="flex gap-2">
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className="flex-1 justify-between dark:bg-neutral-900 sm:hidden"
-                  >
+              <ComboboxDrawer<string, AlternativeOption>
+                value={selectedAlternative}
+                onValueChange={handleAlternativeSelect}
+                options={alternativeOptions}
+                placeholder="Seleccioná la alternativa..."
+                searchPlaceholder="Buscar alternativa..."
+                emptyMessage="No se encontró la alternativa."
+                title="Seleccionar Alternativa"
+                className="flex-1 dark:bg-neutral-900"
+                renderTrigger={(selectedOption) => (
+                  <>
                     <div className="flex items-center gap-2">
                       {!isCustomAlternative &&
                         selectedAlternative &&
                         selectedAlternative !== "custom" && (
                           <div className="flex items-center gap-2">
-                            {(() => {
-                              const option = alternativeOptions.find(
-                                (opt) => opt.value === selectedAlternative,
-                              );
-                              return option?.logoUrl ? (
-                                <Image
-                                  src={option.logoUrl}
-                                  alt={option.label}
-                                  width={16}
-                                  height={16}
-                                  className="rounded-sm"
-                                  unoptimized
-                                />
-                              ) : null;
-                            })()}
+                            {selectedOption?.logoUrl && (
+                              <Image
+                                src={selectedOption.logoUrl}
+                                alt={selectedOption.label}
+                                width={16}
+                                height={16}
+                                className="rounded-sm"
+                                unoptimized
+                              />
+                            )}
                             <span className="truncate">
                               {getAlternativeDisplayName(selectedAlternative)} (
                               {formatNumber(caucho / 100, 2, "percentage")})
@@ -400,184 +297,49 @@ export default function FijaCalculator({
                       )}
                     </div>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent className="max-h-[80vh] pb-16">
-                  <DrawerHeader>
-                    <DrawerTitle>Seleccionar Alternativa</DrawerTitle>
-                  </DrawerHeader>
-                  <div className="px-4 pb-4 overflow-y-auto">
-                    <div className="space-y-2">
-                      {alternativeOptions.map((option) => (
-                        <DrawerClose asChild key={option.value}>
-                          <Button
-                            variant="ghost"
-                            className="w-full justify-start h-auto p-3 text-left"
-                            onClick={() =>
-                              handleAlternativeSelect(option.value)
-                            }
-                          >
-                            <div className="flex items-center gap-2 justify-between w-full">
-                              <div className="flex items-center gap-2 min-w-0">
-                                {option.logoUrl && (
-                                  <Image
-                                    src={option.logoUrl}
-                                    alt={option.label}
-                                    width={20}
-                                    height={20}
-                                    className="rounded-sm flex-shrink-0"
-                                    unoptimized
-                                  />
-                                )}
-                                <div className="min-w-0">
-                                  <div className="text-sm font-medium truncate">
-                                    {option.label}{" "}
-                                    <span className="text-xs ml-4 text-muted-foreground">
-                                      TNA{" "}
-                                      {option.tna
-                                        ? formatNumber(
-                                            option.tna / 100,
-                                            2,
-                                            "percentage",
-                                          )
-                                        : "N/A"}
-                                    </span>
-                                  </div>
-                                  <div className="flex flex-col gap-1">
-                                    {option.limit && (
-                                      <div className="text-xs text-orange-600">
-                                        Límite: ${formatNumber(option.limit)}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedAlternative === option.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
+                  </>
+                )}
+                renderOption={(option, isSelected) => (
+                  <div className="flex items-center gap-2 justify-between w-full">
+                    <div className="flex items-center gap-2 min-w-0">
+                      {option.logoUrl && (
+                        <Image
+                          src={option.logoUrl}
+                          alt={option.label}
+                          width={20}
+                          height={20}
+                          className="rounded-sm flex-shrink-0"
+                          unoptimized
+                        />
+                      )}
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium truncate">
+                          {option.label}{" "}
+                          <span className="text-xs ml-2 text-muted-foreground">
+                            TNA{" "}
+                            {option.tna
+                              ? formatNumber(option.tna / 100, 2, "percentage")
+                              : "N/A"}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          {option.limit && (
+                            <div className="text-xs text-orange-600">
+                              Límite: ${formatNumber(option.limit)}
                             </div>
-                          </Button>
-                        </DrawerClose>
-                      ))}
+                          )}
+                        </div>
+                      </div>
                     </div>
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        isSelected ? "opacity-100" : "opacity-0",
+                      )}
+                    />
                   </div>
-                </DrawerContent>
-              </Drawer>
-
-              <Popover open={alternativeOpen} onOpenChange={setAlternativeOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={alternativeOpen}
-                    className="flex-1 justify-between dark:bg-neutral-900 hidden sm:flex"
-                  >
-                    <div className="flex items-center gap-2">
-                      {!isCustomAlternative &&
-                        selectedAlternative &&
-                        selectedAlternative !== "custom" && (
-                          <div className="flex items-center gap-2">
-                            {(() => {
-                              const option = alternativeOptions.find(
-                                (opt) => opt.value === selectedAlternative,
-                              );
-                              return option?.logoUrl ? (
-                                <Image
-                                  src={option.logoUrl}
-                                  alt={option.label}
-                                  width={16}
-                                  height={16}
-                                  className="rounded-sm"
-                                  unoptimized
-                                />
-                              ) : null;
-                            })()}
-                            <span className="truncate">
-                              {getAlternativeDisplayName(selectedAlternative)} (
-                              {formatNumber(caucho / 100, 2, "percentage")})
-                            </span>
-                          </div>
-                        )}
-                      {isCustomAlternative && <span>Personalizado</span>}
-                      {!selectedAlternative && (
-                        <span>Seleccioná la alternativa...</span>
-                      )}
-                    </div>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0">
-                  <Command>
-                    <CommandInput placeholder="Buscar alternativa..." />
-                    <CommandList>
-                      <CommandEmpty>
-                        No se encontró la alternativa.
-                      </CommandEmpty>
-                      <CommandGroup>
-                        {alternativeOptions.map((option) => (
-                          <CommandItem
-                            key={option.value}
-                            value={option.value}
-                            onSelect={() => {
-                              handleAlternativeSelect(option.value);
-                              setAlternativeOpen(false);
-                            }}
-                          >
-                            <div className="flex items-center gap-2 justify-between w-full">
-                              <div className="flex items-center gap-2 min-w-0">
-                                {option.logoUrl && (
-                                  <Image
-                                    src={option.logoUrl}
-                                    alt={option.label}
-                                    width={16}
-                                    height={16}
-                                    className="rounded-sm flex-shrink-0"
-                                    unoptimized
-                                  />
-                                )}
-                                <div className="min-w-0">
-                                  <div className="text-sm font-medium truncate">
-                                    {option.label}{" "}
-                                    <span className="text-xs ml-2 text-muted-foreground">
-                                      {option.tna
-                                        ? formatNumber(
-                                            option.tna / 100,
-                                            2,
-                                            "percentage",
-                                          )
-                                        : "N/A"}
-                                    </span>
-                                  </div>
-                                  <div className="flex flex-col gap-1">
-                                    {option.limit && (
-                                      <div className="text-xs text-orange-600">
-                                        Límite: ${formatNumber(option.limit)}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  selectedAlternative === option.value
-                                    ? "opacity-100"
-                                    : "opacity-0",
-                                )}
-                              />
-                            </div>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+                )}
+              />
 
               {isCustomAlternative && (
                 <NumericInput

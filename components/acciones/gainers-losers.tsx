@@ -98,7 +98,7 @@ export function GainersLosers({ acciones }: GainersLosersProps) {
 
   return (
     <Card>
-      <CardContent className="pt-8 gap-8 md:gap-16 grid grid-cols-1 md:grid-cols-2">
+      <CardContent className="gap-8 md:gap-16 grid grid-cols-1 md:grid-cols-2">
         {renderAccionList(gainers, "Ganadores", "bg-[#35C759]")}
         {renderAccionList(losers, "Perdedores", "bg-[#FF3B2F]")}
       </CardContent>

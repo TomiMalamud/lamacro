@@ -25,11 +25,11 @@ interface MepBreakevenChartProps {
 const chartConfig = {
   mep_breakeven: {
     label: "Breakeven",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-1)",
   },
   band: {
     label: "Rango de Proyección",
-    color: "hsl(var(--muted))",
+    color: "var(--muted)",
   },
 } satisfies ChartConfig;
 
@@ -85,7 +85,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
                       <div className="flex items-center gap-2">
                         <span
                           className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
-                          style={{ backgroundColor: "hsl(var(--chart-1))" }}
+                          style={{ backgroundColor: "var(--chart-1)" }}
                         />
                         <p className="text-muted-foreground">Breakeven:</p>
                         <p className="font-medium text-foreground">
@@ -120,7 +120,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
               <span
                 className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
                 style={{
-                  backgroundColor: "hsl(var(--muted-foreground))",
+                  backgroundColor: "var(--muted-foreground)",
                   opacity: 0.6,
                 }}
               />
@@ -136,7 +136,7 @@ const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
               <span
                 className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
                 style={{
-                  backgroundColor: "hsl(var(--muted-foreground))",
+                  backgroundColor: "var(--muted-foreground)",
                   opacity: 0.6,
                 }}
               />
@@ -356,7 +356,7 @@ export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
           type="monotone"
           dataKey="band"
           stroke="none"
-          fill="hsl(var(--muted-foreground))"
+          fill="var(--muted-foreground)"
           fillOpacity={0.1}
           connectNulls
           dot={false}
@@ -366,7 +366,7 @@ export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
           <Scatter
             key={`mep_breakeven_${bondIndex}`}
             dataKey={`mep_breakeven_${bondIndex}`}
-            fill="hsl(var(--chart-1))"
+            fill="var(--chart-1)"
             name={`mep_breakeven_${bondIndex}`}
             legendType="circle"
             r={4}
@@ -376,7 +376,7 @@ export function MepBreakevenChart({ data }: MepBreakevenChartProps) {
               position="top"
               style={{
                 fontSize: "10px",
-                fill: "hsl(var(--chart-1))",
+                fill: "var(--chart-1)",
                 fontWeight: "bold",
               }}
             />

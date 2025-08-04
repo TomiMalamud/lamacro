@@ -25,7 +25,7 @@ export default async function InflationCalculatorPage() {
     <div className="container mx-auto text-center py-8 px-4 md:px-16">
       <h1 className="text-3xl font-bold mb-6">Calculadora de Inflación</h1>
       <InflationForm inflationData={inflationData} />
-      <Card className="mt-4">
+      <Card className="mt-4 py-6">
         <CardHeader>
           <CardTitle>Fuente</CardTitle>
           <CardDescription>

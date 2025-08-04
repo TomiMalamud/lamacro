@@ -76,7 +76,7 @@ export function AccionesChart({ acciones, inflacion }: AccionesChartProps) {
           domain={[yAxisMin, yAxisMax]}
         />
         <CartesianGrid vertical={false} />
-        <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" />
+        <ReferenceLine y={0} stroke="var(--muted-foreground)" />
         <ChartTooltip
           content={
             <ChartTooltipContent
@@ -103,7 +103,7 @@ export function AccionesChart({ acciones, inflacion }: AccionesChartProps) {
         />
         <ReferenceLine
           y={inflacion}
-          stroke="hsl(var(--muted-foreground))"
+          stroke="var(--muted-foreground)"
           strokeDasharray="5 5"
           label={{
             value: `Inflación: ${inflacion.toFixed(1)}%`,

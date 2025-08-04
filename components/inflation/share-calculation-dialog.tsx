@@ -96,7 +96,7 @@ export function ShareCalculationDialog({
       </Button>
 
       <Button
-        className="flex h-14 justify-start text-white bg-black hover:bg-gray-950"
+        className="flex h-14 justify-start"
         onClick={() => handleShare("twitter")}
       >
         <FaXTwitter className="h-4 w-4 mr-2" />

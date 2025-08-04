@@ -60,7 +60,7 @@ export function MepBreakeven({ data }: MepBreakevenProps) {
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 pt-4">
         <span className="text-blue-500 text-xs">
           Ingresá un valor del dólar personalizado:
         </span>

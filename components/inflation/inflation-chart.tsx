@@ -27,7 +27,7 @@ interface InflationChartProps {
 const chartConfig = {
   value: {
     label: "Evolución",
-    color: "hsl(var(--chart-2))",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { NumericInput } from "@/components/numeric-input";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,12 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { NumericInput } from "@/components/numeric-input";
 import { Label } from "@/components/ui/label";
 import type { CallValueRequest, CallValueResponse } from "@/lib/duales";
 import { getTamarCallValueAction } from "@/lib/tamar-actions";
-import { BarChart3, Info, Loader2, TrendingUp } from "lucide-react";
+import { BarChart3, Info, Loader, TrendingUp } from "lucide-react";
 import { useState } from "react";
+import InlineLink from "../inline-link";
 import {
   Table,
   TableBody,
@@ -28,7 +29,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import InlineLink from "../inline-link";
 
 export const DEFAULT_CALL_VALUE_REQUEST: CallValueRequest = {
   target_mean: 0.0154, // 0.1851/12, obtenido de mediana REM dic-26
@@ -105,7 +105,7 @@ export default function CallValueComponent({
               <div>
                 <Label htmlFor="target_mean">Mediana estimada de TAMAR</Label>
                 <NumericInput
-                  className="mt-2 bg-white dark:bg-black"
+                  className="mt-2"
                   id="target_mean"
                   decimalScale={4}
                   value={request.target_mean}
@@ -121,7 +121,7 @@ export default function CallValueComponent({
                   Probabilidad asignada a máximo estimado
                 </Label>
                 <NumericInput
-                  className="mt-2 bg-white dark:bg-black"
+                  className="mt-2"
                   id="target_prob"
                   decimalScale={4}
                   value={request.target_prob}
@@ -135,7 +135,7 @@ export default function CallValueComponent({
               <div>
                 <Label htmlFor="threshold">Máximo valor esperado</Label>
                 <NumericInput
-                  className="mt-2 bg-white dark:bg-black"
+                  className="mt-2"
                   id="threshold"
                   decimalScale={4}
                   value={request.threshold}
@@ -161,7 +161,7 @@ export default function CallValueComponent({
                   </TooltipProvider>
                 </Label>
                 <NumericInput
-                  className="mt-2 bg-white dark:bg-black"
+                  className="mt-2"
                   id="min_val"
                   decimalScale={4}
                   value={request.min_val}
@@ -176,7 +176,7 @@ export default function CallValueComponent({
             <Button type="submit" disabled={isLoading} className="w-full">
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
                   Calculando...
                 </>
               ) : (

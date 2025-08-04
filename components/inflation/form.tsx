@@ -1,139 +1,20 @@
 "use client";
 
-import { Alert, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { NumericInput } from "@/components/numeric-input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { Card, CardContent, CardFooter } from "../ui/card";
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { ComboboxDrawer } from "@/components/ui/combobox-drawer";
 import {
   calculateInflation,
   getMonthName,
   InflationRates,
 } from "@/lib/inflation";
+import NumberFlow from "@number-flow/react";
+import { useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
+import { Card, CardContent, CardFooter } from "../ui/card";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
 import { ShareCalculationDialog } from "./share-calculation-dialog";
-import NumberFlow from "@number-flow/react";
-
-interface ResponsiveSelectProps {
-  value: number;
-  onValueChange: (value: number) => void;
-  options: { value: number; label: string }[];
-  placeholder: string;
-  isMobile: boolean;
-}
-
-function ResponsiveSelect({
-  value,
-  onValueChange,
-  options,
-  placeholder,
-  isMobile,
-}: ResponsiveSelectProps) {
-  const [open, setOpen] = useState(false);
-
-  if (isMobile) {
-    return (
-      <Select
-        value={value.toString()}
-        onValueChange={(val) => onValueChange(parseInt(val))}
-      >
-        <SelectTrigger className="w-32 dark:bg-black">
-          <SelectValue placeholder={placeholder}>
-            {options.find((opt) => opt.value === value)?.label}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem
-              key={option.value}
-              value={option.value.toString()}
-              className="py-2 text-lg"
-            >
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  }
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-32 justify-between"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              setOpen(true);
-            }
-          }}
-        >
-          {options.find((opt) => opt.value === value)?.label ?? placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-36 p-0">
-        <Command>
-          <CommandInput
-            placeholder={`Buscar ${placeholder.toLowerCase()}...`}
-          />
-          <CommandList>
-            <CommandEmpty>No se encontró.</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.label}
-                  onSelect={() => {
-                    onValueChange(option.value);
-                    setOpen(false);
-                  }}
-                  tabIndex={0}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 interface InflationFormProps {
   inflationData: InflationRates;
@@ -166,7 +47,6 @@ export function InflationForm({ inflationData }: InflationFormProps) {
   const [endYear, setEndYear] = useState<number>(() =>
     getDefaultValue("endYear", new Date().getFullYear()),
   );
-  const [isMobile, setIsMobile] = useState(false);
 
   // Track previous values for state adjustment
   const [prevEndValues, setPrevEndValues] = useState({ endYear, endMonth });
@@ -250,17 +130,6 @@ export function InflationForm({ inflationData }: InflationFormProps) {
     inflationData,
   ]);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    const handleResize = () => checkMobile();
-
-    handleResize(); // Initial check
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   return (
     <>
       <Card>
@@ -282,7 +151,7 @@ export function InflationForm({ inflationData }: InflationFormProps) {
                     onValueChange={(values) =>
                       setStartValue(values.floatValue || 0)
                     }
-                    className="pl-8 bg-white dark:bg-black font-medium"
+                    className="pl-8"
                     placeholder="0"
                     allowNegative={false}
                     decimalScale={2}
@@ -296,19 +165,19 @@ export function InflationForm({ inflationData }: InflationFormProps) {
               <div className="flex flex-col md:flex-row items-center gap-2">
                 <span className="text-muted-foreground">en</span>
                 <div className="flex gap-2">
-                  <ResponsiveSelect
+                  <ComboboxDrawer
                     value={startMonth}
                     onValueChange={setStartMonth}
                     options={getValidMonthOptions(startYear)}
                     placeholder="Mes"
-                    isMobile={isMobile}
+                    className="w-32"
                   />
-                  <ResponsiveSelect
+                  <ComboboxDrawer
                     value={startYear}
                     onValueChange={setStartYear}
                     options={yearOptions}
                     placeholder="Año"
-                    isMobile={isMobile}
+                    className="w-32"
                   />
                 </div>
               </div>
@@ -317,19 +186,19 @@ export function InflationForm({ inflationData }: InflationFormProps) {
               <div className="flex flex-col md:flex-row items-center gap-2">
                 <span className="text-muted-foreground">entonces en</span>
                 <div className="flex gap-2">
-                  <ResponsiveSelect
+                  <ComboboxDrawer
                     value={endMonth}
                     onValueChange={setEndMonth}
                     options={getValidMonthOptions(endYear)}
                     placeholder="Mes"
-                    isMobile={isMobile}
+                    className="w-32"
                   />
-                  <ResponsiveSelect
+                  <ComboboxDrawer
                     value={endYear}
                     onValueChange={setEndYear}
                     options={yearOptions}
                     placeholder="Año"
-                    isMobile={isMobile}
+                    className="w-32"
                   />
                 </div>
               </div>
