@@ -9,11 +9,86 @@ import { formatDateAR } from "@/lib/utils";
 import { format, subMonths } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { Suspense } from "react";
 
 export async function generateStaticParams() {
   return STATIC_VARIABLE_IDS.map((id) => ({ id: id.toString() }));
+}
+
+const getVariableData = cache(async (id: number) => {
+  const desde = format(subMonths(new Date(), 3), "yyyy-MM-dd");
+  const hasta = format(new Date(), "yyyy-MM-dd");
+
+  const [timeSeriesData, allVariablesData] = await Promise.all([
+    fetchVariableTimeSeries(id, desde, hasta),
+    fetchBCRADirect(),
+  ]);
+
+  const variableInfo = allVariablesData.results.find(
+    (v) => v.idVariable === id,
+  );
+
+  return {
+    timeSeriesData,
+    variableInfo,
+    variableDescription: variableInfo?.descripcion || `Variable #${id}`,
+  };
+});
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
+  const resolvedParams = await params;
+  const id = parseInt(resolvedParams.id);
+
+  if (isNaN(id)) {
+    return {
+      title: "Variable no encontrada",
+      description: "La variable solicitada no existe o no es válida.",
+    };
+  }
+
+  try {
+    const { variableDescription, timeSeriesData } = await getVariableData(id);
+    const latestDataPoint = timeSeriesData.results[0];
+
+    const cleanDescription = variableDescription
+      .replace("n.a.", "TNA")
+      .replace("e.a.", "TEA");
+
+    const title = `${cleanDescription} - Variable BCRA #${id}`;
+    const description = latestDataPoint
+      ? `Valor actual: ${latestDataPoint.valor}. Última actualización: ${formatDateAR(latestDataPoint.fecha)}. Variable del Banco Central de la República Argentina.`
+      : `Variable #${id} del Banco Central de la República Argentina (BCRA).`;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: "article",
+      },
+      twitter: {
+        title,
+        description,
+        card: "summary",
+      },
+    };
+  } catch (error) {
+    return {
+      title: `Variable BCRA #${id}`,
+      description: `Variable #${id} del Banco Central de la República Argentina.`,
+    };
+  }
 }
 
 export default async function VariableDetailPage({
@@ -67,23 +142,9 @@ function VariableDetailSkeleton() {
 
 async function VariableDetail({ id }: { id: number }) {
   try {
-    // Set default date range for initial data (3 months)
-    const desde = format(subMonths(new Date(), 3), "yyyy-MM-dd");
-    const hasta = format(new Date(), "yyyy-MM-dd");
-
-    // Fetch data in parallel
-    const [timeSeriesData, allVariablesData] = await Promise.all([
-      fetchVariableTimeSeries(id, desde, hasta),
-      fetchBCRADirect(),
-    ]);
-
-    // Find the variable in the full list to get its description
-    const variableInfo = allVariablesData.results.find(
-      (v) => v.idVariable === id,
-    );
-
-    // Get description or use fallback
-    const variableDescription = variableInfo?.descripcion || `Variable #${id}`;
+    // Use memoized function to get data
+    const { timeSeriesData, variableInfo, variableDescription } =
+      await getVariableData(id);
 
     // Get the most recent data point for the header
     const latestDataPoint = timeSeriesData.results[0];
