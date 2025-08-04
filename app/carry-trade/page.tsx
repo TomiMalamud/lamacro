@@ -21,7 +21,7 @@ import { addDays, format, parseISO } from "date-fns";
 export const metadata = {
   title: "Carry Trade",
   description:
-    "Calculadora y visualización de estrategias de carry trade con bonos argentinos.",
+    "Calculadora de carry trade argentina. Alternativas con dólar MEP actual, límites de la banda de flotación, y salida anticipada por compresión de tasa.",
 };
 
 export const revalidate = 3600; // 1 hour
@@ -59,7 +59,7 @@ export default async function CarryTradePage() {
       <h1 className="text-3xl font-bold mb-2">Carry Trade</h1>
       <p className="text-muted-foreground mb-8">
         Fijate cuál es el mejor bono para hacer carry trade. Se actualiza casi a
-        tiempo real. Inspirado en el gran{" "}
+        tiempo real. Cálculos por{" "}
         <InlineLink href="https://x.com/JohnGalt_is_www/status/1912555971400069372">
           JohnGalt_is_www
         </InlineLink>
