@@ -77,7 +77,7 @@ export function MepBreakeven({ data }: MepBreakevenProps) {
           prefix="$"
         />
       </div>
-      <MepBreakevenChart data={chartData} customMep={customMep} />
+      <MepBreakevenChart data={chartData} />
     </>
   );
 }
