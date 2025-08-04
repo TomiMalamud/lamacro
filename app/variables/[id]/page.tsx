@@ -64,10 +64,10 @@ export async function generateMetadata(
       .replace("n.a.", "TNA")
       .replace("e.a.", "TEA");
 
-    const title = `${cleanDescription} - Variable BCRA #${id}`;
+    const title = `${cleanDescription}`;
     const description = latestDataPoint
       ? `Valor actual: ${latestDataPoint.valor}. Última actualización: ${formatDateAR(latestDataPoint.fecha)}. Variable del Banco Central de la República Argentina.`
-      : `Variable #${id} del Banco Central de la República Argentina (BCRA).`;
+      : `Entrá para ver el valor de ${cleanDescription} en Argentina.`;
 
     return {
       title,
