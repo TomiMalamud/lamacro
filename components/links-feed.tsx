@@ -21,8 +21,8 @@ export default function LinksFeed() {
                       href={feature.url}
                       className="block transition-transform"
                     >
-                      <Card className="h-full group rounded-2xl shadow-md border-neutral-100 dark:border-neutral-900 border">
-                        <CardContent className="p-4">
+                      <Card className="h-full py-4 group rounded-2xl shadow-md border-neutral-100 dark:border-neutral-900 border">
+                        <CardContent className="px-4">
                           <div className="flex gap-4 items-center">
                             <Image
                               src={feature.iconSrc}
