@@ -64,9 +64,9 @@ export async function generateMetadata(
       .replace("n.a.", "TNA")
       .replace("e.a.", "TEA");
 
-    const title = `${cleanDescription}`;
+    const title = `${cleanDescription} | La Macro`;
     const description = latestDataPoint
-      ? `Valor actual: ${latestDataPoint.valor}. Última actualización: ${formatDateAR(latestDataPoint.fecha)}. Variable del Banco Central de la República Argentina.`
+      ? `Valor actual: ${latestDataPoint.valor}. Última actualización: ${formatDateAR(latestDataPoint.fecha)}. Estadísticas del Banco Central de la República Argentina.`
       : `Entrá para ver el valor de ${cleanDescription} en Argentina.`;
 
     return {

@@ -9,9 +9,9 @@ import {
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Central de Deudores - Búsqueda",
+  title: "Central de Deudores BCRA",
   description:
-    "Buscar información de deudas registradas en el BCRA por CUIT/CUIL",
+    "Buscá información de deudas registradas en el BCRA por CUIT o CUIL.",
 };
 
 export default function DebtSearchPage() {
