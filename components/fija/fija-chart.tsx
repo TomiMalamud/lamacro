@@ -161,14 +161,14 @@ export default function FijaChart({ data }: FijaChartProps) {
           dataKey="dias"
           name="Días"
           tickFormatter={(value) => value.toString()}
-          domain={["dataMin", "dataMax"]}
+          domain={["dataMin-10", "dataMax+5"]}
         />
         <YAxis
           type="number"
           dataKey="tem"
           name="TEM"
           tickFormatter={(value) => `${formatNumber(value, 2)}%`}
-          domain={["dataMin", "dataMax"]}
+          domain={["dataMin-0.5", "dataMax+0.5"]}
         />
         <ChartTooltip
           cursor={{ strokeDasharray: "3 3" }}
