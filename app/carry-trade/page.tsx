@@ -191,10 +191,7 @@ export default async function CarryTradePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <MepBreakeven
-              data={carryTradeResult.carryData}
-              defaultMep={carryTradeResult.mep}
-            />
+            <MepBreakeven data={carryTradeResult.carryData} />
           </CardContent>
         </Card>
 

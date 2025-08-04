@@ -20,7 +20,7 @@ interface CarryTableProps {
   mep: number;
 }
 
-const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];
+const CARRY_PRICES = [1200, 1300, 1400];
 const carryColumnKeys = CARRY_PRICES.map((price) => `carry_${price}` as const);
 
 export function CarryTable({ data, mep }: CarryTableProps) {

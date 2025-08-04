@@ -9,7 +9,6 @@ import type { ProcessedBondData } from "@/types/carry-trade";
 
 interface MepBreakevenProps {
   data: ProcessedBondData[];
-  defaultMep: number;
 }
 
 const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];
@@ -42,7 +41,7 @@ function recalculateWithCustomMep(
   });
 }
 
-export function MepBreakeven({ data, defaultMep }: MepBreakevenProps) {
+export function MepBreakeven({ data }: MepBreakevenProps) {
   const [customMep, setCustomMep] = useState<number | undefined>();
 
   const chartData = useMemo(() => {

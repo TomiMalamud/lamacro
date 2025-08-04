@@ -114,14 +114,12 @@ async function getBondData(): Promise<RawBondData[]> {
   return [...notes, ...bonds];
 }
 
-export async function getCarryTradeData(
-  customMep?: number,
-): Promise<CarryTradeData> {
+export async function getCarryTradeData(): Promise<CarryTradeData> {
   const [actualMep, allBonds] = await Promise.all([
     getMepRate(),
     getBondData(),
   ]);
-  const mep = customMep ?? actualMep;
+  const mep = actualMep;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalize to start of day
