@@ -67,7 +67,7 @@ const PAYOFF: Record<string, number> = {
 
 const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];
 
-function getCurrentUpperLimit(): number {
+export function getCurrentUpperLimit(): number {
   const startDate = new Date(2025, 3, 14); // April 14, 2025 (month is 0-indexed)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
