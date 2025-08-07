@@ -47,6 +47,7 @@ export const navMain: NavigationGroup[] = [
         icon: ChartNoAxesCombined,
         iconSrc: "/stocks.png",
         iconAlt: "Stock chart icon",
+        prefetch: true,
       },
       {
         title: "Carry Trade",
@@ -55,6 +56,7 @@ export const navMain: NavigationGroup[] = [
         icon: DollarSign,
         iconSrc: "/money.png",
         iconAlt: "Money icon",
+        prefetch: true,
       },
       {
         title: "Duales TAMAR",
@@ -72,6 +74,7 @@ export const navMain: NavigationGroup[] = [
         icon: PieChart,
         iconSrc: "/charts.png",
         iconAlt: "Charts icon",
+        prefetch: true,
       },
     ],
   },
@@ -87,6 +90,7 @@ export const navMain: NavigationGroup[] = [
         icon: ChartArea,
         iconSrc: "/trending.png",
         iconAlt: "Trending chart icon",
+        prefetch: true,
       },
       {
         title: "Central de Deudores",
@@ -111,13 +115,6 @@ export const navMain: NavigationGroup[] = [
     ],
   },
 ];
-
-export const navigationLinks: NavigationItem[] = navMain.flatMap(
-  (group) => group.items,
-);
-
-export const inversionesLinks: NavigationItem[] =
-  navMain.find((group) => group.title === "Finanzas")?.items || [];
 
 export function Navigation() {
   const finanzasGroup = navMain.find((group) => group.title === "Finanzas");
@@ -145,27 +142,34 @@ export function Navigation() {
                   </NavigationMenuTrigger>
                   <NavigationMenuContent className="group-data-[viewport=false]/navigation-menu:rounded-xl z-50">
                     <ul className="grid w-sm">
-                      {finanzasGroup.items.map((item) => (
-                        <li key={item.url}>
-                          <NavigationMenuLink asChild>
-                            <Link
-                              href={item.url}
-                              prefetch={item.prefetch}
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                            >
-                              <div className="flex items-center gap-2">
-                                {item.icon && <item.icon className="h-4 w-4" />}
-                                <div className="text-sm font-medium leading-none">
-                                  {item.title}
-                                </div>
-                              </div>
-                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                {item.description}
-                              </p>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
+                      {finanzasGroup.items.map(
+                        (item) => (
+                          console.log(item),
+                          (
+                            <li key={item.url}>
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  href={item.url}
+                                  prefetch={item.prefetch}
+                                  className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    {item.icon && (
+                                      <item.icon className="h-4 w-4" />
+                                    )}
+                                    <div className="text-sm font-medium leading-none">
+                                      {item.title}
+                                    </div>
+                                  </div>
+                                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                                    {item.description}
+                                  </p>
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          )
+                        ),
+                      )}
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
