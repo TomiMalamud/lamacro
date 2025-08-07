@@ -133,14 +133,14 @@ export function Navigation() {
           </Link>
         </div>
         <div className="hidden sm:flex">
-          <NavigationMenu className="ml-2 text-left" viewport={false}>
+          <NavigationMenu className="ml-2 text-left">
             <NavigationMenuList>
               {finanzasGroup && (
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="font-medium">
                     {finanzasGroup.title}
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent className="group-data-[viewport=false]/navigation-menu:rounded-xl z-50">
+                  <NavigationMenuContent>
                     <ul className="grid w-sm">
                       {finanzasGroup.items.map((item) => (
                         <li key={item.url}>
