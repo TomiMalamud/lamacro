@@ -24,6 +24,7 @@ import { useMemo, useState } from "react";
 import InlineLink from "../inline-link";
 import { Button } from "../ui/button";
 import FijaResults from "./fija-results";
+import { NumberFormatValues } from "react-number-format";
 
 export default function FijaCalculator({
   tableData,
@@ -44,21 +45,21 @@ export default function FijaCalculator({
     .sort((a, b) => a.dias - b.dias)
     .map(({ dias, ...rest }) => rest);
 
-  const [pesosIniciales, setPesosIniciales] = useState(100000);
+  const [pesosIniciales, setPesosIniciales] = useState<number | string>(100000);
   const [pesosInicialesError, setPesosInicialesError] = useState<
     string | undefined
   >();
   const [selectedTicker, setSelectedTicker] = useState(
     tickerOptions.length > 0 ? tickerOptions[0].value : "",
   );
-  const [caucho, setCaucho] = useState(23);
+  const [caucho, setCaucho] = useState<number | string>(23);
   const [cauchoError, setCauchoError] = useState<string | undefined>();
   const [selectedAlternative, setSelectedAlternative] = useState<string>("");
   const [isCustomAlternative, setIsCustomAlternative] = useState(false);
   const [calculatorMode, setCalculatorMode] = useState<"ticker" | "comparison">(
     "ticker",
   );
-  const [comision, setComision] = useState(0.5);
+  const [comision, setComision] = useState<number | string>(0.5);
 
   const getAlternativeDisplayName = (selectedAlternative: string): string => {
     return selectedAlternative === "custom"
@@ -99,6 +100,7 @@ export default function FijaCalculator({
       !selectedTicker ||
       pesosInicialesError ||
       pesosIniciales === 0 ||
+      pesosIniciales === "" ||
       (calculatorMode === "comparison" && (!selectedAlternative || cauchoError))
     )
       return null;
@@ -111,25 +113,31 @@ export default function FijaCalculator({
     if (!selectedData || !configData) return null;
 
     const precio = selectedData.px;
-    const nominales = (pesosIniciales * 100) / precio;
-    const alVencimientoGross = (configData.pagoFinal * nominales) / 100;
+    const precioConComision =
+      precio * (1 + (typeof comision === "number" ? comision : 0) / 100);
 
-    // Apply fee to ticker results
-    const feeAmount = (alVencimientoGross - pesosIniciales) * (comision / 100);
-    const alVencimiento = alVencimientoGross - feeAmount;
+    // Calculate bonds purchased at the higher effective price (including fee)
+    const pesosInicialesNum =
+      typeof pesosIniciales === "number" ? pesosIniciales : 0;
+    const nominales = (pesosInicialesNum * 100) / precioConComision;
+    const alVencimientoGross = (configData.pagoFinal * nominales) / 100;
+    const alVencimiento = alVencimientoGross;
+    const feeAmount = ((precioConComision - precio) * nominales) / 100;
 
     if (calculatorMode === "ticker") {
       const tea =
-        Math.pow(alVencimiento / pesosIniciales, 365 / selectedData.dias) - 1;
+        Math.pow(alVencimiento / pesosInicialesNum, 365 / selectedData.dias) -
+        1;
 
       return {
         precio,
+        precioConComision,
         nominales,
-        pesosIniciales,
+        pesosIniciales: pesosInicialesNum,
         alVencimiento,
         alVencimientoGross,
         feeAmount,
-        comision,
+        comision: typeof comision === "number" ? comision : 0,
         tea,
         dias: selectedData.dias,
         mode: "ticker" as const,
@@ -137,9 +145,10 @@ export default function FijaCalculator({
     }
 
     let montoCaucho: number;
-    let efectiveAmount = pesosIniciales;
+    let efectiveAmount = pesosInicialesNum;
     let limitExceeded = false;
     let limitAmount: number | null = null;
+    const cauchoNum = typeof caucho === "number" ? caucho : 0;
 
     if (selectedAlternative !== "custom" && !isCustomAlternative) {
       const billeteraOption = billeteras.find(
@@ -148,7 +157,7 @@ export default function FijaCalculator({
 
       if (billeteraOption && billeteraOption.limit) {
         limitAmount = billeteraOption.limit;
-        if (pesosIniciales > billeteraOption.limit) {
+        if (pesosInicialesNum > billeteraOption.limit) {
           efectiveAmount = billeteraOption.limit;
           limitExceeded = true;
         }
@@ -157,25 +166,28 @@ export default function FijaCalculator({
 
     if (limitExceeded && limitAmount) {
       const limitedReturns =
-        limitAmount * Math.pow(1 + caucho / 100 / 365, selectedData.dias);
-      const excessAmount = pesosIniciales - limitAmount;
+        limitAmount * Math.pow(1 + cauchoNum / 100 / 365, selectedData.dias);
+      const excessAmount = pesosInicialesNum - limitAmount;
       montoCaucho = limitedReturns + excessAmount;
     } else {
       montoCaucho =
-        pesosIniciales * Math.pow(1 + caucho / 100 / 365, selectedData.dias);
+        pesosInicialesNum *
+        Math.pow(1 + cauchoNum / 100 / 365, selectedData.dias);
     }
 
     const diferenciaGanancia = alVencimiento - montoCaucho;
     const porDia = diferenciaGanancia / selectedData.dias;
-    const tasaGanancia = diferenciaGanancia / pesosIniciales;
-    const tea = selectedData.tea;
+    const tasaGanancia = diferenciaGanancia / pesosInicialesNum;
+    const tea =
+      Math.pow(alVencimiento / pesosInicialesNum, 365 / selectedData.dias) - 1;
     const teaCaucho =
-      Math.pow(montoCaucho / pesosIniciales, 365 / selectedData.dias) - 1;
+      Math.pow(montoCaucho / pesosInicialesNum, 365 / selectedData.dias) - 1;
 
     return {
       precio,
+      precioConComision,
       nominales,
-      pesosIniciales,
+      pesosIniciales: pesosInicialesNum,
       alVencimiento,
       alVencimientoGross,
       feeAmount,
@@ -275,15 +287,19 @@ export default function FijaCalculator({
                   id="pesosIniciales"
                   value={pesosIniciales}
                   onValueChange={(values) => {
-                    const newValue = values.floatValue || 0;
-                    setPesosIniciales(newValue);
+                    const newValue = values.floatValue;
+                    if (newValue === undefined) {
+                      setPesosIniciales("");
+                    } else {
+                      setPesosIniciales(newValue);
+                    }
                     setPesosInicialesError(undefined);
                   }}
                   className={cn(
                     "dark:bg-neutral-900 mt-1",
                     pesosInicialesError && "border-red-500",
                   )}
-                  placeholder="100.000"
+                  placeholder="Ej: 100.000"
                   allowNegative={false}
                   decimalScale={0}
                 />
@@ -298,16 +314,22 @@ export default function FijaCalculator({
                   id="comision"
                   value={comision}
                   onValueChange={(values) => {
-                    const newValue = values.floatValue || 0;
-                    setComision(Math.min(Math.max(newValue, 0), 2));
+                    const newValue = values.floatValue;
+                    if (newValue === undefined) {
+                      setComision("");
+                    } else {
+                      setComision(Math.min(Math.max(newValue, 0), 2));
+                    }
                   }}
                   className="dark:bg-neutral-900 mt-1"
-                  placeholder="0,5"
+                  placeholder="Ej: 0,5%"
                   allowNegative={false}
                   decimalScale={2}
                   suffix="%"
-                  min={0}
-                  max={2}
+                  isAllowed={(values: NumberFormatValues): boolean => {
+                    const numericValue = parseFloat(values.value);
+                    return !isNaN(numericValue) && numericValue <= 2;
+                  }}
                 />
               </div>
             </div>
@@ -345,7 +367,13 @@ export default function FijaCalculator({
                                   {getAlternativeDisplayName(
                                     selectedAlternative,
                                   )}{" "}
-                                  ({formatNumber(caucho / 100, 2, "percentage")}
+                                  (
+                                  {formatNumber(
+                                    (typeof caucho === "number" ? caucho : 0) /
+                                      100,
+                                    2,
+                                    "percentage",
+                                  )}
                                   )
                                 </span>
                               </div>
@@ -409,8 +437,12 @@ export default function FijaCalculator({
                       id="caucho"
                       value={caucho}
                       onValueChange={(values) => {
-                        const newValue = values.floatValue || 0;
-                        setCaucho(newValue);
+                        const newValue = values.floatValue;
+                        if (newValue === undefined) {
+                          setCaucho("");
+                        } else {
+                          setCaucho(newValue);
+                        }
                         setCauchoError(undefined);
                       }}
                       className={cn(
@@ -460,8 +492,8 @@ export default function FijaCalculator({
         selectedTicker={selectedTicker}
         selectedAlternative={selectedAlternative}
         tableData={tableData}
-        caucho={caucho}
-        pesosIniciales={pesosIniciales}
+        caucho={typeof caucho === "number" ? caucho : 0}
+        pesosIniciales={typeof pesosIniciales === "number" ? pesosIniciales : 0}
       />
     </div>
   );
