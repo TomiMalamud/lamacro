@@ -383,7 +383,7 @@ export default function FijaResults({
                       </td>
                       <td className="py-3 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <span className="text-muted-foreground">
+                          <span className="text-base text-muted-foreground">
                             <NumberFlow
                               value={(() => {
                                 const selectedData = tableData.find(
@@ -407,7 +407,7 @@ export default function FijaResults({
                               }}
                             />
                           </span>
-                          <span className="text-primary font-medium">
+                          <span className="text-base text-primary font-medium">
                             <NumberFlow
                               value={(() => {
                                 const selectedData = tableData.find(
@@ -434,7 +434,7 @@ export default function FijaResults({
                         </div>
                       </td>
                       <td className="py-3 text-center">
-                        <span className="text-primary font-medium">
+                        <span className="text-base text-primary font-medium">
                           <NumberFlow
                             value={caucho / 100}
                             locales="es-AR"
@@ -452,7 +452,7 @@ export default function FijaResults({
                       </td>
                       <td className="py-3 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <span className="text-muted-foreground">
+                          <span className="text-base text-muted-foreground">
                             <NumberFlow
                               value={(() => {
                                 const selectedData = tableData.find(
@@ -476,7 +476,7 @@ export default function FijaResults({
                               }}
                             />
                           </span>
-                          <span className="text-primary font-medium">
+                          <span className="text-base text-primary font-medium">
                             <NumberFlow
                               value={(() => {
                                 const selectedData = tableData.find(
@@ -503,7 +503,7 @@ export default function FijaResults({
                         </div>
                       </td>
                       <td className="py-3 text-center">
-                        <span className="text-primary font-medium">
+                        <span className="text-base text-primary font-medium">
                           <NumberFlow
                             value={(() => {
                               const selectedData = tableData.find(
@@ -533,7 +533,7 @@ export default function FijaResults({
                       </td>
                       <td className="py-3 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <span className="text-muted-foreground">
+                          <span className="text-base text-muted-foreground">
                             <NumberFlow
                               value={(() => {
                                 const selectedData = tableData.find(
@@ -557,7 +557,7 @@ export default function FijaResults({
                               }}
                             />
                           </span>
-                          <span className="text-primary font-medium">
+                          <span className="text-base text-primary font-medium">
                             <NumberFlow
                               value={calculations.tea}
                               locales="es-AR"
@@ -570,7 +570,7 @@ export default function FijaResults({
                         </div>
                       </td>
                       <td className="py-3 text-center">
-                        <span className="text-primary font-medium">
+                        <span className="text-base text-primary font-medium">
                           <NumberFlow
                             value={calculations.teaCaucho || 0}
                             locales="es-AR"
