@@ -455,7 +455,7 @@ export default function FijaCalculator({
                         setCauchoError(undefined);
                       }}
                       className={cn(
-                        "dark:bg-neutral-900 flex-1",
+                        "dark:bg-neutral-900 flex-1 mt-1",
                         cauchoError && "border-red-500",
                       )}
                       placeholder="23"
