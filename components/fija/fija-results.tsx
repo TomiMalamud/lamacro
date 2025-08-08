@@ -130,164 +130,147 @@ export default function FijaResults({
                   </div>
                 </div>
               </div>
-
-              {/* TEM-TNA-TEA before fees for ticker mode */}
-              <div className="bg-muted/30 p-4 rounded-lg space-y-3">
-                <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                  Rendimientos antes de comisión
-                </h3>
+              <div className="bg-muted p-4 rounded-lg space-y-3">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">TNA</Label>
-                    <div className="text-sm font-medium">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTNA(
-                            configData.pagoFinal,
-                            selectedData.px,
-                            selectedData.dias,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{
-                          style: "percent",
-                          maximumFractionDigits: 2,
-                        }}
-                      />
+                    <div className="text-sm font-medium flex items-center gap-2">
+                      <span className="line-through text-muted-foreground">
+                        <NumberFlow
+                          value={(() => {
+                            const selectedData = tableData.find(
+                              (row) => row.ticker === selectedTicker,
+                            );
+                            if (!selectedData) return 0;
+                            const configData = TICKER_PROSPECT.find(
+                              (config) => config.ticker === selectedTicker,
+                            );
+                            if (!configData) return 0;
+                            return calculateTNA(
+                              configData.pagoFinal,
+                              selectedData.px,
+                              selectedData.dias,
+                            );
+                          })()}
+                          locales="es-AR"
+                          format={{
+                            style: "percent",
+                            maximumFractionDigits: 2,
+                          }}
+                        />
+                      </span>
+                      <span className="text-primary">
+                        <NumberFlow
+                          value={(() => {
+                            const selectedData = tableData.find(
+                              (row) => row.ticker === selectedTicker,
+                            );
+                            if (!selectedData) return 0;
+                            return calculateTNA(
+                              calculations.alVencimiento,
+                              calculations.pesosIniciales,
+                              selectedData.dias,
+                            );
+                          })()}
+                          locales="es-AR"
+                          format={{
+                            style: "percent",
+                            maximumFractionDigits: 2,
+                          }}
+                        />
+                      </span>
                     </div>
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">TEM</Label>
-                    <div className="text-sm font-medium">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTEM(
-                            configData.pagoFinal,
-                            selectedData.px,
-                            selectedData.meses,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{
-                          style: "percent",
-                          maximumFractionDigits: 2,
-                        }}
-                      />
+                    <div className="text-sm font-medium flex items-center gap-2">
+                      <span className="line-through text-muted-foreground">
+                        <NumberFlow
+                          value={(() => {
+                            const selectedData = tableData.find(
+                              (row) => row.ticker === selectedTicker,
+                            );
+                            if (!selectedData) return 0;
+                            const configData = TICKER_PROSPECT.find(
+                              (config) => config.ticker === selectedTicker,
+                            );
+                            if (!configData) return 0;
+                            return calculateTEM(
+                              configData.pagoFinal,
+                              selectedData.px,
+                              selectedData.meses,
+                            );
+                          })()}
+                          locales="es-AR"
+                          format={{
+                            style: "percent",
+                            maximumFractionDigits: 2,
+                          }}
+                        />
+                      </span>
+                      <span className="text-primary">
+                        <NumberFlow
+                          value={(() => {
+                            const selectedData = tableData.find(
+                              (row) => row.ticker === selectedTicker,
+                            );
+                            if (!selectedData) return 0;
+                            const configData = TICKER_PROSPECT.find(
+                              (config) => config.ticker === selectedTicker,
+                            );
+                            if (!configData) return 0;
+                            return calculateTEM(
+                              configData.pagoFinal,
+                              calculations.precioConComision,
+                              selectedData.meses,
+                            );
+                          })()}
+                          locales="es-AR"
+                          format={{
+                            style: "percent",
+                            maximumFractionDigits: 2,
+                          }}
+                        />
+                      </span>
                     </div>
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">TEA</Label>
-                    <div className="text-sm font-medium">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTEA(
-                            configData.pagoFinal,
-                            selectedData.px,
-                            selectedData.dias,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{
-                          style: "percent",
-                          maximumFractionDigits: 2,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* TEM-TNA-TEA after fees for ticker mode */}
-              <div className="bg-muted/30 p-4 rounded-lg space-y-3">
-                <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                  Rendimientos después de comisión
-                </h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">TNA</Label>
-                    <div className="text-sm font-medium">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          return calculateTNA(
-                            calculations.alVencimiento,
-                            calculations.pesosIniciales,
-                            selectedData.dias,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{
-                          style: "percent",
-                          maximumFractionDigits: 2,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">TEM</Label>
-                    <div className="text-sm font-medium">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTEM(
-                            configData.pagoFinal,
-                            calculations.precioConComision,
-                            selectedData.meses,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{
-                          style: "percent",
-                          maximumFractionDigits: 2,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-xs text-muted-foreground">TEA</Label>
-                    <div className="text-sm font-medium">
-                      <NumberFlow
-                        value={calculations.tea}
-                        locales="es-AR"
-                        format={{
-                          style: "percent",
-                          maximumFractionDigits: 2,
-                        }}
-                      />
+                    <div className="text-sm font-medium flex items-center gap-2">
+                      <span className="line-through text-muted-foreground">
+                        <NumberFlow
+                          value={(() => {
+                            const selectedData = tableData.find(
+                              (row) => row.ticker === selectedTicker,
+                            );
+                            if (!selectedData) return 0;
+                            const configData = TICKER_PROSPECT.find(
+                              (config) => config.ticker === selectedTicker,
+                            );
+                            if (!configData) return 0;
+                            return calculateTEA(
+                              configData.pagoFinal,
+                              selectedData.px,
+                              selectedData.dias,
+                            );
+                          })()}
+                          locales="es-AR"
+                          format={{
+                            style: "percent",
+                            maximumFractionDigits: 2,
+                          }}
+                        />
+                      </span>
+                      <span className="text-primary">
+                        <NumberFlow
+                          value={calculations.tea}
+                          locales="es-AR"
+                          format={{
+                            style: "percent",
+                            maximumFractionDigits: 2,
+                          }}
+                        />
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -330,7 +313,7 @@ export default function FijaResults({
                     }}
                   />
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-primary">
+                <div className="flex justify-between items-center py-2 border-b">
                   <span className="font-medium">Comisión</span>
                   <NumberFlow
                     value={-calculations.feeAmount}
@@ -360,10 +343,10 @@ export default function FijaResults({
 
           {calculations.mode === "comparison" && (
             <>
-              {/* TEM-TNA-TEA before fees for comparison mode */}
+              {/* TEM-TNA-TEA combined display with before (strikethrough) and after (highlighted) for comparison mode */}
               <div className="bg-muted/30 p-4 rounded-lg space-y-3">
                 <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                  Rendimientos antes de comisión
+                  Rendimientos
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center font-semibold text-sm mb-2">
@@ -394,214 +377,158 @@ export default function FijaResults({
                   </div>
                 </div>
                 <div className="grid grid-cols-6 gap-2 text-center">
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={(() => {
-                        const selectedData = tableData.find(
-                          (row) => row.ticker === selectedTicker,
-                        );
-                        if (!selectedData) return 0;
-                        const configData = TICKER_PROSPECT.find(
-                          (config) => config.ticker === selectedTicker,
-                        );
-                        if (!configData) return 0;
-                        return calculateTNA(
-                          configData.pagoFinal,
-                          selectedData.px,
-                          selectedData.dias,
-                        );
-                      })()}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
+                  <div className="text-sm font-medium flex items-center justify-center gap-2">
+                    <span className="line-through text-muted-foreground">
+                      <NumberFlow
+                        value={(() => {
+                          const selectedData = tableData.find(
+                            (row) => row.ticker === selectedTicker,
+                          );
+                          if (!selectedData) return 0;
+                          const configData = TICKER_PROSPECT.find(
+                            (config) => config.ticker === selectedTicker,
+                          );
+                          if (!configData) return 0;
+                          return calculateTNA(
+                            configData.pagoFinal,
+                            selectedData.px,
+                            selectedData.dias,
+                          );
+                        })()}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
+                    <span className="text-primary">
+                      <NumberFlow
+                        value={(() => {
+                          const selectedData = tableData.find(
+                            (row) => row.ticker === selectedTicker,
+                          );
+                          if (!selectedData) return 0;
+                          const configData = TICKER_PROSPECT.find(
+                            (config) => config.ticker === selectedTicker,
+                          );
+                          if (!configData) return 0;
+                          return calculateTNA(
+                            configData.pagoFinal,
+                            calculations.precioConComision,
+                            selectedData.dias,
+                          );
+                        })()}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
                   </div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={(() => {
-                        const selectedData = tableData.find(
-                          (row) => row.ticker === selectedTicker,
-                        );
-                        if (!selectedData) return 0;
-                        const configData = TICKER_PROSPECT.find(
-                          (config) => config.ticker === selectedTicker,
-                        );
-                        if (!configData) return 0;
-                        return calculateTEM(
-                          configData.pagoFinal,
-                          selectedData.px,
-                          selectedData.meses,
-                        );
-                      })()}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
+                  <div className="text-sm font-medium flex items-center justify-center gap-2">
+                    <span className="line-through text-muted-foreground">
+                      <NumberFlow
+                        value={(() => {
+                          const selectedData = tableData.find(
+                            (row) => row.ticker === selectedTicker,
+                          );
+                          if (!selectedData) return 0;
+                          const configData = TICKER_PROSPECT.find(
+                            (config) => config.ticker === selectedTicker,
+                          );
+                          if (!configData) return 0;
+                          return calculateTEM(
+                            configData.pagoFinal,
+                            selectedData.px,
+                            selectedData.meses,
+                          );
+                        })()}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
+                    <span className="text-primary">
+                      <NumberFlow
+                        value={(() => {
+                          const selectedData = tableData.find(
+                            (row) => row.ticker === selectedTicker,
+                          );
+                          if (!selectedData) return 0;
+                          const configData = TICKER_PROSPECT.find(
+                            (config) => config.ticker === selectedTicker,
+                          );
+                          if (!configData) return 0;
+                          return calculateTEM(
+                            configData.pagoFinal,
+                            calculations.precioConComision,
+                            selectedData.meses,
+                          );
+                        })()}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
                   </div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={(() => {
-                        const selectedData = tableData.find(
-                          (row) => row.ticker === selectedTicker,
-                        );
-                        if (!selectedData) return 0;
-                        const configData = TICKER_PROSPECT.find(
-                          (config) => config.ticker === selectedTicker,
-                        );
-                        if (!configData) return 0;
-                        return calculateTEA(
-                          configData.pagoFinal,
-                          selectedData.px,
-                          selectedData.dias,
-                        );
-                      })()}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
+                  <div className="text-sm font-medium flex items-center justify-center gap-2">
+                    <span className="line-through text-muted-foreground">
+                      <NumberFlow
+                        value={(() => {
+                          const selectedData = tableData.find(
+                            (row) => row.ticker === selectedTicker,
+                          );
+                          if (!selectedData) return 0;
+                          const configData = TICKER_PROSPECT.find(
+                            (config) => config.ticker === selectedTicker,
+                          );
+                          if (!configData) return 0;
+                          return calculateTEA(
+                            configData.pagoFinal,
+                            selectedData.px,
+                            selectedData.dias,
+                          );
+                        })()}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
+                    <span className="text-primary">
+                      <NumberFlow
+                        value={calculations.tea}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
                   </div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={caucho / 100}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
+                  <div className="text-sm font-medium flex items-center justify-center gap-2">
+                    <span className="line-through text-muted-foreground">
+                      <NumberFlow
+                        value={caucho / 100}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
+                    <span className="text-primary">
+                      <NumberFlow
+                        value={caucho / 100}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
                   </div>
-                  <div className="text-sm text-muted-foreground">N/A</div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={calculations.teaCaucho || 0}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
+                  <div className="text-sm text-muted-foreground flex items-center justify-center">
+                    N/A
                   </div>
-                </div>
-              </div>
-
-              {/* TEM-TNA-TEA after fees for comparison mode */}
-              <div className="bg-muted/30 p-4 rounded-lg space-y-3">
-                <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                  Rendimientos después de comisión
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center font-semibold text-sm mb-2">
-                    {selectedTicker}
-                  </div>
-                  <div className="text-center font-semibold text-sm mb-2">
-                    {getAlternativeDisplayName(selectedAlternative)}
-                  </div>
-                </div>
-                <div className="grid grid-cols-6 gap-2 text-center">
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TNA
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEM
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEA
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TNA
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEM
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEA
-                  </div>
-                </div>
-                <div className="grid grid-cols-6 gap-2 text-center">
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={(() => {
-                        const selectedData = tableData.find(
-                          (row) => row.ticker === selectedTicker,
-                        );
-                        if (!selectedData) return 0;
-                        const configData = TICKER_PROSPECT.find(
-                          (config) => config.ticker === selectedTicker,
-                        );
-                        if (!configData) return 0;
-                        return calculateTNA(
-                          configData.pagoFinal,
-                          calculations.precioConComision,
-                          selectedData.dias,
-                        );
-                      })()}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
-                  </div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={(() => {
-                        const selectedData = tableData.find(
-                          (row) => row.ticker === selectedTicker,
-                        );
-                        if (!selectedData) return 0;
-                        const configData = TICKER_PROSPECT.find(
-                          (config) => config.ticker === selectedTicker,
-                        );
-                        if (!configData) return 0;
-                        return calculateTEM(
-                          configData.pagoFinal,
-                          calculations.precioConComision,
-                          selectedData.meses,
-                        );
-                      })()}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
-                  </div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={calculations.tea}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
-                  </div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={caucho / 100}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
-                  </div>
-                  <div className="text-sm text-muted-foreground">N/A</div>
-                  <div className="text-sm font-medium">
-                    <NumberFlow
-                      value={calculations.teaCaucho || 0}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 1,
-                      }}
-                    />
+                  <div className="text-sm font-medium flex items-center justify-center gap-2">
+                    <span className="line-through text-muted-foreground">
+                      <NumberFlow
+                        value={calculations.teaCaucho || 0}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
+                    <span className="text-primary">
+                      <NumberFlow
+                        value={calculations.teaCaucho || 0}
+                        locales="es-AR"
+                        format={{ style: "percent", maximumFractionDigits: 1 }}
+                      />
+                    </span>
                   </div>
                 </div>
               </div>
