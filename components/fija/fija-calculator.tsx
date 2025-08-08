@@ -59,7 +59,7 @@ export default function FijaCalculator({
   const [calculatorMode, setCalculatorMode] = useState<"ticker" | "comparison">(
     "ticker",
   );
-  const [comision, setComision] = useState<number | string>(0.5);
+  const [comision, setComision] = useState<number | string>(0.2);
 
   const getAlternativeDisplayName = (selectedAlternative: string): string => {
     return selectedAlternative === "custom"
@@ -259,7 +259,7 @@ export default function FijaCalculator({
       <Card>
         <CardHeader>
           <CardTitle>Calculadora de Renta Fija</CardTitle>
-          <CardDescription>
+          <CardDescription className="hidden md:block">
             Compará rendimientos de instrumentos de renta fija con otras
             alternativas de tasa. Podés seleccionar un instrumento de los
             listados en{" "}
@@ -268,6 +268,10 @@ export default function FijaCalculator({
             </InlineLink>
             , como Mercado Pago, Ualá, Cocos, Plazos Fijos, etc., o usar una
             tasa personalizada.
+            <p>
+              Se asume que las alternativas no tienen comisión, pero algunas
+              pueden llegar a tenerla.
+            </p>
             <p className="text-sm text-muted-foreground font-bold">
               Ojo: hay instrumentos que tienen más riesgo que otros. Sólo los
               que tienen límite (ej. Ualá) tienen retornos 100% garantizados.

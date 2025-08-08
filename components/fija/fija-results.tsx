@@ -72,15 +72,12 @@ export default function FijaResults({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Resultados</CardTitle>
-      </CardHeader>
       <CardContent>
         <div className="space-y-6">
           {calculations.mode === "ticker" && (
             <>
               {/* Basic data for ticker mode */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
                 <div className="space-y-1">
                   <Label className="text-sm text-muted-foreground">
                     Precio {selectedTicker}
@@ -131,11 +128,14 @@ export default function FijaResults({
                 </div>
               </div>
               <div className="bg-muted p-4 rounded-lg space-y-3">
-                <div className="grid grid-cols-3 gap-4">
+                <h3 className="text-muted-foreground text-sm">
+                  Tasas antes y después de comisión
+                </h3>
+                <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">TNA</Label>
-                    <div className="text-sm font-medium flex items-center gap-2">
-                      <span className="line-through text-muted-foreground">
+                    <div className="font-medium flex items-center gap-2">
+                      <span className="text-muted-foreground">
                         <NumberFlow
                           value={(() => {
                             const selectedData = tableData.find(
@@ -183,8 +183,8 @@ export default function FijaResults({
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">TEM</Label>
-                    <div className="text-sm font-medium flex items-center gap-2">
-                      <span className="line-through text-muted-foreground">
+                    <div className="font-medium flex items-center gap-2">
+                      <span className="text-muted-foreground">
                         <NumberFlow
                           value={(() => {
                             const selectedData = tableData.find(
@@ -236,8 +236,8 @@ export default function FijaResults({
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs text-muted-foreground">TEA</Label>
-                    <div className="text-sm font-medium flex items-center gap-2">
-                      <span className="line-through text-muted-foreground">
+                    <div className="font-medium flex items-center gap-2">
+                      <span className="text-muted-foreground">
                         <NumberFlow
                           value={(() => {
                             const selectedData = tableData.find(
@@ -275,348 +275,446 @@ export default function FijaResults({
                   </div>
                 </div>
               </div>
-
-              {/* Results for ticker mode */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">Pesos a invertir</span>
-                  <NumberFlow
-                    value={
-                      (calculations.nominales *
-                        calculations.precioConComision) /
-                      100
-                    }
-                    locales="es-AR"
-                    format={{
-                      style: "currency",
-                      currency: "ARS",
-                      maximumFractionDigits: 0,
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">
-                    Ganancia Bruta al Vencimiento (
-                    {
-                      tableData.find((row) => row.ticker === selectedTicker)
-                        ?.fechaVencimiento
-                    }
-                    )
-                  </span>
-                  <NumberFlow
-                    value={calculations.gananciaBruta || 0}
-                    locales="es-AR"
-                    format={{
-                      style: "currency",
-                      currency: "ARS",
-                      maximumFractionDigits: 0,
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">Comisión</span>
-                  <NumberFlow
-                    value={-calculations.feeAmount}
-                    locales="es-AR"
-                    format={{
-                      style: "currency",
-                      currency: "ARS",
-                      maximumFractionDigits: 0,
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between items-center py-2 text-lg font-bold">
-                  Ganancia Neta
-                  <NumberFlow
-                    value={calculations.gananciaNeta || 0}
-                    locales="es-AR"
-                    format={{
-                      style: "currency",
-                      currency: "ARS",
-                      maximumFractionDigits: 0,
-                    }}
-                  />
-                </div>
-              </div>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-muted">
+                    <th className="text-left py-2 font-medium text-muted-foreground">
+                      Letra/Bono
+                    </th>
+                    <th className="text-right py-2 font-semibold">
+                      {selectedTicker}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-muted">
+                  <tr>
+                    <td className="py-3 font-medium">Pesos a invertir</td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={
+                          (calculations.nominales *
+                            calculations.precioConComision) /
+                          100
+                        }
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 font-medium">
+                      Ganancia Bruta al Vencimiento (
+                      {
+                        tableData.find((row) => row.ticker === selectedTicker)
+                          ?.fechaVencimiento
+                      }
+                      )
+                    </td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={calculations.gananciaBruta || 0}
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 font-medium">Comisión</td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={-calculations.feeAmount}
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 font-bold text-lg">Ganancia Neta</td>
+                    <td className="py-3 text-right font-bold text-lg">
+                      <NumberFlow
+                        value={calculations.gananciaNeta || 0}
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </>
           )}
 
           {calculations.mode === "comparison" && (
             <>
-              {/* TEM-TNA-TEA combined display with before (strikethrough) and after (highlighted) for comparison mode */}
-              <div className="bg-muted/30 p-4 rounded-lg space-y-3">
-                <h3 className="font-semibold text-sm text-muted-foreground mb-2">
-                  Rendimientos
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center font-semibold text-sm mb-2">
-                    {selectedTicker}
-                  </div>
-                  <div className="text-center font-semibold text-sm mb-2">
-                    {getAlternativeDisplayName(selectedAlternative)}
-                  </div>
-                </div>
-                <div className="grid grid-cols-6 gap-2 text-center">
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TNA
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEM
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEA
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TNA
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEM
-                  </div>
-                  <div className="text-xs font-medium text-muted-foreground">
-                    TEA
-                  </div>
-                </div>
-                <div className="grid grid-cols-6 gap-2 text-center">
-                  <div className="text-sm font-medium flex items-center justify-center gap-2">
-                    <span className="line-through text-muted-foreground">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTNA(
-                            configData.pagoFinal,
-                            selectedData.px,
-                            selectedData.dias,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                    <span className="text-primary">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTNA(
-                            configData.pagoFinal,
-                            calculations.precioConComision,
-                            selectedData.dias,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                  </div>
-                  <div className="text-sm font-medium flex items-center justify-center gap-2">
-                    <span className="line-through text-muted-foreground">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTEM(
-                            configData.pagoFinal,
-                            selectedData.px,
-                            selectedData.meses,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                    <span className="text-primary">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTEM(
-                            configData.pagoFinal,
-                            calculations.precioConComision,
-                            selectedData.meses,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                  </div>
-                  <div className="text-sm font-medium flex items-center justify-center gap-2">
-                    <span className="line-through text-muted-foreground">
-                      <NumberFlow
-                        value={(() => {
-                          const selectedData = tableData.find(
-                            (row) => row.ticker === selectedTicker,
-                          );
-                          if (!selectedData) return 0;
-                          const configData = TICKER_PROSPECT.find(
-                            (config) => config.ticker === selectedTicker,
-                          );
-                          if (!configData) return 0;
-                          return calculateTEA(
-                            configData.pagoFinal,
-                            selectedData.px,
-                            selectedData.dias,
-                          );
-                        })()}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                    <span className="text-primary">
-                      <NumberFlow
-                        value={calculations.tea}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                  </div>
-                  <div className="text-sm font-medium flex items-center justify-center gap-2">
-                    <span className="line-through text-muted-foreground">
-                      <NumberFlow
-                        value={caucho / 100}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                    <span className="text-primary">
-                      <NumberFlow
-                        value={caucho / 100}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                  </div>
-                  <div className="text-sm text-muted-foreground flex items-center justify-center">
-                    N/A
-                  </div>
-                  <div className="text-sm font-medium flex items-center justify-center gap-2">
-                    <span className="line-through text-muted-foreground">
-                      <NumberFlow
-                        value={calculations.teaCaucho || 0}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                    <span className="text-primary">
-                      <NumberFlow
-                        value={calculations.teaCaucho || 0}
-                        locales="es-AR"
-                        format={{ style: "percent", maximumFractionDigits: 1 }}
-                      />
-                    </span>
-                  </div>
-                </div>
+              <div className="bg-muted p-4 rounded-lg">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-muted">
+                      <th className="text-left py-2 font-medium text-muted-foreground">
+                        Tasa
+                      </th>
+                      <th className="text-center py-2 font-semibold">
+                        {selectedTicker}
+                      </th>
+                      <th className="text-center py-2 font-semibold">
+                        {getAlternativeDisplayName(selectedAlternative)}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-muted">
+                    <tr>
+                      <td className="py-3 font-medium text-muted-foreground">
+                        TNA
+                      </td>
+                      <td className="py-3 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-muted-foreground">
+                            <NumberFlow
+                              value={(() => {
+                                const selectedData = tableData.find(
+                                  (row) => row.ticker === selectedTicker,
+                                );
+                                if (!selectedData) return 0;
+                                const configData = TICKER_PROSPECT.find(
+                                  (config) => config.ticker === selectedTicker,
+                                );
+                                if (!configData) return 0;
+                                return calculateTNA(
+                                  configData.pagoFinal,
+                                  selectedData.px,
+                                  selectedData.dias,
+                                );
+                              })()}
+                              locales="es-AR"
+                              format={{
+                                style: "percent",
+                                maximumFractionDigits: 1,
+                              }}
+                            />
+                          </span>
+                          <span className="text-primary font-medium">
+                            <NumberFlow
+                              value={(() => {
+                                const selectedData = tableData.find(
+                                  (row) => row.ticker === selectedTicker,
+                                );
+                                if (!selectedData) return 0;
+                                const configData = TICKER_PROSPECT.find(
+                                  (config) => config.ticker === selectedTicker,
+                                );
+                                if (!configData) return 0;
+                                return calculateTNA(
+                                  configData.pagoFinal,
+                                  calculations.precioConComision,
+                                  selectedData.dias,
+                                );
+                              })()}
+                              locales="es-AR"
+                              format={{
+                                style: "percent",
+                                maximumFractionDigits: 1,
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 text-center">
+                        <span className="text-primary font-medium">
+                          <NumberFlow
+                            value={caucho / 100}
+                            locales="es-AR"
+                            format={{
+                              style: "percent",
+                              maximumFractionDigits: 1,
+                            }}
+                          />
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 font-medium text-muted-foreground">
+                        TEM
+                      </td>
+                      <td className="py-3 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-muted-foreground">
+                            <NumberFlow
+                              value={(() => {
+                                const selectedData = tableData.find(
+                                  (row) => row.ticker === selectedTicker,
+                                );
+                                if (!selectedData) return 0;
+                                const configData = TICKER_PROSPECT.find(
+                                  (config) => config.ticker === selectedTicker,
+                                );
+                                if (!configData) return 0;
+                                return calculateTEM(
+                                  configData.pagoFinal,
+                                  selectedData.px,
+                                  selectedData.meses,
+                                );
+                              })()}
+                              locales="es-AR"
+                              format={{
+                                style: "percent",
+                                maximumFractionDigits: 1,
+                              }}
+                            />
+                          </span>
+                          <span className="text-primary font-medium">
+                            <NumberFlow
+                              value={(() => {
+                                const selectedData = tableData.find(
+                                  (row) => row.ticker === selectedTicker,
+                                );
+                                if (!selectedData) return 0;
+                                const configData = TICKER_PROSPECT.find(
+                                  (config) => config.ticker === selectedTicker,
+                                );
+                                if (!configData) return 0;
+                                return calculateTEM(
+                                  configData.pagoFinal,
+                                  calculations.precioConComision,
+                                  selectedData.meses,
+                                );
+                              })()}
+                              locales="es-AR"
+                              format={{
+                                style: "percent",
+                                maximumFractionDigits: 1,
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 text-center">
+                        <span className="text-primary font-medium">
+                          <NumberFlow
+                            value={(() => {
+                              const selectedData = tableData.find(
+                                (row) => row.ticker === selectedTicker,
+                              );
+                              if (!selectedData) return 0;
+                              const tnaDecimal = caucho / 100;
+                              return (
+                                Math.pow(
+                                  1 + tnaDecimal,
+                                  selectedData.meses / 12,
+                                ) - 1
+                              );
+                            })()}
+                            locales="es-AR"
+                            format={{
+                              style: "percent",
+                              maximumFractionDigits: 1,
+                            }}
+                          />
+                        </span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="py-3 font-medium text-muted-foreground">
+                        TEA
+                      </td>
+                      <td className="py-3 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="text-muted-foreground">
+                            <NumberFlow
+                              value={(() => {
+                                const selectedData = tableData.find(
+                                  (row) => row.ticker === selectedTicker,
+                                );
+                                if (!selectedData) return 0;
+                                const configData = TICKER_PROSPECT.find(
+                                  (config) => config.ticker === selectedTicker,
+                                );
+                                if (!configData) return 0;
+                                return calculateTEA(
+                                  configData.pagoFinal,
+                                  selectedData.px,
+                                  selectedData.dias,
+                                );
+                              })()}
+                              locales="es-AR"
+                              format={{
+                                style: "percent",
+                                maximumFractionDigits: 1,
+                              }}
+                            />
+                          </span>
+                          <span className="text-primary font-medium">
+                            <NumberFlow
+                              value={calculations.tea}
+                              locales="es-AR"
+                              format={{
+                                style: "percent",
+                                maximumFractionDigits: 1,
+                              }}
+                            />
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 text-center">
+                        <span className="text-primary font-medium">
+                          <NumberFlow
+                            value={calculations.teaCaucho || 0}
+                            locales="es-AR"
+                            format={{
+                              style: "percent",
+                              maximumFractionDigits: 1,
+                            }}
+                          />
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-
-              {/* Comparison mode - 2 columns */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center font-semibold text-sm">
-                    {selectedTicker}
-                  </div>
-                  <div className="text-center font-semibold text-sm">
-                    {getAlternativeDisplayName(selectedAlternative)}
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">Pesos a invertir</span>
-                  <div className="grid grid-cols-2 gap-4 text-right">
-                    <NumberFlow
-                      value={
-                        (calculations.nominales *
-                          calculations.precioConComision) /
-                        100
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-muted">
+                    <th className="text-left py-2 font-medium text-muted-foreground">
+                      Concepto
+                    </th>
+                    <th className="text-right py-2 font-semibold">
+                      {selectedTicker}
+                    </th>
+                    <th className="text-right py-2 font-semibold">
+                      {getAlternativeDisplayName(selectedAlternative)}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-muted">
+                  <tr>
+                    <td className="py-3 font-medium">Pesos a invertir</td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={
+                          (calculations.nominales *
+                            calculations.precioConComision) /
+                          100
+                        }
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={calculations.pesosIniciales}
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 font-medium">
+                      Ganancia Bruta al Vencimiento (
+                      {
+                        tableData.find((row) => row.ticker === selectedTicker)
+                          ?.fechaVencimiento
                       }
-                      locales="es-AR"
-                      format={{
-                        style: "currency",
-                        currency: "ARS",
-                        maximumFractionDigits: 0,
-                      }}
-                    />
-                    <NumberFlow
-                      value={calculations.pesosIniciales}
-                      locales="es-AR"
-                      format={{
-                        style: "currency",
-                        currency: "ARS",
-                        maximumFractionDigits: 0,
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">Comisión</span>
-                  <div className="grid grid-cols-2 gap-4 text-right">
-                    <NumberFlow
-                      value={calculations.feeAmount}
-                      locales="es-AR"
-                      format={{
-                        style: "currency",
-                        currency: "ARS",
-                        maximumFractionDigits: 0,
-                      }}
-                    />
-                    <span>$0</span>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">
-                    Rendimiento al vencimiento (
-                    {
-                      tableData.find((row) => row.ticker === selectedTicker)
-                        ?.fechaVencimiento
-                    }
-                    )
-                  </span>
-                  <div className="grid grid-cols-2 gap-4 text-right">
-                    <NumberFlow
-                      value={calculations.tea}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 2,
-                      }}
-                    />
-                    <NumberFlow
-                      value={calculations.teaCaucho || 0}
-                      locales="es-AR"
-                      format={{
-                        style: "percent",
-                        maximumFractionDigits: 2,
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
+                      )
+                    </td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={calculations.gananciaBruta || 0}
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={
+                          calculations.montoCaucho
+                            ? calculations.montoCaucho -
+                              calculations.pesosIniciales
+                            : 0
+                        }
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 font-medium">Comisión</td>
+                    <td className="py-3 text-right">
+                      <NumberFlow
+                        value={-calculations.feeAmount}
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                    <td className="py-3 text-right text-muted-foreground">
+                      $0
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 font-bold text-lg">Ganancia Neta</td>
+                    <td className="py-3 text-right font-bold text-lg">
+                      <NumberFlow
+                        value={calculations.gananciaNeta || 0}
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                    <td className="py-3 text-right font-bold text-lg">
+                      <NumberFlow
+                        value={
+                          calculations.montoCaucho
+                            ? calculations.montoCaucho -
+                              calculations.pesosIniciales
+                            : 0
+                        }
+                        locales="es-AR"
+                        format={{
+                          style: "currency",
+                          currency: "ARS",
+                          maximumFractionDigits: 0,
+                        }}
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
               {/* Comparison message */}
               <div className="bg-muted/50 p-4 rounded-lg">
