@@ -3,14 +3,9 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { formatNumber } from "@/lib/utils";
-import {
-  calculateTEM,
-  calculateTNA,
-  calculateTEA,
-  calculateDays360,
-} from "@/lib/fija";
 import { TICKER_PROSPECT } from "@/lib/constants";
+import { calculateTEA, calculateTEM, calculateTNA } from "@/lib/fija";
+import { formatNumber } from "@/lib/utils";
 import { FijaTableRow } from "@/types/fija";
 import NumberFlow from "@number-flow/react";
 
@@ -18,10 +13,13 @@ interface FijaCalculations {
   precio: number;
   precioConComision: number;
   nominales: number;
+  nominalesBruto: number;
   pesosIniciales: number;
   alVencimiento: number;
   alVencimientoGross: number;
   feeAmount: number;
+  gananciaBruta?: number;
+  gananciaNeta?: number;
   comision?: number;
   tea: number;
   dias: number;
@@ -89,7 +87,7 @@ export default function FijaResults({
                   </Label>
                   <div className="text-lg font-medium">
                     <NumberFlow
-                      value={calculations.precio}
+                      value={calculations.precioConComision}
                       locales="es-AR"
                       format={{
                         style: "currency",
@@ -98,14 +96,12 @@ export default function FijaResults({
                       }}
                     />
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    Con comisión:{" "}
+                  <div className="text-sm text-muted-foreground flex items-center gap-1">
+                    Sin comisión: $
                     <NumberFlow
-                      value={calculations.precioConComision}
+                      value={calculations.precio}
                       locales="es-AR"
                       format={{
-                        style: "currency",
-                        currency: "ARS",
                         maximumFractionDigits: 2,
                       }}
                     />
@@ -120,6 +116,16 @@ export default function FijaResults({
                       value={calculations.nominales}
                       locales="es-AR"
                       format={{ maximumFractionDigits: 0 }}
+                    />
+                  </div>
+                  <div className="text-sm text-muted-foreground flex items-center gap-1">
+                    Sin comisión:{" "}
+                    <NumberFlow
+                      value={calculations.nominalesBruto}
+                      locales="es-AR"
+                      format={{
+                        maximumFractionDigits: 0,
+                      }}
                     />
                   </div>
                 </div>
@@ -290,7 +296,7 @@ export default function FijaResults({
               {/* Results for ticker mode */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">Dinero a invertir</span>
+                  <span className="font-medium">Pesos a invertir</span>
                   <NumberFlow
                     value={
                       (calculations.nominales *
@@ -306,6 +312,25 @@ export default function FijaResults({
                   />
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
+                  <span className="font-medium">
+                    Ganancia Bruta al Vencimiento (
+                    {
+                      tableData.find((row) => row.ticker === selectedTicker)
+                        ?.fechaVencimiento
+                    }
+                    )
+                  </span>
+                  <NumberFlow
+                    value={calculations.gananciaBruta || 0}
+                    locales="es-AR"
+                    format={{
+                      style: "currency",
+                      currency: "ARS",
+                      maximumFractionDigits: 0,
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-primary">
                   <span className="font-medium">Comisión</span>
                   <NumberFlow
                     value={-calculations.feeAmount}
@@ -317,21 +342,15 @@ export default function FijaResults({
                     }}
                   />
                 </div>
-                <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">
-                    Rendimiento al vencimiento (
-                    {
-                      tableData.find((row) => row.ticker === selectedTicker)
-                        ?.fechaVencimiento
-                    }
-                    )
-                  </span>
+                <div className="flex justify-between items-center py-2 text-lg font-bold">
+                  Ganancia Neta
                   <NumberFlow
-                    value={calculations.tea}
+                    value={calculations.gananciaNeta || 0}
                     locales="es-AR"
                     format={{
-                      style: "percent",
-                      maximumFractionDigits: 2,
+                      style: "currency",
+                      currency: "ARS",
+                      maximumFractionDigits: 0,
                     }}
                   />
                 </div>
@@ -599,7 +618,7 @@ export default function FijaResults({
                 </div>
 
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="font-medium">Dinero a invertir</span>
+                  <span className="font-medium">Pesos a invertir</span>
                   <div className="grid grid-cols-2 gap-4 text-right">
                     <NumberFlow
                       value={
@@ -630,7 +649,7 @@ export default function FijaResults({
                   <span className="font-medium">Comisión</span>
                   <div className="grid grid-cols-2 gap-4 text-right">
                     <NumberFlow
-                      value={-calculations.feeAmount}
+                      value={calculations.feeAmount}
                       locales="es-AR"
                       format={{
                         style: "currency",

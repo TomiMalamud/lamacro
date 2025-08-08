@@ -116,13 +116,16 @@ export default function FijaCalculator({
     const precioConComision =
       precio * (1 + (typeof comision === "number" ? comision : 0) / 100);
 
-    // Calculate bonds purchased at the higher effective price (including fee)
     const pesosInicialesNum =
       typeof pesosIniciales === "number" ? pesosIniciales : 0;
+    const nominalesBruto = (pesosInicialesNum * 100) / precio;
     const nominales = (pesosInicialesNum * 100) / precioConComision;
     const alVencimientoGross = (configData.pagoFinal * nominales) / 100;
     const alVencimiento = alVencimientoGross;
     const feeAmount = ((precioConComision - precio) * nominales) / 100;
+    const gananciaBruta =
+      (nominalesBruto * (configData.pagoFinal - precio)) / 100;
+    const gananciaNeta = gananciaBruta - feeAmount;
 
     if (calculatorMode === "ticker") {
       const tea =
@@ -133,10 +136,13 @@ export default function FijaCalculator({
         precio,
         precioConComision,
         nominales,
+        nominalesBruto,
         pesosIniciales: pesosInicialesNum,
         alVencimiento,
         alVencimientoGross,
         feeAmount,
+        gananciaBruta,
+        gananciaNeta,
         comision: typeof comision === "number" ? comision : 0,
         tea,
         dias: selectedData.dias,
@@ -187,10 +193,13 @@ export default function FijaCalculator({
       precio,
       precioConComision,
       nominales,
+      nominalesBruto,
       pesosIniciales: pesosInicialesNum,
       alVencimiento,
       alVencimientoGross,
       feeAmount,
+      gananciaBruta,
+      gananciaNeta,
       montoCaucho,
       diferenciaGanancia,
       porDia,
