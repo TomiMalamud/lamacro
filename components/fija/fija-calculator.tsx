@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { ComboboxDrawer } from "@/components/ui/combobox-drawer";
 import { Label } from "@/components/ui/label";
-import { FIJA_TABLE_CONFIG } from "@/lib/fija";
+import { TICKER_PROSPECT } from "@/lib/constants";
 import { cn, formatNumber } from "@/lib/utils";
 import {
   AlternativeOption,
@@ -89,7 +89,7 @@ export default function FijaCalculator({
       return null;
 
     const selectedData = tableData.find((row) => row.ticker === selectedTicker);
-    const configData = FIJA_TABLE_CONFIG.find(
+    const configData = TICKER_PROSPECT.find(
       (config) => config.ticker === selectedTicker,
     );
 
