@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardContent,
@@ -7,8 +5,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useFijaData } from "@/hooks/use-fija-data";
-import { SecurityData, ComparatasasOption, FundData } from "@/types/fija";
+import {
+  SecurityData,
+  ComparatasasOption,
+  FundData,
+  FijaTableRow,
+} from "@/types/fija";
 import FijaCalculator from "./fija-calculator";
 import FijaChart from "./fija-chart";
 import FijaTable from "./fija-table";
@@ -18,6 +20,7 @@ interface FijaDashboardProps {
   bonos: SecurityData[];
   billeteras: ComparatasasOption[];
   fondos: FundData[];
+  tableData: FijaTableRow[];
 }
 
 export default function FijaDashboard({
@@ -25,9 +28,8 @@ export default function FijaDashboard({
   bonos,
   billeteras,
   fondos,
+  tableData,
 }: FijaDashboardProps) {
-  const { tableData } = useFijaData({ letras, bonos });
-
   return (
     <div className="space-y-8">
       <FijaCalculator
@@ -43,7 +45,7 @@ export default function FijaDashboard({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <FijaTable letras={letras} bonos={bonos} />
+          <FijaTable tableData={tableData} />
         </CardContent>
       </Card>
 

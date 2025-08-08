@@ -1,10 +1,17 @@
 import CocosLogo from "@/components/cocos-logo";
 import FijaDashboard from "@/components/fija/fija-dashboard";
-import { getBonos, getLetras, getBilleteras, getFondos } from "@/lib/fija";
+import {
+  getBonos,
+  getLetras,
+  getBilleteras,
+  getFondos,
+  getFijaData,
+} from "@/lib/fija";
 
 export const metadata = {
   title: "Renta Fija",
-  description: "Análisis de letras y bonos con cálculos de TNA, TEM y TEA",
+  description:
+    "Calculadora de letras (LECAPs) y bonos (BONCAPs y duales) con cálculos de TNA, TEM y TEA",
 };
 
 async function fetchDataSafely<T>(
@@ -26,6 +33,8 @@ export default async function FijaPage() {
     fetchDataSafely(() => getBilleteras(), []),
     fetchDataSafely(() => getFondos(), []),
   ]);
+
+  const tableData = getFijaData(letras, bonos);
 
   if (letras.length === 0 && bonos.length === 0 && billeteras.length === 0) {
     throw new Error("All data sources failed to load");
@@ -50,6 +59,7 @@ export default async function FijaPage() {
         bonos={bonos}
         billeteras={billeteras}
         fondos={fondos}
+        tableData={tableData}
       />
     </div>
   );

@@ -8,9 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useFijaData } from "@/hooks/use-fija-data";
 import { formatNumber } from "@/lib/utils";
-import { FijaTableRow, SecurityData } from "@/types/fija";
+import { FijaTableRow } from "@/types/fija";
 import {
   ArrowDown,
   ArrowUp,
@@ -38,22 +37,21 @@ import {
 import { toast } from "sonner";
 
 interface FijaTableProps {
-  letras: SecurityData[];
-  bonos: SecurityData[];
+  tableData: FijaTableRow[];
 }
 
 type SortColumn = "tna" | "tem" | "tea";
 type SortDirection = "asc" | "desc" | null;
 type FilterType = "all" | "Letra" | "Bono" | "Dual";
 
-export default function FijaTable({ letras, bonos }: FijaTableProps) {
+export default function FijaTable({
+  tableData: calculatedData,
+}: FijaTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [searchTicker, setSearchTicker] = useState("");
   const [exportLoading, setExportLoading] = useState(false);
-
-  const { tableData: calculatedData } = useFijaData({ letras, bonos });
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn !== column) {

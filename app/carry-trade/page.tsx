@@ -26,24 +26,11 @@ export const metadata = {
 
 export const revalidate = 3600; // 1 hour
 
-function findBest<T>(items: T[], key: keyof T): T | null {
-  if (!items || items.length === 0) return null;
-  return items.reduce((best, current) =>
-    (current[key] as number) > (best[key] as number) ? current : best,
-  );
-}
-
 export default async function CarryTradePage() {
   const [carryTradeResult, carryExitSimulation] = await Promise.all([
     getCarryTradeData(),
     getCarryExitSimulation(),
   ]);
-
-  const bestCarryBond = findBest(
-    carryTradeResult?.carryData ?? [],
-    "carry_worst",
-  );
-  const bestExitBond = findBest(carryExitSimulation ?? [], "ars_tea");
 
   if (!carryTradeResult?.carryData?.length) {
     return (
