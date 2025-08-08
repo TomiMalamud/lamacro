@@ -240,21 +240,21 @@ export default function FijaTable({
               <TableHead className="text-center">
                 <Button
                   variant="ghost"
-                  onClick={() => handleSort("tna")}
-                  className="h-8"
-                >
-                  TNA
-                  {getSortIcon("tna")}
-                </Button>
-              </TableHead>
-              <TableHead className="text-center">
-                <Button
-                  variant="ghost"
                   onClick={() => handleSort("tem")}
                   className="h-8"
                 >
                   TEM
                   {getSortIcon("tem")}
+                </Button>
+              </TableHead>
+              <TableHead className="text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("tna")}
+                  className="h-8"
+                >
+                  TNA
+                  {getSortIcon("tna")}
                 </Button>
               </TableHead>
               <TableHead className="text-center">
@@ -303,13 +303,13 @@ export default function FijaTable({
                   {row.px > 0 ? formatNumber(row.px) : "-"}
                 </TableCell>
                 <TableCell className="text-center">
-                  {row.px > 0 && row.tna < 1
-                    ? formatNumber(row.tna, 2, "percentage")
+                  {row.px > 0 && row.meses > 0 && row.tna < 1
+                    ? formatNumber(row.tem, 2, "percentage")
                     : "-"}
                 </TableCell>
                 <TableCell className="text-center">
-                  {row.px > 0 && row.meses > 0 && row.tna < 1
-                    ? formatNumber(row.tem, 2, "percentage")
+                  {row.px > 0 && row.tna < 1
+                    ? formatNumber(row.tna, 2, "percentage")
                     : "-"}
                 </TableCell>
                 <TableCell className="text-center">
