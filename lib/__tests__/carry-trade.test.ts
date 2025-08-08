@@ -7,8 +7,18 @@ import {
 } from "../carry-trade";
 import { parseISO } from "date-fns";
 
-// Mock fetch globally
 global.fetch = vi.fn();
+
+vi.mock("react", async () => {
+  const actual = (await vi.importActual("react")) as typeof import("react");
+  const typedCache: <T extends (...args: unknown[]) => unknown>(fn: T) => T = (
+    fn,
+  ) => fn;
+  return {
+    ...actual,
+    cache: typedCache,
+  };
+});
 
 describe("carry-trade.ts", () => {
   beforeEach(() => {
