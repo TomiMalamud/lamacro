@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { MepBreakevenChart } from "./mep-breakeven-chart";
+import { getCurrentUpperLimit } from "@/lib/carry-trade"
 import { NumericInput } from "../numeric-input";
 import type { NumberFormatValues } from "react-number-format";
 import type { ProcessedBondData } from "@/types/carry-trade";
@@ -17,11 +18,12 @@ function recalculateWithCustomMep(
   data: ProcessedBondData[],
   customMep: number,
 ): ProcessedBondData[] {
+  const current = getCurrentUpperLimit();
   return data.map((bond) => {
     const ratio = bond.payoff / bond.bond_price;
     const mep_breakeven = customMep * ratio;
     const finish_worst = Math.round(
-      1400 * Math.pow(1.01, bond.days_to_exp / 30),
+      current * Math.pow(1.01, bond.days_to_exp / 30),
     );
     const carry_worst = (ratio * customMep) / finish_worst - 1;
     const carry_mep = ratio - 1;
