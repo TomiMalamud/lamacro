@@ -16,7 +16,7 @@ import {
   getCarryTradeData,
 } from "@/lib/carry-trade";
 import { formatNumber } from "@/lib/utils";
-import { addDays, format, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 export const metadata = {
   title: "Carry Trade",
@@ -26,24 +26,11 @@ export const metadata = {
 
 export const revalidate = 3600; // 1 hour
 
-function findBest<T>(items: T[], key: keyof T): T | null {
-  if (!items || items.length === 0) return null;
-  return items.reduce((best, current) =>
-    (current[key] as number) > (best[key] as number) ? current : best,
-  );
-}
-
 export default async function CarryTradePage() {
   const [carryTradeResult, carryExitSimulation] = await Promise.all([
     getCarryTradeData(),
     getCarryExitSimulation(),
   ]);
-
-  const bestCarryBond = findBest(
-    carryTradeResult?.carryData ?? [],
-    "carry_worst",
-  );
-  const bestExitBond = findBest(carryExitSimulation ?? [], "ars_tea");
 
   if (!carryTradeResult?.carryData?.length) {
     return (
@@ -67,94 +54,6 @@ export default async function CarryTradePage() {
       </p>
 
       <div className="space-y-8">
-        <div className="grid gap-4 md:grid-cols-2">
-          {bestCarryBond && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Mejor Opción Carry (Hold)</CardTitle>
-                <CardDescription>
-                  Bono con mayor rendimiento estimado conservador (peor caso)
-                  manteniendo hasta el vencimiento.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <p>
-                  <strong>Ticker:</strong> {bestCarryBond.symbol}
-                </p>
-                <p>
-                  <strong>Carry en el peor de los casos:</strong>{" "}
-                  <span
-                    className={
-                      bestCarryBond.carry_worst > 0
-                        ? "text-green-600 dark:text-green-400 font-semibold"
-                        : "text-red-600 dark:text-red-400 font-semibold"
-                    }
-                  >
-                    {formatNumber(bestCarryBond.carry_worst, 2, "percentage")}
-                  </span>
-                </p>
-                <p>
-                  <strong>TEM:</strong>{" "}
-                  {formatNumber(bestCarryBond.tem, 2, "percentage")}
-                </p>
-                <p>
-                  <strong>MEP Breakeven:</strong> ${" "}
-                  {formatNumber(bestCarryBond.mep_breakeven)}
-                </p>
-                <p>
-                  <strong>Días al Vencimiento:</strong>{" "}
-                  {bestCarryBond.days_to_exp}{" "}
-                  <span className="text-muted-foreground font-normal">
-                    {format(
-                      addDays(new Date(), bestCarryBond.days_to_exp),
-                      "dd/MM/yyyy",
-                    )}
-                  </span>
-                </p>
-              </CardContent>
-            </Card>
-          )}
-          {bestExitBond && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Mejor Opción Salida Anticipada</CardTitle>
-                <CardDescription>
-                  Bono con mayor rendimiento anualizado simulando salida
-                  temprana por compresión de tasa.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <p>
-                  <strong>Ticker:</strong> {bestExitBond.symbol}
-                </p>
-                <p>
-                  <strong>TEA Estimada (ARS):</strong>{" "}
-                  <span className="text-green-600 dark:text-green-400 font-semibold">
-                    {formatNumber(bestExitBond.ars_tea, 2, "percentage")}
-                  </span>
-                </p>
-                <p>
-                  <strong>Rendimiento Directo (ARS):</strong>{" "}
-                  {formatNumber(bestExitBond.ars_direct_yield, 2, "percentage")}
-                </p>
-                <p>
-                  <strong>Precio Salida Estimado:</strong> ${" "}
-                  {formatNumber(bestExitBond.bond_price_out)}
-                </p>
-                <p>
-                  <strong>Días Invertido:</strong> {bestExitBond.days_in}{" "}
-                  <span className="text-muted-foreground font-normal">
-                    {format(
-                      addDays(new Date(), bestExitBond.days_in),
-                      "dd/MM/yyyy",
-                    )}
-                  </span>
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-
         <Card>
           <CardHeader>
             <CardTitle>Análisis de Carry Trade (ARS a MEP)</CardTitle>

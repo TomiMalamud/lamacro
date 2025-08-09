@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fetchDeudas, fetchHistorial, fetchCheques } from "../debts";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as bcraApiHelper from "../bcra-api-helper";
+import { fetchCheques, fetchDeudas, fetchHistorial } from "../debts";
 
 // Mock bcra-api-helper
 vi.mock("../bcra-api-helper");

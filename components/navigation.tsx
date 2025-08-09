@@ -47,6 +47,7 @@ export const navMain: NavigationGroup[] = [
         icon: ChartNoAxesCombined,
         iconSrc: "/stocks.png",
         iconAlt: "Stock chart icon",
+        prefetch: true,
       },
       {
         title: "Carry Trade",
@@ -55,6 +56,7 @@ export const navMain: NavigationGroup[] = [
         icon: DollarSign,
         iconSrc: "/money.png",
         iconAlt: "Money icon",
+        prefetch: true,
       },
       {
         title: "Duales TAMAR",
@@ -72,6 +74,7 @@ export const navMain: NavigationGroup[] = [
         icon: PieChart,
         iconSrc: "/charts.png",
         iconAlt: "Charts icon",
+        prefetch: true,
       },
     ],
   },
@@ -87,6 +90,7 @@ export const navMain: NavigationGroup[] = [
         icon: ChartArea,
         iconSrc: "/trending.png",
         iconAlt: "Trending chart icon",
+        prefetch: true,
       },
       {
         title: "Central de Deudores",
@@ -112,13 +116,6 @@ export const navMain: NavigationGroup[] = [
   },
 ];
 
-export const navigationLinks: NavigationItem[] = navMain.flatMap(
-  (group) => group.items,
-);
-
-export const inversionesLinks: NavigationItem[] =
-  navMain.find((group) => group.title === "Finanzas")?.items || [];
-
 export function Navigation() {
   const finanzasGroup = navMain.find((group) => group.title === "Finanzas");
   const bcraGroup = navMain.find((group) => group.title === "BCRA");
@@ -136,14 +133,14 @@ export function Navigation() {
           </Link>
         </div>
         <div className="hidden sm:flex">
-          <NavigationMenu className="ml-2 text-left" viewport={false}>
+          <NavigationMenu className="ml-2 text-left">
             <NavigationMenuList>
               {finanzasGroup && (
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="font-medium">
                     {finanzasGroup.title}
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent className="group-data-[viewport=false]/navigation-menu:rounded-xl z-50">
+                  <NavigationMenuContent>
                     <ul className="grid w-sm">
                       {finanzasGroup.items.map((item) => (
                         <li key={item.url}>

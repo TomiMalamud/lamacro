@@ -1,16 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { SecurityData } from "@/types/fija";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { HOLIDAYS, TICKER_PROSPECT } from "../constants";
 import {
-  getLetras,
-  getBonos,
-  getBilleteras,
-  getFondos,
-  calculateDaysDifference,
   calculateDays360,
-  calculateTNA,
-  calculateTEM,
+  calculateDaysDifference,
   calculateTEA,
-  Holidays,
-  FIJA_TABLE_CONFIG,
+  calculateTEM,
+  calculateTNA,
+  getBilleteras,
+  getBonos,
+  getFijaData,
+  getFondos,
+  getLetras,
 } from "../fija";
 
 // Mock fetch globally
@@ -151,12 +152,192 @@ describe("fija.ts", () => {
     });
   });
 
+  describe("getFijaData", () => {
+    it("should process fija data correctly", () => {
+      const mockLetras = [
+        {
+          symbol: "S30Y5",
+          q_bid: 10,
+          px_bid: 99,
+          px_ask: 101,
+          q_ask: 15,
+          v: 1000,
+          q_op: 50,
+          c: 100,
+          pct_change: 0.01,
+        },
+        {
+          symbol: "S18J5",
+          q_bid: 8,
+          px_bid: 104,
+          px_ask: 106,
+          q_ask: 12,
+          v: 800,
+          q_op: 40,
+          c: 105,
+          pct_change: 0.02,
+        },
+      ];
+      const mockBonos = [
+        {
+          symbol: "TZXY5",
+          q_bid: 5,
+          px_bid: 94,
+          px_ask: 96,
+          q_ask: 20,
+          v: 1200,
+          q_op: 30,
+          c: 95,
+          pct_change: -0.01,
+        },
+        {
+          symbol: "TZX25",
+          q_bid: 15,
+          px_bid: 199,
+          px_ask: 201,
+          q_ask: 25,
+          v: 2000,
+          q_op: 60,
+          c: 200,
+          pct_change: 0.005,
+        },
+      ];
+
+      const result = getFijaData(mockLetras, mockBonos);
+
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBeGreaterThan(0);
+
+      const firstItem = result[0];
+      expect(firstItem).toHaveProperty("ticker");
+      expect(firstItem).toHaveProperty("fechaVencimiento");
+      expect(firstItem).toHaveProperty("dias");
+      expect(firstItem).toHaveProperty("meses");
+      expect(firstItem).toHaveProperty("px");
+      expect(firstItem).toHaveProperty("pagoFinal");
+      expect(firstItem).toHaveProperty("tna");
+      expect(firstItem).toHaveProperty("tem");
+      expect(firstItem).toHaveProperty("tea");
+      expect(typeof firstItem.tna).toBe("number");
+      expect(typeof firstItem.tem).toBe("number");
+      expect(typeof firstItem.tea).toBe("number");
+    });
+
+    it("should filter out items with zero or negative days", () => {
+      const mockLetras = [
+        {
+          symbol: "S30Y5",
+          q_bid: 10,
+          px_bid: 99,
+          px_ask: 101,
+          q_ask: 15,
+          v: 1000,
+          q_op: 50,
+          c: 100,
+          pct_change: 0.01,
+        },
+      ];
+      const mockBonos = [
+        {
+          symbol: "TZXY5",
+          q_bid: 5,
+          px_bid: 94,
+          px_ask: 96,
+          q_ask: 20,
+          v: 1200,
+          q_op: 30,
+          c: 95,
+          pct_change: -0.01,
+        },
+      ];
+
+      const result = getFijaData(mockLetras, mockBonos);
+
+      result.forEach((item) => {
+        expect(item.dias).toBeGreaterThan(0);
+      });
+    });
+
+    it("should sort results by days ascending", () => {
+      const mockLetras = [
+        {
+          symbol: "S30Y5",
+          q_bid: 10,
+          px_bid: 99,
+          px_ask: 101,
+          q_ask: 15,
+          v: 1000,
+          q_op: 50,
+          c: 100,
+          pct_change: 0.01,
+        },
+        {
+          symbol: "S18J5",
+          q_bid: 8,
+          px_bid: 104,
+          px_ask: 106,
+          q_ask: 12,
+          v: 800,
+          q_op: 40,
+          c: 105,
+          pct_change: 0.02,
+        },
+      ];
+      const mockBonos = [
+        {
+          symbol: "TZXY5",
+          q_bid: 5,
+          px_bid: 94,
+          px_ask: 96,
+          q_ask: 20,
+          v: 1200,
+          q_op: 30,
+          c: 95,
+          pct_change: -0.01,
+        },
+        {
+          symbol: "TZX25",
+          q_bid: 15,
+          px_bid: 199,
+          px_ask: 201,
+          q_ask: 25,
+          v: 2000,
+          q_op: 60,
+          c: 200,
+          pct_change: 0.005,
+        },
+      ];
+
+      const result = getFijaData(mockLetras, mockBonos);
+
+      for (let i = 1; i < result.length; i++) {
+        expect(result[i].dias).toBeGreaterThanOrEqual(result[i - 1].dias);
+      }
+    });
+
+    it("should handle missing prices gracefully", () => {
+      const mockLetras: SecurityData[] = [];
+      const mockBonos: SecurityData[] = [];
+
+      const result = getFijaData(mockLetras, mockBonos);
+
+      expect(Array.isArray(result)).toBe(true);
+      result.forEach((item) => {
+        if (item.px === 0) {
+          expect(item.tna).toBe(0);
+          expect(item.tem).toBe(0);
+          expect(item.tea).toBe(0);
+        }
+      });
+    });
+  });
+
   describe("Constants", () => {
     it("Holidays should contain expected structure", () => {
-      expect(Array.isArray(Holidays)).toBe(true);
-      expect(Holidays.length).toBeGreaterThan(0);
+      expect(Array.isArray(HOLIDAYS)).toBe(true);
+      expect(HOLIDAYS.length).toBeGreaterThan(0);
 
-      const firstHoliday = Holidays[0];
+      const firstHoliday = HOLIDAYS[0];
       expect(firstHoliday).toHaveProperty("fecha");
       expect(firstHoliday).toHaveProperty("tipo");
       expect(firstHoliday).toHaveProperty("nombre");
@@ -164,11 +345,11 @@ describe("fija.ts", () => {
       expect(firstHoliday.nombre).toBe("Año nuevo");
     });
 
-    it("FIJA_TABLE_CONFIG should contain expected structure", () => {
-      expect(Array.isArray(FIJA_TABLE_CONFIG)).toBe(true);
-      expect(FIJA_TABLE_CONFIG.length).toBeGreaterThan(0);
+    it("TICKER_PROSPECT should contain expected structure", () => {
+      expect(Array.isArray(TICKER_PROSPECT)).toBe(true);
+      expect(TICKER_PROSPECT.length).toBeGreaterThan(0);
 
-      const firstConfig = FIJA_TABLE_CONFIG[0];
+      const firstConfig = TICKER_PROSPECT[0];
       expect(firstConfig).toHaveProperty("ticker");
       expect(firstConfig).toHaveProperty("fechaVencimiento");
       expect(firstConfig).toHaveProperty("pagoFinal");

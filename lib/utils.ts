@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { formatDate, parseISO } from "date-fns";
 import { twMerge } from "tailwind-merge";
-import { Holidays } from "./fija";
+import { HOLIDAYS } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -55,7 +55,7 @@ export function formatPeriod(periodString: string | null): string {
 }
 
 export function getNextBusinessDay(date: Date = new Date()): Date {
-  const holidayDates = new Set(Holidays.map((h) => h.fecha));
+  const holidayDates = new Set(HOLIDAYS.map((h) => h.fecha));
 
   const nextDay = new Date(date);
   nextDay.setDate(nextDay.getDate() + 1);

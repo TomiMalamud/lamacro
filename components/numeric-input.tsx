@@ -6,6 +6,7 @@ export function NumericInput({
   allowNegative = false,
   ...props
 }: NumericFormatProps) {
+  const { isAllowed: originalIsAllowed, ...rest } = props;
   return (
     <NumericFormat
       thousandSeparator="."
@@ -14,7 +15,11 @@ export function NumericInput({
       decimalScale={decimalScale}
       allowNegative={allowNegative}
       customInput={Input}
-      {...props}
+      isAllowed={(values) => {
+        if (values.value === "" || values.formattedValue === "") return true;
+        return originalIsAllowed ? originalIsAllowed(values) : true;
+      }}
+      {...rest}
     />
   );
 }

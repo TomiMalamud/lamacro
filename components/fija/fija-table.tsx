@@ -8,9 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useFijaData } from "@/hooks/use-fija-data";
 import { formatNumber } from "@/lib/utils";
-import { FijaTableRow, SecurityData } from "@/types/fija";
+import { FijaTableRow } from "@/types/fija";
 import {
   ArrowDown,
   ArrowUp,
@@ -38,22 +37,21 @@ import {
 import { toast } from "sonner";
 
 interface FijaTableProps {
-  letras: SecurityData[];
-  bonos: SecurityData[];
+  tableData: FijaTableRow[];
 }
 
 type SortColumn = "tna" | "tem" | "tea";
 type SortDirection = "asc" | "desc" | null;
 type FilterType = "all" | "Letra" | "Bono" | "Dual";
 
-export default function FijaTable({ letras, bonos }: FijaTableProps) {
+export default function FijaTable({
+  tableData: calculatedData,
+}: FijaTableProps) {
   const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
   const [filterType, setFilterType] = useState<FilterType>("all");
   const [searchTicker, setSearchTicker] = useState("");
   const [exportLoading, setExportLoading] = useState(false);
-
-  const { tableData: calculatedData } = useFijaData({ letras, bonos });
 
   const handleSort = (column: SortColumn) => {
     if (sortColumn !== column) {
@@ -242,21 +240,21 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
               <TableHead className="text-center">
                 <Button
                   variant="ghost"
-                  onClick={() => handleSort("tna")}
-                  className="h-8"
-                >
-                  TNA
-                  {getSortIcon("tna")}
-                </Button>
-              </TableHead>
-              <TableHead className="text-center">
-                <Button
-                  variant="ghost"
                   onClick={() => handleSort("tem")}
                   className="h-8"
                 >
                   TEM
                   {getSortIcon("tem")}
+                </Button>
+              </TableHead>
+              <TableHead className="text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => handleSort("tna")}
+                  className="h-8"
+                >
+                  TNA
+                  {getSortIcon("tna")}
                 </Button>
               </TableHead>
               <TableHead className="text-center">
@@ -305,13 +303,13 @@ export default function FijaTable({ letras, bonos }: FijaTableProps) {
                   {row.px > 0 ? formatNumber(row.px) : "-"}
                 </TableCell>
                 <TableCell className="text-center">
-                  {row.px > 0 && row.tna < 1
-                    ? formatNumber(row.tna, 2, "percentage")
+                  {row.px > 0 && row.meses > 0 && row.tna < 1
+                    ? formatNumber(row.tem, 2, "percentage")
                     : "-"}
                 </TableCell>
                 <TableCell className="text-center">
-                  {row.px > 0 && row.meses > 0 && row.tna < 1
-                    ? formatNumber(row.tem, 2, "percentage")
+                  {row.px > 0 && row.tna < 1
+                    ? formatNumber(row.tna, 2, "percentage")
                     : "-"}
                 </TableCell>
                 <TableCell className="text-center">

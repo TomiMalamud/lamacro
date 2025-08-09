@@ -37,7 +37,7 @@ async function getVariableData(id: number) {
   } catch (error) {
     return {
       description: `Variable #${id}`,
-      value: "Error loading data",
+      value: `Error loading data: ${error}`,
     };
   }
 }

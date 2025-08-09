@@ -1,10 +1,26 @@
 import CocosLogo from "@/components/cocos-logo";
-import FijaDashboard from "@/components/fija/fija-dashboard";
-import { getBonos, getLetras, getBilleteras, getFondos } from "@/lib/fija";
+import FijaCalculator from "@/components/fija/fija-calculator";
+import FijaChart from "@/components/fija/fija-chart";
+import FijaTable from "@/components/fija/fija-table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  getBilleteras,
+  getBonos,
+  getFijaData,
+  getFondos,
+  getLetras,
+} from "@/lib/fija";
 
 export const metadata = {
   title: "Renta Fija",
-  description: "Análisis de letras y bonos con cálculos de TNA, TEM y TEA",
+  description:
+    "Calculadora de letras (LECAPs) y bonos (BONCAPs y duales) con cálculos de TNA, TEM y TEA",
 };
 
 async function fetchDataSafely<T>(
@@ -27,6 +43,8 @@ export default async function FijaPage() {
     fetchDataSafely(() => getFondos(), []),
   ]);
 
+  const tableData = getFijaData(letras, bonos);
+
   if (letras.length === 0 && bonos.length === 0 && billeteras.length === 0) {
     throw new Error("All data sources failed to load");
   }
@@ -45,12 +63,40 @@ export default async function FijaPage() {
         </div>
         <CocosLogo className="h-8 pb-2 w-auto sm:hidden block mt-2 dark:grayscale dark:invert" />
       </div>
-      <FijaDashboard
-        letras={letras}
-        bonos={bonos}
-        billeteras={billeteras}
-        fondos={fondos}
-      />
+      <div className="space-y-8">
+        <FijaCalculator
+          tableData={tableData}
+          billeteras={billeteras}
+          fondos={fondos}
+        />
+        <Card>
+          <CardHeader>
+            <CardTitle>LECAPs, BONCAPs y Duales</CardTitle>
+            <CardDescription>
+              Tabla completa de letras y bonos con cálculos de TNA, TEM y TEA
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FijaTable tableData={tableData} />
+          </CardContent>
+        </Card>
+
+        <Card className="hidden sm:block">
+          <CardHeader>
+            <CardTitle>TEM vs Días hasta Vencimiento</CardTitle>
+            <CardDescription>
+              Gráfico de dispersión que muestra la relación entre TEM y días
+              hasta vencimiento
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FijaChart data={tableData} />
+          </CardContent>
+        </Card>
+        <div className="sm:hidden">
+          <FijaChart data={tableData} />
+        </div>
+      </div>
     </div>
   );
 }
