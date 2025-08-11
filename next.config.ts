@@ -29,6 +29,11 @@ const nextConfig: NextConfig = {
         destination: "/bonos-duales",
         permanent: true,
       },
+      {
+        source: "/variable/:path*",
+        destination: "/variables/:path*",
+        permanent: true,
+      },
     ];
   },
   logging: {
