@@ -15,17 +15,15 @@ describe("Utils Integration Tests", () => {
 
   describe("Business Day Calculations with Argentine Holidays", () => {
     it("should skip weekends correctly", () => {
-      // Thursday, January 24, 2025
-      const thursday = new Date("2025-01-24");
-      const nextBusinessDay = getNextBusinessDay(thursday);
+      const friday = new Date("2025-01-24T00:00:00-03:00");
+      const nextBusinessDay = getNextBusinessDay(friday);
 
-      // Next business day after Thursday is Friday (25th)
-      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-01-25");
+      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-01-27");
     });
 
     it("should skip Argentine national holidays", () => {
       // December 31, 2024 - next day is New Year (holiday)
-      const newYearEve = new Date("2024-12-31");
+      const newYearEve = new Date("2024-12-31T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(newYearEve);
 
       // Should skip January 1, 2025 (Año nuevo) and land on January 2
@@ -34,7 +32,7 @@ describe("Utils Integration Tests", () => {
 
     it("should handle Carnaval holidays correctly", () => {
       // March 2, 2025 (Sunday) - next business day should skip Carnaval
-      const beforeCarnaval = new Date("2025-03-02");
+      const beforeCarnaval = new Date("2025-03-02T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(beforeCarnaval);
 
       // Should skip March 3 and 4 (Carnaval) and land on March 5
@@ -43,34 +41,34 @@ describe("Utils Integration Tests", () => {
 
     it("should handle Easter holidays correctly", () => {
       // April 17, 2025 (Wednesday before Viernes Santo)
-      const beforeEaster = new Date("2025-04-17");
+      const beforeEaster = new Date("2025-04-17T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(beforeEaster);
 
-      // Should skip April 18 (Viernes Santo), land on April 19 (Friday)
-      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-04-19");
+      // Should skip April 18 (Viernes Santo), land on April 21 (Monday)
+      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-04-21");
     });
 
     it("should handle Worker's Day and bridge holidays", () => {
       // April 30, 2025 (Tuesday before May 1 Labor Day)
-      const beforeLaborDay = new Date("2025-04-30");
+      const beforeLaborDay = new Date("2025-04-30T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(beforeLaborDay);
 
-      // Should skip May 1 (Labor Day) and May 2 (Bridge), land on May 3 (Friday)
-      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-05-03");
+      // Should skip May 1 (Labor Day) and May 2 (Bridge), land on May 5 (Monday)
+      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-05-05");
     });
 
     it("should handle multiple consecutive holidays and weekends", () => {
       // Test a complex scenario with holidays and weekends
-      const beforeComplexPeriod = new Date("2025-05-23"); // Thursday before May 25 holiday
+      const beforeComplexPeriod = new Date("2025-05-23T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(beforeComplexPeriod);
 
-      // Should land on May 24 (Friday) since it's the next business day
-      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-05-24");
+      // Should land on May 26 (Monday)
+      expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-05-26");
     });
 
     it("should work correctly with current date default", () => {
       // Mock current date to a known value
-      const fixedDate = new Date("2025-01-29"); // Wednesday
+      const fixedDate = new Date("2025-01-29T00:00:00-03:00");
       vi.setSystemTime(fixedDate);
 
       const nextBusinessDay = getNextBusinessDay();
@@ -92,7 +90,7 @@ describe("Utils Integration Tests", () => {
       expect(newYearHoliday?.nombre).toBe("Año nuevo");
 
       // Test business day calculation uses the holidays
-      const beforeNewYear = new Date("2024-12-31");
+      const beforeNewYear = new Date("2024-12-31T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(beforeNewYear);
       expect(nextBusinessDay.toISOString().split("T")[0]).toBe("2025-01-02");
     });
@@ -270,18 +268,18 @@ describe("Utils Integration Tests", () => {
     });
 
     it("should handle business day calculations with formatted dates", () => {
-      const startDate = new Date("2025-01-24"); // Thursday
+      const startDate = new Date("2025-01-24T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(startDate);
       const formattedDate = formatDateAR(
         nextBusinessDay.toISOString().split("T")[0],
       );
 
-      expect(formattedDate).toBe("25/01/2025"); // Friday
+      expect(formattedDate).toBe("27/01/2025");
     });
 
     it("should integrate with financial calculations and holidays", () => {
       // Test business day calculation around a holiday
-      const beforeHoliday = new Date("2024-12-31");
+      const beforeHoliday = new Date("2024-12-31T00:00:00-03:00");
       const nextBusinessDay = getNextBusinessDay(beforeHoliday);
       const formattedNextDay = formatDateAR(
         nextBusinessDay.toISOString().split("T")[0],
