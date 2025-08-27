@@ -16,12 +16,16 @@ import {
   getFondos,
   getLetras,
 } from "@/lib/fija";
+import { revalidateMarketPages } from "@/lib/actions";
+import RevalidateButtonClient from "@/components/revalidate-button";
 
 export const metadata = {
   title: "Renta Fija",
   description:
     "Calculadora de letras (LECAPs) y bonos (BONCAPs y duales) con cálculos de TNA, TEM y TEA",
 };
+
+export const revalidate = 3600;
 
 async function fetchDataSafely<T>(
   fetchFn: () => Promise<T>,
@@ -52,7 +56,10 @@ export default async function FijaPage() {
   return (
     <div className="container mx-auto px-6 md:px-16 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{metadata.title}</h1>
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <h1 className="text-3xl font-bold">{metadata.title}</h1>
+          <RevalidateButtonClient action={revalidateMarketPages} />
+        </div>
         <div className="flex items-center gap-2">
           <p className="text-muted-foreground">
             {metadata.description}. Cálculos por{" "}

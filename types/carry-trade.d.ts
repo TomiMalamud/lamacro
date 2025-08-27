@@ -3,6 +3,11 @@ export interface RawBondData {
   c: number;
   px_bid: number;
   px_ask: number;
+  v?: number;
+  q_bid?: number;
+  q_ask?: number;
+  q_op?: number;
+  pct_change?: number;
 }
 
 export interface ProcessedBondData extends RawBondData {
