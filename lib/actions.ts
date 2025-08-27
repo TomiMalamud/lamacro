@@ -1,6 +1,7 @@
 "use server";
 
 import { fetchVariableTimeSeries } from "./bcra-fetch";
+import { revalidatePath } from "next/cache";
 
 /**
  * Server Action to fetch time series data for a specific variable and date range.
@@ -36,5 +37,15 @@ export async function getVariableDataForRange(
         : "Error desconocido en el servidor.";
     // You might want to log the full error server-side here
     return { error: `Error al obtener datos: ${message}`, data: null };
+  }
+}
+
+export async function revalidateMarketPages() {
+  try {
+    revalidatePath("/carry-trade");
+    revalidatePath("/bonos-duales");
+    revalidatePath("/fija");
+  } catch (error) {
+    console.error("Error revalidating market pages:", error);
   }
 }

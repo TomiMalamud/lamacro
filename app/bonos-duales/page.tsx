@@ -4,6 +4,8 @@ import CallValueComponent, {
 import DualesClient from "@/components/duales-tamar/duales-client";
 import InlineLink from "@/components/inline-link";
 import { getDualBondSimulationData } from "@/lib/duales";
+import { revalidateMarketPages } from "@/lib/actions";
+import RevalidateButtonClient from "@/components/revalidate-button";
 
 export const metadata = {
   title: "Análisis de Bonos Duales TAMAR",
@@ -20,7 +22,10 @@ export default async function CallsPage() {
 
   return (
     <main className="container mx-auto px-6 md:px-16 py-8">
-      <h1 className="text-3xl font-bold mb-2">{metadata.title}</h1>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <h1 className="text-3xl font-bold">{metadata.title}</h1>
+        <RevalidateButtonClient action={revalidateMarketPages} />
+      </div>
       <p className="text-muted-foreground mb-8">
         Cálculos hechos por{" "}
         <InlineLink href="https://x.com/JohnGalt_is_www/">
