@@ -102,8 +102,8 @@ export function HistorialChart({ periodos }: HistorialChartProps) {
           entidad.situacion <= 6 &&
           entidad.monto !== null
         ) {
-          situacionMontos[entidad.situacion - 1] += entidad.monto;
-          totalMonto += entidad.monto;
+          situacionMontos[entidad.situacion - 1] += entidad.monto * 1000;
+          totalMonto += entidad.monto * 1000;
         }
       });
 
