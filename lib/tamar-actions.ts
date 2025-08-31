@@ -39,7 +39,15 @@ export async function getTamarCallValueAction(
       };
     }
 
-    return response.json();
+    try {
+      return await response.json();
+    } catch (error) {
+      console.error("Error parsing TAMAR JSON response:", error);
+      if (error instanceof Error) {
+        return { error: `Network or unexpected error: ${error.message}` };
+      }
+      return { error: "An unknown error occurred while fetching call value." };
+    }
   } catch (error) {
     console.error("Error fetching call value in server action:", error);
     if (error instanceof Error) {
@@ -82,7 +90,12 @@ export async function getTamarCallValueData(
       return null;
     }
 
-    return response.json();
+    try {
+      return await response.json();
+    } catch (error) {
+      console.error("Error parsing TAMAR JSON response:", error);
+      return null;
+    }
   } catch (error) {
     console.error("Error fetching call value data:", error);
     return null;

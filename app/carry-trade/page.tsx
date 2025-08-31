@@ -15,8 +15,10 @@ import {
   getCarryExitSimulation,
   getCarryTradeData,
 } from "@/lib/carry-trade";
+import { revalidateMarketPages } from "@/lib/actions";
 import { formatNumber } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
+import RevalidateButtonClient from "@/components/revalidate-button";
 
 export const metadata = {
   title: "Carry Trade",
@@ -43,7 +45,10 @@ export default async function CarryTradePage() {
 
   return (
     <main className="container mx-auto px-6 md:px-16 py-8">
-      <h1 className="text-3xl font-bold mb-2">Carry Trade</h1>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <h1 className="text-3xl font-bold">Carry Trade</h1>
+        <RevalidateButtonClient action={revalidateMarketPages} />
+      </div>
       <p className="text-muted-foreground mb-8">
         Fijate cuál es el mejor bono para hacer carry trade. Se actualiza casi a
         tiempo real. Cálculos por{" "}
