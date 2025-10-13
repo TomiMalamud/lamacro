@@ -63,7 +63,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-hooks-extra": "^1.53.1",
+    "eslint-plugin-react-hooks-extra": "^2.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.4",
     "postcss": "^8",
