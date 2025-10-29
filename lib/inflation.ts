@@ -51,8 +51,7 @@ export async function getCombinedInflationData(): Promise<InflationRates> {
 }
 
 export function getMonthName(month: number): string {
-  const date = new Date();
-  date.setMonth(month - 1);
+  const date = new Date(2000, month - 1, 1);
   return date.toLocaleString("es-AR", { month: "long" });
 }
 
