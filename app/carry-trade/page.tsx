@@ -1,7 +1,7 @@
-import { CarryExitTable } from "@/components/carry-trade/carry-exit-table";
 import { CarryTable } from "@/components/carry-trade/carry-table";
 import { MepBreakeven } from "@/components/carry-trade/mep-breakeven";
 import InlineLink from "@/components/inline-link";
+import RevalidateButtonClient from "@/components/revalidate-button";
 import {
   Card,
   CardContent,
@@ -9,16 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  CPI_EST,
-  EST_DATE_STR,
-  getCarryExitSimulation,
-  getCarryTradeData,
-} from "@/lib/carry-trade";
 import { revalidateMarketPages } from "@/lib/actions";
-import { formatNumber } from "@/lib/utils";
-import { format, parseISO } from "date-fns";
-import RevalidateButtonClient from "@/components/revalidate-button";
+import { getCarryExitSimulation, getCarryTradeData } from "@/lib/carry-trade";
 
 export const metadata = {
   title: "Carry Trade",
@@ -98,7 +90,7 @@ export default async function CarryTradePage() {
             <MepBreakeven data={carryTradeResult.carryData} />
           </CardContent>
         </Card>
-
+        {/*
         <Card>
           <CardHeader>
             <CardTitle>
@@ -116,6 +108,7 @@ export default async function CarryTradePage() {
             <CarryExitTable data={carryExitSimulation} />
           </CardContent>
         </Card>
+         */}
       </div>
     </main>
   );
