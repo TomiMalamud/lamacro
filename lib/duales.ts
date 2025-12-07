@@ -29,9 +29,9 @@ const DUAL_BOND_FIXED_RATES: Record<string, number> = {
 
 const TARGET_FECHA_DUALES = "2026-12-31";
 
-const REM_50 = 18.51 / 100;
-const REM_75 = 21.8 / 100;
-const REM_25 = 15.6 / 100;
+const REM_50 = 20.9 / 100;
+const REM_75 = 22.9 / 100;
+const REM_25 = 19.2 / 100;
 
 const ALL_PROJECTION_SCENARIOS_TEM: number[] = [
   REM_25 / 12,
