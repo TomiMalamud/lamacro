@@ -69,8 +69,8 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0
       lucide-react:
-        specifier: ^0.555.0
-        version: 0.555.0(react@18.3.1)
+        specifier: ^0.556.0
+        version: 0.556.0(react@18.3.1)
       next:
         specifier: ^15.5.7
         version: 15.5.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -78,14 +78,14 @@ importers:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       posthog-js:
-        specifier: ^1.298.1
-        version: 1.298.1
+        specifier: ^1.302.2
+        version: 1.302.2
       react:
         specifier: ^18.3.1
         version: 18.3.1
       react-day-picker:
-        specifier: ^9.11.3
-        version: 9.11.3(react@18.3.1)
+        specifier: ^9.12.0
+        version: 9.12.0(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -163,8 +163,8 @@ importers:
         specifier: ^8
         version: 8.5.6
       prettier:
-        specifier: 3.7.3
-        version: 3.7.3
+        specifier: 3.7.4
+        version: 3.7.4
       tailwindcss:
         specifier: ^4.1.17
         version: 4.1.17
@@ -681,8 +681,8 @@ packages:
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
 
-  '@posthog/core@1.6.0':
-    resolution: {integrity: sha512-Tbh8UACwbb7jFdDC7wwXHtfNzO+4wKh3VbyMHmp2UBe6w1jliJixexTJNfkqdGZm+ht3M10mcKvGGPnoZ2zLBg==}
+  '@posthog/core@1.7.1':
+    resolution: {integrity: sha512-kjK0eFMIpKo9GXIbts8VtAknsoZ18oZorANdtuTj1CbgS28t4ZVq//HAWhnxEuXRTrtkd+SUJ6Ux3j2Af8NCuA==}
 
   '@radix-ui/number@1.1.1':
     resolution: {integrity: sha512-MkKCwxlXTgz6CFoJx3pCwn07GKp36+aZyu/u2Ln2VrA5DcdyCZkASEDBTd8x5whTQQL5CiYf4prXKLcgQdv29g==}
@@ -2683,8 +2683,8 @@ packages:
   loupe@3.1.4:
     resolution: {integrity: sha512-wJzkKwJrheKtknCOKNEtDK4iqg/MxmZheEMtSTYvnzRdEYaZzmgH976nenp8WdJRdx5Vc1X/9MO0Oszl6ezeXg==}
 
-  lucide-react@0.555.0:
-    resolution: {integrity: sha512-D8FvHUGbxWBRQM90NZeIyhAvkFfsh3u9ekrMvJ30Z6gnpBHS6HC6ldLg7tL45hwiIz/u66eKDtdA23gwwGsAHA==}
+  lucide-react@0.556.0:
+    resolution: {integrity: sha512-iOb8dRk7kLaYBZhR2VlV1CeJGxChBgUthpSP8wom9jfj79qovgG6qcSdiy6vkoREKPnbUYzJsCn4o4PtG3Iy+A==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -2880,18 +2880,18 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  posthog-js@1.298.1:
-    resolution: {integrity: sha512-MynFhC2HO6sg5moUfpkd0s6RzAqcqFX75kjIi4Xrj2Gl0/YQWYvFUgvv8FCpWPKPs2mdvNWYhs+oqJg0BVVHPw==}
+  posthog-js@1.302.2:
+    resolution: {integrity: sha512-4voih22zQe7yHA7DynlQ3B7kgzJOaKIjzV7K3jJ2Qf+UDXd1ZgO7xYmLWYVtuKEvD1OXHbKk/fPhUTZeHEWpBw==}
 
-  preact@10.27.2:
-    resolution: {integrity: sha512-5SYSgFKSyhCbk6SrXyMpqjb5+MQBgfvEKE/OC+PujcY34sOpqtr+0AZQtPYx5IA6VxynQ7rUPCtKzyovpj9Bpg==}
+  preact@10.28.0:
+    resolution: {integrity: sha512-rytDAoiXr3+t6OIP3WGlDd0ouCUG1iCWzkcY3++Nreuoi17y6T5i/zRhe6uYfoVcxq6YU+sBtJouuRDsq8vvqA==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier@3.7.3:
-    resolution: {integrity: sha512-QgODejq9K3OzoBbuyobZlUhznP5SKwPqp+6Q6xw6o8gnhr4O85L2U915iM2IDcfF2NPXVaM9zlo9tdwipnYwzg==}
+  prettier@3.7.4:
+    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -2905,8 +2905,8 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
-  react-day-picker@9.11.3:
-    resolution: {integrity: sha512-7lD12UvGbkyXqgzbYIGQTbl+x29B9bAf+k0pP5Dcs1evfpKk6zv4EdH/edNc8NxcmCiTNXr2HIYPrSZ3XvmVBg==}
+  react-day-picker@9.12.0:
+    resolution: {integrity: sha512-t8OvG/Zrciso5CQJu5b1A7yzEmebvST+S3pOVQJWxwjjVngyG/CA2htN/D15dLI4uTEuLLkbZyS4YYt480FAtA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: '>=16.8.0'
@@ -3923,7 +3923,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.29': {}
 
-  '@posthog/core@1.6.0':
+  '@posthog/core@1.7.1':
     dependencies:
       cross-spawn: 7.0.6
 
@@ -6073,7 +6073,7 @@ snapshots:
 
   loupe@3.1.4: {}
 
-  lucide-react@0.555.0(react@18.3.1):
+  lucide-react@0.556.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -6257,19 +6257,19 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  posthog-js@1.298.1:
+  posthog-js@1.302.2:
     dependencies:
-      '@posthog/core': 1.6.0
+      '@posthog/core': 1.7.1
       core-js: 3.47.0
       fflate: 0.4.8
-      preact: 10.27.2
+      preact: 10.28.0
       web-vitals: 4.2.4
 
-  preact@10.27.2: {}
+  preact@10.28.0: {}
 
   prelude-ls@1.2.1: {}
 
-  prettier@3.7.3: {}
+  prettier@3.7.4: {}
 
   prop-types@15.8.1:
     dependencies:
@@ -6281,7 +6281,7 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  react-day-picker@9.11.3(react@18.3.1):
+  react-day-picker@9.12.0(react@18.3.1):
     dependencies:
       '@date-fns/tz': 1.4.1
       date-fns: 4.1.0
