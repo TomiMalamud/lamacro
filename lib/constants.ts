@@ -107,9 +107,54 @@ export const TICKER_PROSPECT = [
     pagoFinal: 144.97,
   },
   {
+    ticker: "S27F6",
+    fechaVencimiento: "2026-02-27",
+    pagoFinal: 125.84,
+  },
+  {
+    ticker: "S16M6",
+    fechaVencimiento: "2026-03-16",
+    pagoFinal: 104.62,
+  },
+  {
+    ticker: "TZXM6",
+    fechaVencimiento: "2026-03-31",
+    pagoFinal: 213.37,
+  },
+  {
+    ticker: "S17A6",
+    fechaVencimiento: "2026-04-17",
+    pagoFinal: 110.13,
+  },
+  {
+    ticker: "S30A6",
+    fechaVencimiento: "2026-04-30",
+    pagoFinal: 127.49,
+  },
+  {
+    ticker: "S29Y6",
+    fechaVencimiento: "2026-05-29",
+    pagoFinal: 132.04,
+  },
+  {
     ticker: "T30J6",
     fechaVencimiento: "2026-06-30",
     pagoFinal: 144.9,
+  },
+  {
+    ticker: "S31G6",
+    fechaVencimiento: "2026-08-31",
+    pagoFinal: 127.06,
+  },
+  {
+    ticker: "S30O6",
+    fechaVencimiento: "2026-10-30",
+    pagoFinal: 135.28,
+  },
+  {
+    ticker: "S30N6",
+    fechaVencimiento: "2026-11-30",
+    pagoFinal: 129.89,
   },
   {
     ticker: "TO26",
@@ -120,6 +165,21 @@ export const TICKER_PROSPECT = [
     ticker: "T15E7",
     fechaVencimiento: "2027-01-15",
     pagoFinal: 161.1,
+  },
+  {
+    ticker: "T30A7",
+    fechaVencimiento: "2027-04-30",
+    pagoFinal: 157.34,
+  },
+  {
+    ticker: "T31Y7",
+    fechaVencimiento: "2027-05-31",
+    pagoFinal: 151.56,
+  },
+  {
+    ticker: "T30J7",
+    fechaVencimiento: "2027-06-30",
+    pagoFinal: 156.04,
   },
   {
     ticker: "TTM26",
