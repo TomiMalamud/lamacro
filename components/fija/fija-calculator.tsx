@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { ComboboxDrawer } from "@/components/ui/combobox-drawer";
 import { Label } from "@/components/ui/label";
-import { TICKER_PROSPECT } from "@/lib/constants";
 import { cn, formatNumber } from "@/lib/utils";
 import {
   AlternativeOption,
@@ -106,11 +105,8 @@ export default function FijaCalculator({
       return null;
 
     const selectedData = tableData.find((row) => row.ticker === selectedTicker);
-    const configData = TICKER_PROSPECT.find(
-      (config) => config.ticker === selectedTicker,
-    );
 
-    if (!selectedData || !configData) return null;
+    if (!selectedData) return null;
 
     const precio = selectedData.px;
     const precioConComision =
@@ -120,11 +116,11 @@ export default function FijaCalculator({
       typeof pesosIniciales === "number" ? pesosIniciales : 0;
     const nominalesBruto = (pesosInicialesNum * 100) / precio;
     const nominales = (pesosInicialesNum * 100) / precioConComision;
-    const alVencimientoGross = (configData.pagoFinal * nominales) / 100;
+    const alVencimientoGross = (selectedData.pagoFinal * nominales) / 100;
     const alVencimiento = alVencimientoGross;
     const feeAmount = ((precioConComision - precio) * nominales) / 100;
     const gananciaBruta =
-      (nominalesBruto * (configData.pagoFinal - precio)) / 100;
+      (nominalesBruto * (selectedData.pagoFinal - precio)) / 100;
     const gananciaNeta = gananciaBruta - feeAmount;
 
     if (calculatorMode === "ticker") {

@@ -7,6 +7,7 @@ import {
   EST_DATE_STR,
 } from "../carry-trade";
 import { parseISO, differenceInDays } from "date-fns";
+import { TICKER_PROSPECT } from "../constants";
 import type {
   CarryTradeData,
   CarryExitData,
@@ -28,6 +29,14 @@ vi.mock("react", async () => {
     cache: typedCache,
   };
 });
+
+const getPayoff = (ticker: string): number => {
+  const entry = TICKER_PROSPECT.find((item) => item.ticker === ticker);
+  if (!entry) {
+    throw new Error(`Missing ticker config for ${ticker}`);
+  }
+  return entry.pagoFinal;
+};
 
 describe("Carry Trade End-to-End Integration Tests", () => {
   const mockMepData: MepData[] = [
@@ -144,7 +153,7 @@ describe("Carry Trade End-to-End Integration Tests", () => {
       // Verify financial calculations integration
       const s30y5 = result.carryData.find((bond) => bond.symbol === "S30Y5");
       expect(s30y5).toBeDefined();
-      expect(s30y5?.payoff).toBe(136.331); // From PAYOFF constant
+      expect(s30y5?.payoff).toBe(getPayoff("S30Y5")); // From ticker prospect data
       expect(s30y5?.bond_price).toBe(100);
       expect(s30y5?.expiration).toBe("2025-05-30");
 
@@ -204,8 +213,9 @@ describe("Carry Trade End-to-End Integration Tests", () => {
       ).toBeLessThanOrEqual(1);
 
       // Verify financial calculations integration
+      const payoffT15D5 = getPayoff("T15D5");
       const expectedBondPriceOut =
-        170.838 / Math.pow(1 + CPI_EST, expectedDaysToExp / 30);
+        payoffT15D5 / Math.pow(1 + CPI_EST, expectedDaysToExp / 30);
       expect(simulation.bond_price_out).toBeCloseTo(expectedBondPriceOut, 2);
 
       const expectedDirectYield = expectedBondPriceOut / 120 - 1;
@@ -336,10 +346,11 @@ describe("Carry Trade End-to-End Integration Tests", () => {
       expect(result.carryData).toHaveLength(1);
 
       const bond = result.carryData[0];
+      const payoffT15D5 = getPayoff("T15D5");
 
       // Verify all financial calculations are integrated correctly
       expect(bond.bond_price).toBe(125.5);
-      expect(bond.payoff).toBe(170.838); // From PAYOFF constant
+      expect(bond.payoff).toBe(payoffT15D5); // From ticker prospect data
 
       const today = new Date("2025-01-29");
       const expirationDate = parseISO("2025-12-15");
@@ -350,7 +361,7 @@ describe("Carry Trade End-to-End Integration Tests", () => {
       ).toBeLessThanOrEqual(1);
 
       // Verify complex yield calculations
-      const ratio = 170.838 / 125.5;
+      const ratio = payoffT15D5 / 125.5;
       const daysFactor = 365 / expectedDaysToExp;
       const monthlyFactor = 30 / expectedDaysToExp;
 
@@ -360,11 +371,11 @@ describe("Carry Trade End-to-End Integration Tests", () => {
 
       // Verify bid/ask calculations
       expect(bond.tem_bid).toBeCloseTo(
-        Math.pow(170.838 / 124.75, monthlyFactor) - 1,
+        Math.pow(payoffT15D5 / 124.75, monthlyFactor) - 1,
         3,
       );
       expect(bond.tem_ask).toBeCloseTo(
-        Math.pow(170.838 / 126.25, monthlyFactor) - 1,
+        Math.pow(payoffT15D5 / 126.25, monthlyFactor) - 1,
         3,
       );
 

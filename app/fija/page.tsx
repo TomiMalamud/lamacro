@@ -16,6 +16,7 @@ import {
   getFondos,
   getLetras,
 } from "@/lib/fija";
+import { getHydratedTickerProspect } from "@/lib/ticker-prospect";
 import { revalidateMarketPages } from "@/lib/actions";
 import RevalidateButtonClient from "@/components/revalidate-button";
 
@@ -47,7 +48,8 @@ export default async function FijaPage() {
     fetchDataSafely(() => getFondos(), []),
   ]);
 
-  const tableData = getFijaData(letras, bonos);
+  const tickerProspect = await getHydratedTickerProspect();
+  const tableData = getFijaData(letras, bonos, tickerProspect);
 
   if (letras.length === 0 && bonos.length === 0 && billeteras.length === 0) {
     throw new Error("All data sources failed to load");

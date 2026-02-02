@@ -3,7 +3,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { TICKER_PROSPECT } from "@/lib/constants";
 import { calculateTEA, calculateTEM, calculateTNA } from "@/lib/fija";
 import { formatNumber } from "@/lib/utils";
 import { FijaTableRow } from "@/types/fija";
@@ -69,6 +68,8 @@ export default function FijaResults({
       </Card>
     );
   }
+
+  const selectedData = tableData.find((row) => row.ticker === selectedTicker);
 
   return (
     <Card>
@@ -138,16 +139,9 @@ export default function FijaResults({
                       <span className="text-muted-foreground">
                         <NumberFlow
                           value={(() => {
-                            const selectedData = tableData.find(
-                              (row) => row.ticker === selectedTicker,
-                            );
                             if (!selectedData) return 0;
-                            const configData = TICKER_PROSPECT.find(
-                              (config) => config.ticker === selectedTicker,
-                            );
-                            if (!configData) return 0;
                             return calculateTNA(
-                              configData.pagoFinal,
+                              selectedData.pagoFinal,
                               selectedData.px,
                               selectedData.dias,
                             );
@@ -187,16 +181,9 @@ export default function FijaResults({
                       <span className="text-muted-foreground">
                         <NumberFlow
                           value={(() => {
-                            const selectedData = tableData.find(
-                              (row) => row.ticker === selectedTicker,
-                            );
                             if (!selectedData) return 0;
-                            const configData = TICKER_PROSPECT.find(
-                              (config) => config.ticker === selectedTicker,
-                            );
-                            if (!configData) return 0;
                             return calculateTEM(
-                              configData.pagoFinal,
+                              selectedData.pagoFinal,
                               selectedData.px,
                               selectedData.meses,
                             );
@@ -211,16 +198,9 @@ export default function FijaResults({
                       <span className="text-primary">
                         <NumberFlow
                           value={(() => {
-                            const selectedData = tableData.find(
-                              (row) => row.ticker === selectedTicker,
-                            );
                             if (!selectedData) return 0;
-                            const configData = TICKER_PROSPECT.find(
-                              (config) => config.ticker === selectedTicker,
-                            );
-                            if (!configData) return 0;
                             return calculateTEM(
-                              configData.pagoFinal,
+                              selectedData.pagoFinal,
                               calculations.precioConComision,
                               selectedData.meses,
                             );
@@ -240,16 +220,9 @@ export default function FijaResults({
                       <span className="text-muted-foreground">
                         <NumberFlow
                           value={(() => {
-                            const selectedData = tableData.find(
-                              (row) => row.ticker === selectedTicker,
-                            );
                             if (!selectedData) return 0;
-                            const configData = TICKER_PROSPECT.find(
-                              (config) => config.ticker === selectedTicker,
-                            );
-                            if (!configData) return 0;
                             return calculateTEA(
-                              configData.pagoFinal,
+                              selectedData.pagoFinal,
                               selectedData.px,
                               selectedData.dias,
                             );
@@ -386,16 +359,9 @@ export default function FijaResults({
                           <span className="text-base text-muted-foreground">
                             <NumberFlow
                               value={(() => {
-                                const selectedData = tableData.find(
-                                  (row) => row.ticker === selectedTicker,
-                                );
                                 if (!selectedData) return 0;
-                                const configData = TICKER_PROSPECT.find(
-                                  (config) => config.ticker === selectedTicker,
-                                );
-                                if (!configData) return 0;
                                 return calculateTNA(
-                                  configData.pagoFinal,
+                                  selectedData.pagoFinal,
                                   selectedData.px,
                                   selectedData.dias,
                                 );
@@ -410,16 +376,9 @@ export default function FijaResults({
                           <span className="text-base text-primary font-medium">
                             <NumberFlow
                               value={(() => {
-                                const selectedData = tableData.find(
-                                  (row) => row.ticker === selectedTicker,
-                                );
                                 if (!selectedData) return 0;
-                                const configData = TICKER_PROSPECT.find(
-                                  (config) => config.ticker === selectedTicker,
-                                );
-                                if (!configData) return 0;
                                 return calculateTNA(
-                                  configData.pagoFinal,
+                                  selectedData.pagoFinal,
                                   calculations.precioConComision,
                                   selectedData.dias,
                                 );
@@ -455,16 +414,9 @@ export default function FijaResults({
                           <span className="text-base text-muted-foreground">
                             <NumberFlow
                               value={(() => {
-                                const selectedData = tableData.find(
-                                  (row) => row.ticker === selectedTicker,
-                                );
                                 if (!selectedData) return 0;
-                                const configData = TICKER_PROSPECT.find(
-                                  (config) => config.ticker === selectedTicker,
-                                );
-                                if (!configData) return 0;
                                 return calculateTEM(
-                                  configData.pagoFinal,
+                                  selectedData.pagoFinal,
                                   selectedData.px,
                                   selectedData.meses,
                                 );
@@ -479,16 +431,9 @@ export default function FijaResults({
                           <span className="text-base text-primary font-medium">
                             <NumberFlow
                               value={(() => {
-                                const selectedData = tableData.find(
-                                  (row) => row.ticker === selectedTicker,
-                                );
                                 if (!selectedData) return 0;
-                                const configData = TICKER_PROSPECT.find(
-                                  (config) => config.ticker === selectedTicker,
-                                );
-                                if (!configData) return 0;
                                 return calculateTEM(
-                                  configData.pagoFinal,
+                                  selectedData.pagoFinal,
                                   calculations.precioConComision,
                                   selectedData.meses,
                                 );
@@ -536,16 +481,9 @@ export default function FijaResults({
                           <span className="text-base text-muted-foreground">
                             <NumberFlow
                               value={(() => {
-                                const selectedData = tableData.find(
-                                  (row) => row.ticker === selectedTicker,
-                                );
                                 if (!selectedData) return 0;
-                                const configData = TICKER_PROSPECT.find(
-                                  (config) => config.ticker === selectedTicker,
-                                );
-                                if (!configData) return 0;
                                 return calculateTEA(
-                                  configData.pagoFinal,
+                                  selectedData.pagoFinal,
                                   selectedData.px,
                                   selectedData.dias,
                                 );

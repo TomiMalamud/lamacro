@@ -6,6 +6,7 @@ import {
   EST_DATE_STR,
 } from "../carry-trade";
 import { parseISO } from "date-fns";
+import { TICKER_PROSPECT } from "../constants";
 
 global.fetch = vi.fn();
 
@@ -19,6 +20,14 @@ vi.mock("react", async () => {
     cache: typedCache,
   };
 });
+
+const getPayoff = (ticker: string): number => {
+  const entry = TICKER_PROSPECT.find((item) => item.ticker === ticker);
+  if (!entry) {
+    throw new Error(`Missing ticker config for ${ticker}`);
+  }
+  return entry.pagoFinal;
+};
 
 describe("carry-trade.ts", () => {
   beforeEach(() => {
@@ -89,7 +98,7 @@ describe("carry-trade.ts", () => {
       const s30y5 = result.carryData.find((b) => b.symbol === "S30Y5");
       expect(s30y5).toBeDefined();
       expect(s30y5?.bond_price).toBe(100);
-      expect(s30y5?.payoff).toBe(136.331);
+      expect(s30y5?.payoff).toBe(getPayoff("S30Y5"));
       expect(s30y5?.expiration).toBe("2025-05-30");
       expect(s30y5?.days_to_exp).toBeGreaterThan(0);
       expect(s30y5?.tem).toBeCloseTo(0.0792, 3);
@@ -224,7 +233,7 @@ describe("carry-trade.ts", () => {
 
       const simulation = result[0];
       expect(simulation.symbol).toBe("T15D5");
-      expect(simulation.payoff).toBe(170.838);
+      expect(simulation.payoff).toBe(getPayoff("T15D5"));
       expect(simulation.expiration).toBe("2025-12-15");
       expect(simulation.bond_price_in).toBe(120);
       expect(simulation.exit_TEM).toBe(CPI_EST);
@@ -245,8 +254,9 @@ describe("carry-trade.ts", () => {
       expect(simulation.days_to_exp).toBe(expectedDaysToExp);
 
       // Check bond price out calculation
+      const payoff = getPayoff("T15D5");
       const expectedBondPriceOut =
-        170.838 / Math.pow(1 + CPI_EST, expectedDaysToExp / 30);
+        payoff / Math.pow(1 + CPI_EST, expectedDaysToExp / 30);
       expect(simulation.bond_price_out).toBeCloseTo(expectedBondPriceOut, 2);
 
       // Check yield calculations

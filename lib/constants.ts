@@ -15,7 +15,13 @@ export const STATIC_VARIABLE_IDS = [
   30, 31, 32, 40,
 ];
 
-export const TICKER_PROSPECT = [
+export interface TickerProspectEntry {
+  ticker: string;
+  fechaVencimiento: string;
+  pagoFinal: number;
+}
+
+export const TICKER_PROSPECT: TickerProspectEntry[] = [
   {
     ticker: "TZXY5",
     fechaVencimiento: "2025-05-30",

@@ -1,7 +1,7 @@
 import { formatDateAR, getNextBusinessDay } from "@/lib/utils";
 import { ComparatasasOption, FijaTableRow, SecurityData } from "@/types/fija";
 import { parseISO } from "date-fns";
-import { TICKER_PROSPECT } from "./constants";
+import { TICKER_PROSPECT, type TickerProspectEntry } from "./constants";
 export async function getLetras() {
   const response = await fetch("https://data912.com/live/arg_notes", {
     next: { revalidate: 1200 },
@@ -97,6 +97,7 @@ export function calculateTEA(
 export function getFijaData(
   letras: SecurityData[],
   bonos: SecurityData[],
+  tickerProspect: TickerProspectEntry[] = TICKER_PROSPECT,
 ): FijaTableRow[] {
   const getPriceForTicker = (ticker: string): number => {
     if (ticker.startsWith("S")) {
@@ -111,33 +112,34 @@ export function getFijaData(
 
   const baseDate = getNextBusinessDay();
 
-  return TICKER_PROSPECT.map((config) => {
-    const fechaVencimiento = parseISO(config.fechaVencimiento);
-    const liquiSecuDate =
-      baseDate > fechaVencimiento ? fechaVencimiento : baseDate;
-    const px = getPriceForTicker(config.ticker);
+  return tickerProspect
+    .map((config) => {
+      const fechaVencimiento = parseISO(config.fechaVencimiento);
+      const liquiSecuDate =
+        baseDate > fechaVencimiento ? fechaVencimiento : baseDate;
+      const px = getPriceForTicker(config.ticker);
 
-    const dias = calculateDaysDifference(fechaVencimiento, liquiSecuDate);
-    const days360 = calculateDays360(fechaVencimiento, liquiSecuDate);
-    const meses = days360 / 30;
+      const dias = calculateDaysDifference(fechaVencimiento, liquiSecuDate);
+      const days360 = calculateDays360(fechaVencimiento, liquiSecuDate);
+      const meses = days360 / 30;
 
-    const tna = px > 0 ? calculateTNA(config.pagoFinal, px, dias) : 0;
-    const tem =
-      px > 0 && meses > 0 ? calculateTEM(config.pagoFinal, px, meses) : 0;
-    const tea = px > 0 ? calculateTEA(config.pagoFinal, px, dias) : 0;
+      const tna = px > 0 ? calculateTNA(config.pagoFinal, px, dias) : 0;
+      const tem =
+        px > 0 && meses > 0 ? calculateTEM(config.pagoFinal, px, meses) : 0;
+      const tea = px > 0 ? calculateTEA(config.pagoFinal, px, dias) : 0;
 
-    return {
-      ticker: config.ticker,
-      fechaVencimiento: formatDateAR(fechaVencimiento.toISOString()),
-      dias,
-      meses,
-      px,
-      pagoFinal: config.pagoFinal,
-      tna,
-      tem,
-      tea,
-    };
-  })
+      return {
+        ticker: config.ticker,
+        fechaVencimiento: formatDateAR(fechaVencimiento.toISOString()),
+        dias,
+        meses,
+        px,
+        pagoFinal: config.pagoFinal,
+        tna,
+        tem,
+        tea,
+      };
+    })
     .filter((item) => item.dias > 0)
     .sort((a, b) => a.dias - b.dias);
 }

@@ -10,84 +10,7 @@ import {
   parseISO,
 } from "date-fns";
 import { cache } from "react";
-
-const TICKERS: Record<string, string> = {
-  S16A5: "2025-04-16",
-  S28A5: "2025-04-28",
-  S16Y5: "2025-05-16",
-  S30Y5: "2025-05-30",
-  S18J5: "2025-06-18",
-  S30J5: "2025-06-30",
-  S31L5: "2025-07-31",
-  S15G5: "2025-08-15",
-  S29G5: "2025-08-29",
-  S12S5: "2025-09-12",
-  S30S5: "2025-09-30",
-  T17O5: "2025-10-15",
-  S31O5: "2025-10-31",
-  S10N5: "2025-11-10",
-  S28N5: "2025-11-28",
-  T15D5: "2025-12-15",
-  T30E6: "2026-01-30",
-  T13F6: "2026-02-13",
-  S27F6: "2026-02-27",
-  S16M6: "2026-03-16",
-  TZXM6: "2026-03-31",
-  S17A6: "2026-04-17",
-  S30A6: "2026-04-30",
-  S29Y6: "2026-05-29",
-  T30J6: "2026-06-30",
-  S31G6: "2026-08-31",
-  S30O6: "2026-10-30",
-  S30N6: "2026-11-30",
-  T15E7: "2027-01-15",
-  T30A7: "2027-04-30",
-  T31Y7: "2027-05-31",
-  T30J7: "2027-06-30",
-  TTM26: "2026-03-16",
-  TTJ26: "2026-06-30",
-  TTS26: "2026-09-15",
-  TTD26: "2026-12-15",
-};
-
-const PAYOFF: Record<string, number> = {
-  S16A5: 131.211,
-  S28A5: 130.813,
-  S16Y5: 136.861,
-  S30Y5: 136.331,
-  S18J5: 147.695,
-  S30J5: 146.607,
-  S31L5: 147.74,
-  S15G5: 146.794,
-  S29G5: 157.7,
-  S12S5: 158.977,
-  S30S5: 159.734,
-  T17O5: 158.872,
-  S31O5: 132.821,
-  S10N5: 122.254,
-  S28N5: 123.561,
-  T15D5: 170.838,
-  T30E6: 142.222,
-  T13F6: 144.966,
-  S27F6: 125.84,
-  S16M6: 104.62,
-  TZXM6: 213.37,
-  S17A6: 110.13,
-  S30A6: 127.49,
-  S29Y6: 132.04,
-  T30J6: 144.896,
-  S31G6: 127.06,
-  S30O6: 135.28,
-  S30N6: 129.89,
-  T15E7: 160.777,
-  T30A7: 157.34,
-  T31Y7: 151.56,
-  T30J7: 156.04,
-  TTM26: 135.238,
-  TTJ26: 144.629,
-  TTS26: 152.096,
-  TTD26: 161.144,
-};
+import { getHydratedTickerProspect } from "@/lib/ticker-prospect";
 
 const CARRY_PRICES = [1000, 1100, 1200, 1300, 1400];
 
@@ -181,26 +104,33 @@ async function getBondData(): Promise<RawBondData[]> {
 }
 
 export const getCarryTradeData = cache(async (): Promise<CarryTradeData> => {
-  const [actualMep, allBonds] = await Promise.all([
+  const [actualMep, allBonds, tickerProspect] = await Promise.all([
     getMepRate(),
     getBondData(),
+    getHydratedTickerProspect(),
   ]);
   const mep = actualMep;
+  const tickerBySymbol = new Map(
+    tickerProspect.map((entry) => [entry.ticker, entry] as const),
+  );
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Normalize to start of day
   const current = getCurrentUpperLimit();
   const carryData = allBonds
-    .filter((bond) => TICKERS[bond.symbol]) // Filter only bonds we have data for
+    .filter((bond) => tickerBySymbol.has(bond.symbol)) // Filter only bonds we have data for
     .map((bond) => {
-      const expirationDate = parseISO(TICKERS[bond.symbol]);
+      const tickerConfig = tickerBySymbol.get(bond.symbol);
+      if (!tickerConfig) return null;
+
+      const expirationDate = parseISO(tickerConfig.fechaVencimiento);
       const days_to_exp = originalDifferenceInDays(expirationDate, today);
 
       if (days_to_exp <= 0 || !bond.c || bond.c <= 0) {
         return null; // Skip expired or invalid bonds
       }
 
-      const payoff = PAYOFF[bond.symbol];
+      const payoff = tickerConfig.pagoFinal;
       const ratio = payoff / bond.c;
       const daysFactor = 365 / days_to_exp;
       const monthlyFactor = 30 / days_to_exp;
@@ -234,7 +164,7 @@ export const getCarryTradeData = cache(async (): Promise<CarryTradeData> => {
         ...bond,
         bond_price: bond.c,
         payoff: payoff,
-        expiration: TICKERS[bond.symbol],
+        expiration: tickerConfig.fechaVencimiento,
         days_to_exp: days_to_exp,
         tna: tna,
         tea: tea,
