@@ -5,6 +5,7 @@ const TICKER_SHEET_ID = "1MxsnnAW9yErCX2ZvuwgM-FtHWJMivA4ZTYEZt-P7nPs";
 const TICKER_SHEET_GID = "1058333006";
 const TICKER_SHEET_URL = `https://docs.google.com/spreadsheets/d/${TICKER_SHEET_ID}/export?format=csv&gid=${TICKER_SHEET_GID}`;
 const SHEET_REVALIDATE_SECONDS = 3600;
+const SHEET_FETCH_TIMEOUT_MS = 1000;
 
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
@@ -164,24 +165,26 @@ export function mergeTickerProspects(
   base: TickerProspectEntry[],
   remote: TickerProspectEntry[],
 ): TickerProspectEntry[] {
-  const remoteByTicker = new Map(
-    remote.map((entry) => [entry.ticker, entry] as const),
-  );
-
-  const merged = base.map((entry) => remoteByTicker.get(entry.ticker) ?? entry);
   const baseTickers = new Set(base.map((entry) => entry.ticker));
 
   const extras = remote
     .filter((entry) => !baseTickers.has(entry.ticker))
     .sort((a, b) => a.fechaVencimiento.localeCompare(b.fechaVencimiento));
 
-  return [...merged, ...extras];
+  return [...base, ...extras];
 }
 
 async function fetchTickerProspectCsv(): Promise<string> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(
+    () => controller.abort(),
+    SHEET_FETCH_TIMEOUT_MS,
+  );
+
   const response = await fetch(TICKER_SHEET_URL, {
     next: { revalidate: SHEET_REVALIDATE_SECONDS },
-  });
+    signal: controller.signal,
+  }).finally(() => clearTimeout(timeoutId));
 
   if (!response.ok) {
     throw new Error(`Ticker sheet request failed: ${response.status}`);

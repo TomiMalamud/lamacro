@@ -53,7 +53,7 @@ describe("ticker-prospect", () => {
     ]);
   });
 
-  it("merges remote data over base and appends new tickers", () => {
+  it("appends new tickers without overriding base", () => {
     const base = [
       {
         ticker: "T30J6",
@@ -82,7 +82,7 @@ describe("ticker-prospect", () => {
     const merged = mergeTickerProspects(base, remote);
 
     expect(merged).toHaveLength(3);
-    expect(merged[0].pagoFinal).toBe(150);
+    expect(merged[0].pagoFinal).toBe(144.9);
     expect(merged[2].ticker).toBe("NEW1");
   });
 
@@ -95,6 +95,33 @@ describe("ticker-prospect", () => {
 
     const result = await getHydratedTickerProspectUncached();
     expect(result).toBe(TICKER_PROSPECT);
+  });
+
+  it("falls back to constants when sheet fetch times out", async () => {
+    process.env.ALLOW_TICKER_SHEET_FETCH = "true";
+    vi.useFakeTimers();
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_input, init) => {
+        const signal = init?.signal as AbortSignal | undefined;
+        return new Promise((_, reject) => {
+          if (!signal) return;
+          signal.addEventListener("abort", () => {
+            const error = new Error("AbortError");
+            (error as Error & { name?: string }).name = "AbortError";
+            reject(error);
+          });
+        });
+      }),
+    );
+
+    const promise = getHydratedTickerProspectUncached();
+    await vi.runAllTimersAsync();
+    const result = await promise;
+
+    expect(result).toBe(TICKER_PROSPECT);
+    vi.useRealTimers();
   });
 
   it("hydrates when sheet fetch succeeds", async () => {
