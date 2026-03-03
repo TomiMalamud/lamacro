@@ -79,6 +79,7 @@ export function InflationForm({ inflationData }: InflationFormProps) {
 
   const startDate = new Date(startYear, startMonth - 1);
   const endDate = new Date(endYear, endMonth - 1);
+  const hasInvalidDateRange = startDate >= endDate;
 
   if (startDate > endDate) {
     adjustedStartYear = endYear;
@@ -219,7 +220,7 @@ export function InflationForm({ inflationData }: InflationFormProps) {
               )}
             </div>
 
-            {result && result.totalIncrement <= 0 && (
+            {hasInvalidDateRange && (
               <Alert variant="destructive" className="mt-4">
                 <AlertTitle className="font-bold">
                   La fecha inicial debe ser anterior a la final
