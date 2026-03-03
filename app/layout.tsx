@@ -3,6 +3,7 @@ import { Navigation } from "@/components/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -57,17 +58,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-100 dark:bg-background`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navigation />
-          {children}
-          <Footer />
-          <Toaster richColors />
-        </ThemeProvider>
+        <NuqsAdapter>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Navigation />
+            {children}
+            <Footer />
+            <Toaster richColors />
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

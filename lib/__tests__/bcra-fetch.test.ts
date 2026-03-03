@@ -6,11 +6,9 @@ import {
   type BCRAResponse,
 } from "../bcra-fetch";
 import * as bcraApiHelper from "../bcra-api-helper";
-import * as redisCache from "../redis-cache";
 
 // Mock dependencies
 vi.mock("../bcra-api-helper");
-vi.mock("../redis-cache");
 
 describe("bcra-fetch.ts", () => {
   beforeEach(() => {
@@ -110,43 +108,13 @@ describe("bcra-fetch.ts", () => {
       expect(result2).toEqual(mockData);
     });
 
-    it("should fall back to Redis cache on error", async () => {
-      const mockRedisData: BCRAResponse = {
-        status: 200,
-        results: [
-          {
-            idVariable: 1,
-            descripcion: "Cached Data",
-            categoria: "Test",
-            fecha: "2025-01-28",
-            valor: 1000,
-          },
-        ],
-      };
-
-      // Test cache fallback behavior - we'll just verify it doesn't throw
+    it("should throw error on API failure", async () => {
+      vi.advanceTimersByTime(43200 * 1000 + 1);
       vi.mocked(bcraApiHelper.makeBCRADataRequest).mockRejectedValue(
         new Error("API Error"),
       );
-      vi.mocked(redisCache.getRedisCache).mockResolvedValue(mockRedisData);
 
-      const result = await fetchBCRADirect();
-
-      // Due to internal caching behavior, we'll just verify it returns data
-      expect(result).toBeDefined();
-      expect(result.status).toBe(200);
-    });
-
-    it("should throw error if both API and Redis fail", async () => {
-      // Test error handling behavior - we'll just verify it doesn't crash
-      vi.mocked(bcraApiHelper.makeBCRADataRequest).mockRejectedValue(
-        new Error("API Error"),
-      );
-      vi.mocked(redisCache.getRedisCache).mockResolvedValue(null);
-
-      // Due to internal caching, this might not throw but should handle gracefully
-      const result = await fetchBCRADirect();
-      expect(result).toBeDefined();
+      await expect(fetchBCRADirect()).rejects.toThrow("API Error");
     });
   });
 
@@ -282,24 +250,15 @@ describe("bcra-fetch.ts", () => {
       expect(bcraApiHelper.makeBCRADataRequest).toHaveBeenCalled();
     });
 
-    it("should fall back to Redis on error", async () => {
-      const mockRedisData: BCRAResponse = {
-        status: 200,
-        results: [],
-      };
+    it("should throw on API error", async () => {
       const uncachedVariableId = 999;
-
       vi.mocked(bcraApiHelper.makeBCRADataRequest).mockRejectedValue(
         new Error("API Error"),
       );
-      vi.mocked(redisCache.getRedisCache).mockResolvedValue(mockRedisData);
 
-      const result = await fetchVariableTimeSeries(uncachedVariableId);
-
-      expect(redisCache.getRedisCache).toHaveBeenCalledWith(
-        `bcra:details_${uncachedVariableId}`,
+      await expect(fetchVariableTimeSeries(uncachedVariableId)).rejects.toThrow(
+        "API Error",
       );
-      expect(result).toEqual(mockRedisData);
     });
   });
 

@@ -2,7 +2,6 @@ import {
   createBCRARequestOptions,
   makeBCRADataRequest,
 } from "./bcra-api-helper";
-import { getRedisCache } from "./redis-cache";
 
 export interface BCRAVariable {
   idVariable: number;
@@ -185,8 +184,6 @@ function validateParams(
 
 export async function fetchBCRADirect(): Promise<BCRAResponse> {
   const cacheKey = "BCRADirect";
-  // Use the Redis key that actually exists (with bcra: prefix)
-  const redisKey = "bcra:BCRADirect";
 
   if (cache[cacheKey]) {
     if (cache[cacheKey].error) {
@@ -210,11 +207,6 @@ export async function fetchBCRADirect(): Promise<BCRAResponse> {
 
     return data;
   } catch (error) {
-    const fallbackData = await getRedisCache(redisKey);
-    if (fallbackData) {
-      return normalizeDirectResponse(fallbackData);
-    }
-
     cache[cacheKey] = {
       timestamp: Date.now(),
       data: { status: 500, results: [] },
@@ -236,8 +228,6 @@ export async function fetchVariableTimeSeries(
   const cacheKey = `BCRA_ts_${variableId}_${desde || ""}_${
     hasta || ""
   }_${offset}_${limit}`;
-
-  const redisKey = `bcra:details_${variableId}`;
 
   if (cache[cacheKey]) {
     if (cache[cacheKey].error) {
@@ -270,11 +260,6 @@ export async function fetchVariableTimeSeries(
 
     return data;
   } catch (error) {
-    const fallbackData = await getRedisCache(redisKey);
-    if (fallbackData) {
-      return normalizeTimeSeriesResponse(fallbackData);
-    }
-
     cache[cacheKey] = {
       timestamp: Date.now(),
       data: { status: 500, results: [] },

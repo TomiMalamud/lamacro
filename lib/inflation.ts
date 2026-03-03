@@ -55,6 +55,36 @@ export function getMonthName(month: number): string {
   return date.toLocaleString("es-AR", { month: "long" });
 }
 
+export function getFirstMissingInflationMonthInRange(
+  startMonth: number,
+  startYear: number,
+  endMonth: number,
+  endYear: number,
+  inflationData: InflationRates,
+): { month: number; year: number } | null {
+  const totalMonths = (endYear - startYear) * 12 + (endMonth - startMonth);
+  if (totalMonths <= 0) return null;
+
+  let currentMonth = startMonth;
+  let currentYear = startYear;
+
+  for (let i = 0; i < totalMonths; i++) {
+    const monthRate =
+      inflationData[currentYear.toString()]?.[currentMonth.toString()];
+    if (typeof monthRate !== "number") {
+      return { month: currentMonth, year: currentYear };
+    }
+
+    currentMonth++;
+    if (currentMonth > 12) {
+      currentMonth = 1;
+      currentYear++;
+    }
+  }
+
+  return null;
+}
+
 export function calculateInflation(
   startMonth: number,
   startYear: number,
@@ -91,10 +121,26 @@ export function calculateInflation(
   let currentMonth = startMonth;
   let currentYear = startYear;
 
+  const missingMonth = getFirstMissingInflationMonthInRange(
+    startMonth,
+    startYear,
+    endMonth,
+    endYear,
+    inflationData,
+  );
+  if (missingMonth) {
+    throw new Error(
+      `Missing inflation data for ${missingMonth.year}-${String(
+        missingMonth.month,
+      ).padStart(2, "0")}`,
+    );
+  }
+
   for (let i = 0; i < totalMonths; i++) {
     // Apply inflation for current month, then move to next month
-    const yearData = inflationData[currentYear.toString()] || {};
-    const monthRate = yearData[currentMonth.toString()] || 0;
+    const monthRate = inflationData[currentYear.toString()]?.[
+      currentMonth.toString()
+    ] as number;
 
     currentValue = currentValue * (1 + monthRate);
 

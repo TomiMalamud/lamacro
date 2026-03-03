@@ -4,7 +4,6 @@ import {
   makeBCRADataRequest,
 } from "@/lib/bcra-api-helper";
 import { STATIC_VARIABLE_IDS } from "@/lib/constants";
-import { setRedisCache } from "@/lib/redis-cache";
 import { format, subMonths } from "date-fns";
 
 export async function GET(request: NextRequest) {
@@ -30,8 +29,7 @@ export async function GET(request: NextRequest) {
       throw new Error("Invalid data structure received from BCRA API");
     }
 
-    await setRedisCache("bcra:BCRADirect", data);
-    console.log("Main BCRA data cached successfully");
+    console.log("Main BCRA data fetched successfully");
 
     // Cache individual variable details
     const desde = format(subMonths(new Date(), 3), "yyyy-MM-dd");
@@ -72,9 +70,8 @@ export async function GET(request: NextRequest) {
               variableData.results &&
               variableData.results.length > 0
             ) {
-              await setRedisCache(`bcra:details_${variableId}`, variableData);
               cachedVariables++;
-              console.log(`Variable ${variableId} cached successfully`);
+              console.log(`Variable ${variableId} fetched successfully`);
             } else {
               console.warn(`Variable ${variableId} returned empty results`);
               failedVariables++;

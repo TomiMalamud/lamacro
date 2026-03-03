@@ -2,15 +2,19 @@
 
 import { NumericInput } from "@/components/numeric-input";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { ComboboxDrawer } from "@/components/ui/combobox-drawer";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
 import {
   calculateInflation,
+  getFirstMissingInflationMonthInRange,
   getMonthName,
   InflationRates,
 } from "@/lib/inflation";
 import NumberFlow from "@number-flow/react";
-import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { parseAsFloat, parseAsInteger, useQueryState } from "nuqs";
+import { useMemo } from "react";
 import { Card, CardContent, CardFooter } from "../ui/card";
 import { InflationChart } from "./inflation-chart";
 import { InflationResult } from "./result";
@@ -20,117 +24,316 @@ interface InflationFormProps {
   inflationData: InflationRates;
 }
 
-export function InflationForm({ inflationData }: InflationFormProps) {
-  const searchParams = useSearchParams();
+interface YearMonth {
+  year: number;
+  month: number;
+}
 
-  const getDefaultValue = (param: string, fallback: number) => {
-    const value = searchParams.get(param);
-    return value
-      ? param === "startValue"
-        ? parseFloat(value)
-        : parseInt(value)
-      : fallback;
+interface InflationAvailability {
+  yearsDesc: number[];
+  endYearsDesc: number[];
+  monthsByYear: Record<number, number[]>;
+  endMonthsByYear: Record<number, number[]>;
+  availableDatesAsc: YearMonth[];
+  endSelectableDatesAsc: YearMonth[];
+  maxEndDate: YearMonth;
+}
+
+function compareYearMonth(a: YearMonth, b: YearMonth): number {
+  if (a.year !== b.year) return a.year - b.year;
+  return a.month - b.month;
+}
+
+function buildInflationAvailability(
+  inflationData: InflationRates,
+): InflationAvailability {
+  const yearsAsc = Object.keys(inflationData)
+    .map((year) => Number(year))
+    .filter((year) => Number.isInteger(year))
+    .sort((a, b) => a - b);
+
+  const monthsByYear: Record<number, number[]> = {};
+  const availableDatesAsc: YearMonth[] = [];
+
+  yearsAsc.forEach((year) => {
+    const months = Object.keys(inflationData[year.toString()] || {})
+      .map((month) => Number(month))
+      .filter((month) => Number.isInteger(month) && month >= 1 && month <= 12)
+      .sort((a, b) => a - b);
+
+    if (months.length === 0) return;
+
+    monthsByYear[year] = months;
+    months.forEach((month) => {
+      availableDatesAsc.push({ year, month });
+    });
+  });
+
+  if (availableDatesAsc.length === 0) {
+    throw new Error("Inflation data is empty");
+  }
+
+  const yearsDesc = Object.keys(monthsByYear)
+    .map((year) => Number(year))
+    .sort((a, b) => b - a);
+
+  const nextMonthAfterLastDate: YearMonth =
+    availableDatesAsc[availableDatesAsc.length - 1].month === 12
+      ? {
+          year: availableDatesAsc[availableDatesAsc.length - 1].year + 1,
+          month: 1,
+        }
+      : {
+          year: availableDatesAsc[availableDatesAsc.length - 1].year,
+          month: availableDatesAsc[availableDatesAsc.length - 1].month + 1,
+        };
+
+  const endMonthsByYear: Record<number, number[]> = Object.fromEntries(
+    Object.entries(monthsByYear).map(([year, months]) => [year, [...months]]),
+  );
+  const endYearMonths = endMonthsByYear[nextMonthAfterLastDate.year] || [];
+  if (!endYearMonths.includes(nextMonthAfterLastDate.month)) {
+    endYearMonths.push(nextMonthAfterLastDate.month);
+    endYearMonths.sort((a, b) => a - b);
+  }
+  endMonthsByYear[nextMonthAfterLastDate.year] = endYearMonths;
+
+  const endYearsDesc = Object.keys(endMonthsByYear)
+    .map((year) => Number(year))
+    .sort((a, b) => b - a);
+
+  const endSelectableDatesAsc = [...availableDatesAsc, nextMonthAfterLastDate];
+
+  return {
+    yearsDesc,
+    endYearsDesc,
+    monthsByYear,
+    endMonthsByYear,
+    availableDatesAsc,
+    endSelectableDatesAsc,
+    maxEndDate: nextMonthAfterLastDate,
   };
+}
 
-  const [startMonth, setStartMonth] = useState<number>(() =>
-    getDefaultValue("startMonth", new Date().getMonth() + 1),
-  );
-  const [startYear, setStartYear] = useState<number>(() =>
-    getDefaultValue("startYear", new Date().getFullYear() - 1),
-  );
-  const [startValue, setStartValue] = useState<number>(() =>
-    getDefaultValue("startValue", 1000),
-  );
-  const [endMonth, setEndMonth] = useState<number>(() =>
-    getDefaultValue("endMonth", new Date().getMonth() + 1),
-  );
-  const [endYear, setEndYear] = useState<number>(() =>
-    getDefaultValue("endYear", new Date().getFullYear()),
-  );
-
-  // Track previous values for state adjustment
-  const [prevEndValues, setPrevEndValues] = useState({ endYear, endMonth });
-
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
-
-  // Generate year options (from current year to 1992, descending)
-  const yearOptions = Array.from({ length: currentYear - 1991 }, (_, i) => ({
-    value: currentYear - i,
-    label: (currentYear - i).toString(),
-  }));
-
-  const monthOptions = Array.from({ length: 12 }, (_, i) => ({
-    value: i + 1,
-    label: getMonthName(i + 1),
-  }));
-
-  const getValidMonthOptions = (year: number) => {
-    let months = monthOptions; // Use the predefined monthOptions
-    if (year === currentYear) {
-      months = months.filter((month) => month.value <= currentMonth);
-    }
-    return months;
-  };
-
-  // Adjust start date if it's after end date (during render)
-  let adjustedStartYear = startYear;
-  let adjustedStartMonth = startMonth;
-
-  const startDate = new Date(startYear, startMonth - 1);
-  const endDate = new Date(endYear, endMonth - 1);
-  const hasInvalidDateRange = startDate >= endDate;
-
-  if (startDate > endDate) {
-    adjustedStartYear = endYear;
-    adjustedStartMonth = endMonth;
-
-    // Update state if end values changed
-    if (
-      prevEndValues.endYear !== endYear ||
-      prevEndValues.endMonth !== endMonth
-    ) {
-      setPrevEndValues({ endYear, endMonth });
-      // Schedule state updates
-      Promise.resolve().then(() => {
-        setStartYear(endYear);
-        setStartMonth(endMonth);
-      });
+function findLatestAvailableOnOrBefore(
+  target: YearMonth,
+  availableDatesAsc: YearMonth[],
+): YearMonth {
+  for (let index = availableDatesAsc.length - 1; index >= 0; index--) {
+    if (compareYearMonth(availableDatesAsc[index], target) <= 0) {
+      return availableDatesAsc[index];
     }
   }
+
+  return availableDatesAsc[0];
+}
+
+function findPreviousAvailableDate(
+  target: YearMonth,
+  availableDatesAsc: YearMonth[],
+): YearMonth | null {
+  for (let index = availableDatesAsc.length - 1; index >= 0; index--) {
+    if (compareYearMonth(availableDatesAsc[index], target) < 0) {
+      return availableDatesAsc[index];
+    }
+  }
+
+  return null;
+}
+
+function coerceMonthForYear(
+  year: number,
+  preferredMonth: number,
+  monthsByYear: Record<number, number[]>,
+): number | null {
+  const months = monthsByYear[year];
+  if (!months || months.length === 0) return null;
+  if (months.includes(preferredMonth)) return preferredMonth;
+
+  for (let index = months.length - 1; index >= 0; index--) {
+    if (months[index] < preferredMonth) {
+      return months[index];
+    }
+  }
+
+  return months[0];
+}
+
+export function InflationForm({ inflationData }: InflationFormProps) {
+  const availability = useMemo(
+    () => buildInflationAvailability(inflationData),
+    [inflationData],
+  );
+
+  const defaultValues = useMemo(() => {
+    const end = availability.maxEndDate;
+    const start =
+      findPreviousAvailableDate(end, availability.availableDatesAsc) ??
+      availability.availableDatesAsc[0];
+
+    return {
+      start,
+      end,
+      startValue: 1000,
+    };
+  }, [availability]);
+
+  const [queryStartMonth, setStartMonth] = useQueryState(
+    "startMonth",
+    parseAsInteger.withDefault(defaultValues.start.month),
+  );
+  const [queryStartYear, setStartYear] = useQueryState(
+    "startYear",
+    parseAsInteger.withDefault(defaultValues.start.year),
+  );
+  const [queryStartValue, setStartValue] = useQueryState(
+    "startValue",
+    parseAsFloat.withDefault(defaultValues.startValue),
+  );
+  const [queryEndMonth, setEndMonth] = useQueryState(
+    "endMonth",
+    parseAsInteger.withDefault(defaultValues.end.month),
+  );
+  const [queryEndYear, setEndYear] = useQueryState(
+    "endYear",
+    parseAsInteger.withDefault(defaultValues.end.year),
+  );
+
+  const startDate = useMemo(
+    () =>
+      findLatestAvailableOnOrBefore(
+        { year: queryStartYear, month: queryStartMonth },
+        availability.availableDatesAsc,
+      ),
+    [queryStartYear, queryStartMonth, availability],
+  );
+
+  const endDate = useMemo(
+    () =>
+      findLatestAvailableOnOrBefore(
+        { year: queryEndYear, month: queryEndMonth },
+        availability.endSelectableDatesAsc,
+      ),
+    [queryEndYear, queryEndMonth, availability],
+  );
+
+  const startMonth = startDate.month;
+  const startYear = startDate.year;
+  const startValue = Math.max(0, queryStartValue);
+  const endMonth = endDate.month;
+  const endYear = endDate.year;
+
+  const handleStartYearChange = (year: number) => {
+    setStartYear(year);
+    const validMonth = coerceMonthForYear(
+      year,
+      startMonth,
+      availability.monthsByYear,
+    );
+    if (validMonth !== null && validMonth !== startMonth) {
+      setStartMonth(validMonth);
+    }
+  };
+
+  const handleEndYearChange = (year: number) => {
+    setEndYear(year);
+    const validMonth = coerceMonthForYear(
+      year,
+      endMonth,
+      availability.endMonthsByYear,
+    );
+    if (validMonth !== null && validMonth !== endMonth) {
+      setEndMonth(validMonth);
+    }
+  };
+
+  const hasInvalidDateRange =
+    compareYearMonth(
+      { year: startYear, month: startMonth },
+      { year: endYear, month: endMonth },
+    ) >= 0;
+
+  const yearOptions = useMemo(
+    () =>
+      availability.yearsDesc.map((year) => ({
+        value: year,
+        label: year.toString(),
+      })),
+    [availability],
+  );
+
+  const endYearOptions = useMemo(
+    () =>
+      availability.endYearsDesc.map((year) => ({
+        value: year,
+        label: year.toString(),
+      })),
+    [availability],
+  );
+
+  const getValidStartMonthOptions = (year: number) =>
+    (availability.monthsByYear[year] || []).map((month) => ({
+      value: month,
+      label: getMonthName(month),
+    }));
+
+  const getValidEndMonthOptions = (year: number) =>
+    (availability.endMonthsByYear[year] || []).map((month) => ({
+      value: month,
+      label: getMonthName(month),
+    }));
 
   // Calculate error and result with useMemo
   const error = useMemo(() => {
     if (
-      endYear > currentYear ||
-      (endYear === currentYear && endMonth > currentMonth)
+      compareYearMonth(
+        { year: endYear, month: endMonth },
+        availability.maxEndDate,
+      ) > 0
     ) {
-      return "La fecha final no puede ser en el futuro";
+      return "La fecha final seleccionada no tiene datos de inflación";
     }
-    return null;
-  }, [endYear, endMonth, currentYear, currentMonth]);
 
-  const result = useMemo(() => {
-    if (error) return null;
-
-    return calculateInflation(
-      adjustedStartMonth,
-      adjustedStartYear,
-      startValue,
+    const missingMonth = getFirstMissingInflationMonthInRange(
+      startMonth,
+      startYear,
       endMonth,
       endYear,
       inflationData,
     );
+    if (missingMonth) {
+      return `Faltan datos de inflación para ${getMonthName(missingMonth.month)} ${missingMonth.year}`;
+    }
+
+    return null;
+  }, [startMonth, startYear, endMonth, endYear, inflationData, availability]);
+
+  const result = useMemo(() => {
+    if (error || hasInvalidDateRange) return null;
+
+    try {
+      return calculateInflation(
+        startMonth,
+        startYear,
+        startValue,
+        endMonth,
+        endYear,
+        inflationData,
+      );
+    } catch {
+      return null;
+    }
   }, [
     error,
-    adjustedStartMonth,
-    adjustedStartYear,
+    hasInvalidDateRange,
+    startMonth,
+    startYear,
     startValue,
     endMonth,
     endYear,
     inflationData,
   ]);
-  const visibleResult = !hasInvalidDateRange ? result : null;
+  const visibleResult = result;
 
   return (
     <>
@@ -167,20 +370,42 @@ export function InflationForm({ inflationData }: InflationFormProps) {
               <div className="flex flex-col md:flex-row items-center gap-2">
                 <span className="text-muted-foreground">en</span>
                 <div className="flex gap-2">
-                  <ComboboxDrawer
-                    value={startMonth}
-                    onValueChange={setStartMonth}
-                    options={getValidMonthOptions(startYear)}
-                    placeholder="Mes"
+                  <NativeSelect
+                    aria-label="Mes inicial"
                     className="w-32"
-                  />
-                  <ComboboxDrawer
-                    value={startYear}
-                    onValueChange={setStartYear}
-                    options={yearOptions}
-                    placeholder="Año"
+                    value={startMonth.toString()}
+                    onChange={(event) =>
+                      setStartMonth(Number.parseInt(event.target.value, 10))
+                    }
+                  >
+                    {getValidStartMonthOptions(startYear).map((option) => (
+                      <NativeSelectOption
+                        key={option.value}
+                        value={option.value.toString()}
+                      >
+                        {option.label}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                  <NativeSelect
+                    aria-label="Año inicial"
                     className="w-32"
-                  />
+                    value={startYear.toString()}
+                    onChange={(event) =>
+                      handleStartYearChange(
+                        Number.parseInt(event.target.value, 10),
+                      )
+                    }
+                  >
+                    {yearOptions.map((option) => (
+                      <NativeSelectOption
+                        key={option.value}
+                        value={option.value.toString()}
+                      >
+                        {option.label}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
                 </div>
               </div>
 
@@ -188,20 +413,42 @@ export function InflationForm({ inflationData }: InflationFormProps) {
               <div className="flex flex-col md:flex-row items-center gap-2">
                 <span className="text-muted-foreground">entonces en</span>
                 <div className="flex gap-2">
-                  <ComboboxDrawer
-                    value={endMonth}
-                    onValueChange={setEndMonth}
-                    options={getValidMonthOptions(endYear)}
-                    placeholder="Mes"
+                  <NativeSelect
+                    aria-label="Mes final"
                     className="w-32"
-                  />
-                  <ComboboxDrawer
-                    value={endYear}
-                    onValueChange={setEndYear}
-                    options={yearOptions}
-                    placeholder="Año"
+                    value={endMonth.toString()}
+                    onChange={(event) =>
+                      setEndMonth(Number.parseInt(event.target.value, 10))
+                    }
+                  >
+                    {getValidEndMonthOptions(endYear).map((option) => (
+                      <NativeSelectOption
+                        key={option.value}
+                        value={option.value.toString()}
+                      >
+                        {option.label}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                  <NativeSelect
+                    aria-label="Año final"
                     className="w-32"
-                  />
+                    value={endYear.toString()}
+                    onChange={(event) =>
+                      handleEndYearChange(
+                        Number.parseInt(event.target.value, 10),
+                      )
+                    }
+                  >
+                    {endYearOptions.map((option) => (
+                      <NativeSelectOption
+                        key={option.value}
+                        value={option.value.toString()}
+                      >
+                        {option.label}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
                 </div>
               </div>
 

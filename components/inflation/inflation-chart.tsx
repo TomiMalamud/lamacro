@@ -55,8 +55,11 @@ export function InflationChart({
 
     // Calculate value for each month using real inflation rates
     for (let i = 0; i < totalMonths; i++) {
-      const yearData = inflationData[currentYear.toString()] || {};
-      const monthRate = yearData[currentMonth.toString()] || 0;
+      const monthRate =
+        inflationData[currentYear.toString()]?.[currentMonth.toString()];
+      if (typeof monthRate !== "number") {
+        break;
+      }
 
       // Apply monthly inflation rate
       currentValue = currentValue * (1 + monthRate);
