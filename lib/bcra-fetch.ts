@@ -23,6 +23,26 @@ export type BCRAData = {
   data: BCRAVariable[];
 };
 
+interface V4MainVariable {
+  idVariable: number;
+  descripcion?: string;
+  categoria?: string;
+  ultFechaInformada: string;
+  ultValorInformado: number;
+}
+
+interface V4DetailEntry {
+  fecha: string;
+  valor: number;
+}
+
+interface V4TimeSeriesVariable {
+  idVariable: number;
+  descripcion?: string;
+  categoria?: string;
+  detalle?: V4DetailEntry[];
+}
+
 export const VARIABLE_GROUPS = {
   KEY_METRICS: [1, 4, 5, 6, 15, 27, 28, 29],
   INTEREST_RATES: [
@@ -43,6 +63,102 @@ interface CacheEntry {
 const CACHE_TTL = 43200 * 1000;
 const ERROR_CACHE_TTL = 300 * 1000;
 const cache: { [key: string]: CacheEntry } = {};
+
+function isObjectRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function getResponseStatus(data: unknown): number {
+  if (!isObjectRecord(data)) return 500;
+  return typeof data.status === "number" ? data.status : 500;
+}
+
+function getResponseResults(data: unknown): unknown[] {
+  if (!isObjectRecord(data) || !Array.isArray(data.results)) return [];
+  return data.results;
+}
+
+function isLegacyVariable(item: unknown): item is BCRAVariable {
+  if (!isObjectRecord(item)) return false;
+  return (
+    typeof item.idVariable === "number" &&
+    typeof item.descripcion === "string" &&
+    typeof item.categoria === "string" &&
+    typeof item.fecha === "string" &&
+    typeof item.valor === "number"
+  );
+}
+
+function isV4MainVariable(item: unknown): item is V4MainVariable {
+  if (!isObjectRecord(item)) return false;
+  return (
+    typeof item.idVariable === "number" &&
+    typeof item.ultFechaInformada === "string" &&
+    typeof item.ultValorInformado === "number"
+  );
+}
+
+function isV4TimeSeriesVariable(item: unknown): item is V4TimeSeriesVariable {
+  if (!isObjectRecord(item)) return false;
+  return typeof item.idVariable === "number" && Array.isArray(item.detalle);
+}
+
+function normalizeDirectResponse(data: unknown): BCRAResponse {
+  const results = getResponseResults(data)
+    .map((item): BCRAVariable | null => {
+      if (isLegacyVariable(item)) return item;
+
+      if (isV4MainVariable(item)) {
+        return {
+          idVariable: item.idVariable,
+          descripcion: item.descripcion ?? `Variable #${item.idVariable}`,
+          categoria: item.categoria ?? "Sin categoría",
+          fecha: item.ultFechaInformada,
+          valor: item.ultValorInformado,
+        };
+      }
+
+      return null;
+    })
+    .filter((item): item is BCRAVariable => item !== null);
+
+  return {
+    status: getResponseStatus(data),
+    results,
+  };
+}
+
+function normalizeTimeSeriesResponse(data: unknown): BCRAResponse {
+  const results = getResponseResults(data).flatMap((item): BCRAVariable[] => {
+    if (isLegacyVariable(item)) return [item];
+
+    if (isV4TimeSeriesVariable(item)) {
+      return (
+        item.detalle
+          ?.filter(
+            (entry): entry is V4DetailEntry =>
+              isObjectRecord(entry) &&
+              typeof entry.fecha === "string" &&
+              typeof entry.valor === "number",
+          )
+          .map((entry) => ({
+            idVariable: item.idVariable,
+            descripcion: item.descripcion ?? `Variable #${item.idVariable}`,
+            categoria: item.categoria ?? "Sin categoría",
+            fecha: entry.fecha,
+            valor: entry.valor,
+          })) ?? []
+      );
+    }
+
+    return [];
+  });
+
+  return {
+    status: getResponseStatus(data),
+    results,
+  };
+}
 
 function validateParams(
   variableId?: number,
@@ -82,20 +198,21 @@ export async function fetchBCRADirect(): Promise<BCRAResponse> {
     }
   }
 
-  const options = createBCRARequestOptions("/estadisticas/v3.0/monetarias");
+  const options = createBCRARequestOptions("/estadisticas/v4.0/monetarias");
 
   try {
-    const data = await makeBCRADataRequest(
+    const rawData = await makeBCRADataRequest(
       options,
       "Failed to parse BCRA data",
     );
+    const data = normalizeDirectResponse(rawData);
     cache[cacheKey] = { timestamp: Date.now(), data };
 
     return data;
   } catch (error) {
     const fallbackData = await getRedisCache(redisKey);
     if (fallbackData) {
-      return fallbackData;
+      return normalizeDirectResponse(fallbackData);
     }
 
     cache[cacheKey] = {
@@ -140,21 +257,22 @@ export async function fetchVariableTimeSeries(
   const queryString = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
   const options = createBCRARequestOptions(
-    `/estadisticas/v3.0/monetarias/${variableId}${queryString}`,
+    `/estadisticas/v4.0/monetarias/${variableId}${queryString}`,
   );
 
   try {
-    const data = await makeBCRADataRequest(
+    const rawData = await makeBCRADataRequest(
       options,
       "Failed to parse BCRA time series data",
     );
+    const data = normalizeTimeSeriesResponse(rawData);
     cache[cacheKey] = { timestamp: Date.now(), data };
 
     return data;
   } catch (error) {
     const fallbackData = await getRedisCache(redisKey);
     if (fallbackData) {
-      return fallbackData;
+      return normalizeTimeSeriesResponse(fallbackData);
     }
 
     cache[cacheKey] = {

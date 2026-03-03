@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     console.log("Starting BCRA cache refresh cron job");
 
     // Cache main BCRA data
-    const options = createBCRARequestOptions("/estadisticas/v3.0/monetarias");
+    const options = createBCRARequestOptions("/estadisticas/v4.0/monetarias");
     const data = await makeBCRADataRequest(
       options,
       "Failed to parse BCRA data in cron job",
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
               queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
             const variableOptions = createBCRARequestOptions(
-              `/estadisticas/v3.0/monetarias/${variableId}${queryString}`,
+              `/estadisticas/v4.0/monetarias/${variableId}${queryString}`,
             );
 
             const variableData = await makeBCRADataRequest(

@@ -147,9 +147,9 @@ describe("duales.ts", () => {
       expect(futurePoint).toBeDefined();
 
       // Should have projection scenarios
-      expect(futurePoint).toHaveProperty("tamar_proy_1.3");
+      expect(futurePoint).toHaveProperty("tamar_proy_1.6");
       expect(futurePoint).toHaveProperty("tamar_proy_1.5");
-      expect(futurePoint).toHaveProperty("tamar_proy_1.8");
+      expect(futurePoint).toHaveProperty("tamar_proy_1.9");
     });
 
     it("should calculate fixed rates for bonds", async () => {

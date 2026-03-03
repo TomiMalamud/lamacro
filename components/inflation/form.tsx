@@ -130,6 +130,7 @@ export function InflationForm({ inflationData }: InflationFormProps) {
     endYear,
     inflationData,
   ]);
+  const visibleResult = !hasInvalidDateRange ? result : null;
 
   return (
     <>
@@ -204,14 +205,14 @@ export function InflationForm({ inflationData }: InflationFormProps) {
                 </div>
               </div>
 
-              {result && result.totalIncrement > 0 && (
+              {visibleResult && (
                 <div className="border-t flex flex-col md:flex-row pt-4 items-center gap-2 font-medium">
                   <span className="text-muted-foreground">
                     ese mismo ítem valdría
                   </span>
                   <span className="text-xl font-bold">
                     <NumberFlow
-                      value={result.endValue}
+                      value={visibleResult.endValue}
                       locales="es-AR"
                       format={{ style: "currency", currency: "ARS" }}
                     />
@@ -228,14 +229,14 @@ export function InflationForm({ inflationData }: InflationFormProps) {
               </Alert>
             )}
 
-            {result && result.totalIncrement > 0 && (
+            {visibleResult && (
               <div className="mt-8">
-                <InflationResult {...result} />
+                <InflationResult {...visibleResult} />
               </div>
             )}
           </div>
         </CardContent>
-        {result && result.totalIncrement > 0 && (
+        {visibleResult && (
           <CardFooter className="flex justify-center pb-4">
             <ShareCalculationDialog
               startMonth={startMonth}
@@ -247,7 +248,7 @@ export function InflationForm({ inflationData }: InflationFormProps) {
           </CardFooter>
         )}
       </Card>
-      {result && result.totalIncrement > 0 && (
+      {visibleResult && (
         <InflationChart
           startMonth={startMonth}
           startYear={startYear}

@@ -41,10 +41,10 @@ describe("BCRA API Integration Flow", () => {
 
       // Mock the HTTPS request to simulate successful API call
       const mockRequestOptions = createBCRARequestOptions(
-        "/estadisticas/v3.0/monetarias",
+        "/estadisticas/v4.0/monetarias",
       );
       expect(mockRequestOptions.hostname).toBe("api.bcra.gob.ar");
-      expect(mockRequestOptions.path).toBe("/estadisticas/v3.0/monetarias");
+      expect(mockRequestOptions.path).toBe("/estadisticas/v4.0/monetarias");
 
       // Test actual integration by calling the real function
       // but with mocked network calls
@@ -118,9 +118,9 @@ describe("BCRA API Integration Flow", () => {
 
     it("should build correct request options for different paths", () => {
       const paths = [
-        "/estadisticas/v3.0/monetarias",
-        "/estadisticas/v3.0/monetarias/27",
-        "/estadisticas/v3.0/monetarias/1?desde=2025-01-01",
+        "/estadisticas/v4.0/monetarias",
+        "/estadisticas/v4.0/monetarias/27",
+        "/estadisticas/v4.0/monetarias/1?desde=2025-01-01",
       ];
 
       paths.forEach((path) => {
@@ -162,21 +162,21 @@ describe("BCRA API Integration Flow", () => {
       const testCases = [
         {
           params: [1],
-          expectedPath: "/estadisticas/v3.0/monetarias/1",
+          expectedPath: "/estadisticas/v4.0/monetarias/1",
         },
         {
           params: [27, "2025-01-01"],
-          expectedPath: "/estadisticas/v3.0/monetarias/27?desde=2025-01-01",
+          expectedPath: "/estadisticas/v4.0/monetarias/27?desde=2025-01-01",
         },
         {
           params: [27, "2025-01-01", "2025-01-31"],
           expectedPath:
-            "/estadisticas/v3.0/monetarias/27?desde=2025-01-01&hasta=2025-01-31",
+            "/estadisticas/v4.0/monetarias/27?desde=2025-01-01&hasta=2025-01-31",
         },
         {
           params: [1, "2025-01-01", "2025-01-31", 100, 500],
           expectedPath:
-            "/estadisticas/v3.0/monetarias/1?desde=2025-01-01&hasta=2025-01-31&offset=100&limit=500",
+            "/estadisticas/v4.0/monetarias/1?desde=2025-01-01&hasta=2025-01-31&offset=100&limit=500",
         },
       ];
 
@@ -236,7 +236,7 @@ describe("BCRA API Integration Flow", () => {
 
   describe("Business day and timing integration", () => {
     it("should create requests with appropriate headers for Argentine market", () => {
-      const options = createBCRARequestOptions("/estadisticas/v3.0/monetarias");
+      const options = createBCRARequestOptions("/estadisticas/v4.0/monetarias");
       const headers = options.headers as Record<string, string>;
 
       expect(headers["Accept-Language"]).toBe("es-AR,es;q=0.9,en;q=0.8");

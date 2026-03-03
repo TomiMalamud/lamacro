@@ -46,9 +46,43 @@ describe("bcra-fetch.ts", () => {
       const result = await fetchBCRADirect();
 
       expect(bcraApiHelper.createBCRARequestOptions).toHaveBeenCalledWith(
-        "/estadisticas/v3.0/monetarias",
+        "/estadisticas/v4.0/monetarias",
       );
       expect(result).toEqual(mockData);
+    });
+
+    it("should normalize v4 direct response format", async () => {
+      const mockV4Data = {
+        status: 200,
+        results: [
+          {
+            idVariable: 1,
+            descripcion: "Reservas Internacionales",
+            categoria: "Divisas",
+            ultFechaInformada: "2025-01-29",
+            ultValorInformado: 50000,
+          },
+        ],
+      };
+
+      vi.mocked(bcraApiHelper.makeBCRADataRequest).mockResolvedValue(
+        mockV4Data,
+      );
+
+      const result = await fetchBCRADirect();
+
+      expect(result).toEqual({
+        status: 200,
+        results: [
+          {
+            idVariable: 1,
+            descripcion: "Reservas Internacionales",
+            categoria: "Divisas",
+            fecha: "2025-01-29",
+            valor: 50000,
+          },
+        ],
+      });
     });
 
     it("should return cached data if available and not expired", async () => {
@@ -150,9 +184,56 @@ describe("bcra-fetch.ts", () => {
       );
 
       expect(bcraApiHelper.createBCRARequestOptions).toHaveBeenCalledWith(
-        "/estadisticas/v3.0/monetarias/27?desde=2025-01-01&hasta=2025-01-31",
+        "/estadisticas/v4.0/monetarias/27?desde=2025-01-01&hasta=2025-01-31",
       );
       expect(result).toEqual(mockData);
+    });
+
+    it("should normalize v4 time series response format", async () => {
+      const mockV4Data = {
+        status: 200,
+        results: [
+          {
+            idVariable: 27,
+            detalle: [
+              {
+                fecha: "2025-01-01",
+                valor: 3.5,
+              },
+              {
+                fecha: "2025-01-02",
+                valor: 3.6,
+              },
+            ],
+          },
+        ],
+      };
+
+      vi.mocked(bcraApiHelper.makeBCRADataRequest).mockResolvedValue(
+        mockV4Data,
+      );
+
+      const result = await fetchVariableTimeSeries(27);
+
+      expect(result).toEqual({
+        status: 200,
+        results: [
+          {
+            idVariable: 27,
+            descripcion: "Variable #27",
+            categoria: "Sin categoría",
+            fecha: "2025-01-01",
+            valor: 3.5,
+          },
+          {
+            idVariable: 27,
+            descripcion: "Variable #27",
+            categoria: "Sin categoría",
+            fecha: "2025-01-02",
+            valor: 3.6,
+          },
+        ],
+      });
     });
 
     it("should validate parameters", async () => {
@@ -168,19 +249,19 @@ describe("bcra-fetch.ts", () => {
       // Test with all parameters
       await fetchVariableTimeSeries(1, "2025-01-01", "2025-01-31", 100, 500);
       expect(bcraApiHelper.createBCRARequestOptions).toHaveBeenCalledWith(
-        "/estadisticas/v3.0/monetarias/1?desde=2025-01-01&hasta=2025-01-31&offset=100&limit=500",
+        "/estadisticas/v4.0/monetarias/1?desde=2025-01-01&hasta=2025-01-31&offset=100&limit=500",
       );
 
       // Test with only variable ID
       await fetchVariableTimeSeries(2);
       expect(bcraApiHelper.createBCRARequestOptions).toHaveBeenCalledWith(
-        "/estadisticas/v3.0/monetarias/2",
+        "/estadisticas/v4.0/monetarias/2",
       );
 
       // Test with partial parameters
       await fetchVariableTimeSeries(3, "2025-01-01");
       expect(bcraApiHelper.createBCRARequestOptions).toHaveBeenCalledWith(
-        "/estadisticas/v3.0/monetarias/3?desde=2025-01-01",
+        "/estadisticas/v4.0/monetarias/3?desde=2025-01-01",
       );
     });
 
@@ -206,15 +287,18 @@ describe("bcra-fetch.ts", () => {
         status: 200,
         results: [],
       };
+      const uncachedVariableId = 999;
 
       vi.mocked(bcraApiHelper.makeBCRADataRequest).mockRejectedValue(
         new Error("API Error"),
       );
       vi.mocked(redisCache.getRedisCache).mockResolvedValue(mockRedisData);
 
-      const result = await fetchVariableTimeSeries(27);
+      const result = await fetchVariableTimeSeries(uncachedVariableId);
 
-      expect(redisCache.getRedisCache).toHaveBeenCalledWith("bcra:details_27");
+      expect(redisCache.getRedisCache).toHaveBeenCalledWith(
+        `bcra:details_${uncachedVariableId}`,
+      );
       expect(result).toEqual(mockRedisData);
     });
   });
