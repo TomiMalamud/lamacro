@@ -43,7 +43,7 @@ interface Deuda {
   periodos: DeudaPeriodo[] | null;
 }
 
-interface DeudaResponse {
+export interface DeudaResponse {
   status: number;
   results: Deuda;
 }
@@ -67,7 +67,7 @@ interface HistorialDeuda {
   periodos: HistorialPeriodo[] | null;
 }
 
-interface HistorialResponse {
+export interface HistorialResponse {
   status: number;
   results: HistorialDeuda;
 }
