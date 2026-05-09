@@ -107,16 +107,9 @@ export function createBCRARequestOptions(path: string): RequestOptions {
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       Accept: "application/json, text/plain, */*",
       "Accept-Language": "es-AR,es;q=0.9,en;q=0.8",
-      Connection: "keep-alive",
-      Origin: `https://${process.env.VERCEL_URL}`,
-      Referer: `https://${process.env.VERCEL_URL}`,
+      Connection: "close",
       Host: "api.bcra.gob.ar",
       "Content-Language": "es-AR",
-      "X-Forwarded-For": "190.191.237.1", // Common Argentina IP
-      "CF-IPCountry": "AR", // Cloudflare country header
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "cross-site",
     },
     timeout: 10000,
     rejectUnauthorized: false,
@@ -269,14 +262,10 @@ export async function makeBCRARequest(path: string): Promise<Response> {
   const cacheKey = `BCRA_route_${path}`;
 
   if (cache[cacheKey]) {
-    if (cache[cacheKey].error) {
-      if (Date.now() - cache[cacheKey].timestamp < ERROR_CACHE_TTL) {
-        return NextResponse.json(
-          { error: cache[cacheKey].error.message },
-          { status: 500 },
-        );
-      }
-    } else if (!shouldRefreshCache(cache[cacheKey].timestamp)) {
+    if (
+      !cache[cacheKey].error &&
+      !shouldRefreshCache(cache[cacheKey].timestamp)
+    ) {
       const cacheAge = Math.floor(
         (Date.now() - cache[cacheKey].timestamp) / 1000,
       );
@@ -307,12 +296,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
           },
           { status: 401 },
         );
-
-        cache[cacheKey] = {
-          timestamp: Date.now(),
-          error: new Error("BCRA API unauthorized access"),
-        };
-
         resolve(response);
         return;
       }
@@ -327,12 +310,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
           },
           { status: 404 },
         );
-
-        cache[cacheKey] = {
-          timestamp: Date.now(),
-          error: new Error("BCRA API resource not found"),
-        };
-
         resolve(response);
         return;
       }
@@ -365,12 +342,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
         } catch (error) {
           console.error("Error parsing JSON:", error);
           console.error("First 100 chars of data:", data.substring(0, 100));
-
-          cache[cacheKey] = {
-            timestamp: Date.now(),
-            error: new Error("Failed to parse BCRA data"),
-          };
-
           resolve(
             NextResponse.json(
               {
@@ -386,12 +357,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
 
       res.on("error", (error) => {
         console.error("Response error:", error);
-
-        cache[cacheKey] = {
-          timestamp: Date.now(),
-          error: new Error("Error in BCRA API response"),
-        };
-
         resolve(
           NextResponse.json(
             {
@@ -406,12 +371,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
 
     req.on("error", (error) => {
       console.error("Request error:", error);
-
-      cache[cacheKey] = {
-        timestamp: Date.now(),
-        error: new Error("Failed to fetch BCRA data"),
-      };
-
       resolve(
         NextResponse.json(
           {
@@ -426,12 +385,6 @@ export async function makeBCRARequest(path: string): Promise<Response> {
     req.on("timeout", () => {
       console.error("Request timed out");
       req.destroy();
-
-      cache[cacheKey] = {
-        timestamp: Date.now(),
-        error: new Error("BCRA API request timed out"),
-      };
-
       resolve(
         NextResponse.json(
           {

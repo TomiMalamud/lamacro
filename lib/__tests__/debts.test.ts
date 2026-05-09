@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as bcraApiHelper from "../bcra-api-helper";
-import { fetchCheques, fetchDeudas, fetchHistorial } from "../debts";
+import {
+  DebtDataUnavailableError,
+  fetchCheques,
+  fetchDeudas,
+  fetchHistorial,
+} from "../debts";
 
 // Mock bcra-api-helper
 vi.mock("../bcra-api-helper");
@@ -73,7 +78,7 @@ describe("debts.ts", () => {
       expect(result).toBeNull();
     });
 
-    it("should throw error for other error responses", async () => {
+    it("should throw availability error for other error responses", async () => {
       const mockResponse = {
         ok: false,
         status: 500,
@@ -83,9 +88,9 @@ describe("debts.ts", () => {
         mockResponse as unknown as Response,
       );
 
-      const result = await fetchDeudas("12345678");
-
-      expect(result).toBeNull();
+      await expect(fetchDeudas("12345678")).rejects.toBeInstanceOf(
+        DebtDataUnavailableError,
+      );
       expect(console.error).toHaveBeenCalled();
     });
 
@@ -94,9 +99,9 @@ describe("debts.ts", () => {
         new Error("Network error"),
       );
 
-      const result = await fetchDeudas("12345678");
-
-      expect(result).toBeNull();
+      await expect(fetchDeudas("12345678")).rejects.toBeInstanceOf(
+        DebtDataUnavailableError,
+      );
       expect(console.error).toHaveBeenCalledWith(
         "Error fetching debt data:",
         expect.any(Error),
@@ -160,14 +165,14 @@ describe("debts.ts", () => {
       expect(result).toBeNull();
     });
 
-    it("should handle errors", async () => {
+    it("should throw availability error for errors", async () => {
       vi.mocked(bcraApiHelper.makeBCRARequest).mockRejectedValue(
         new Error("API error"),
       );
 
-      const result = await fetchHistorial("12345678");
-
-      expect(result).toBeNull();
+      await expect(fetchHistorial("12345678")).rejects.toBeInstanceOf(
+        DebtDataUnavailableError,
+      );
       expect(console.error).toHaveBeenCalledWith(
         "Error fetching historical data:",
         expect.any(Error),
@@ -221,7 +226,7 @@ describe("debts.ts", () => {
       const result = await fetchCheques("12345678");
 
       expect(bcraApiHelper.makeBCRARequest).toHaveBeenCalledWith(
-        "/centraldedeudores/v1.0/Deudas/Historicas/12345678",
+        "/centraldedeudores/v1.0/Deudas/ChequesRechazados/12345678",
       );
       expect(result).toEqual(mockChequeData);
     });
@@ -241,14 +246,14 @@ describe("debts.ts", () => {
       expect(result).toBeNull();
     });
 
-    it("should handle errors", async () => {
+    it("should throw availability error for errors", async () => {
       vi.mocked(bcraApiHelper.makeBCRARequest).mockRejectedValue(
         new Error("API error"),
       );
 
-      const result = await fetchCheques("12345678");
-
-      expect(result).toBeNull();
+      await expect(fetchCheques("12345678")).rejects.toBeInstanceOf(
+        DebtDataUnavailableError,
+      );
       expect(console.error).toHaveBeenCalledWith(
         "Error fetching check data:",
         expect.any(Error),

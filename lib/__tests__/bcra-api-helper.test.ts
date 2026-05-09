@@ -18,23 +18,8 @@ describe("bcra-api-helper.ts", () => {
       expect(headers).toBeDefined();
       expect(headers["User-Agent"]).toContain("Mozilla");
       expect(headers["Accept"]).toBe("application/json, text/plain, */*");
-      expect(headers["X-Forwarded-For"]).toBe("190.191.237.1");
-      expect(headers["CF-IPCountry"]).toBe("AR");
       expect(options.timeout).toBe(10000);
       expect(options.rejectUnauthorized).toBe(false);
-    });
-
-    it("should use environment URL for Origin and Referer", () => {
-      const originalEnv = process.env.VERCEL_URL;
-      process.env.VERCEL_URL = "test.vercel.app";
-
-      const options = createBCRARequestOptions("/test");
-      const headers = options.headers as OutgoingHttpHeaders;
-
-      expect(headers["Origin"]).toBe("https://test.vercel.app");
-      expect(headers["Referer"]).toBe("https://test.vercel.app");
-
-      process.env.VERCEL_URL = originalEnv;
     });
 
     it("should include all required headers", () => {
@@ -42,12 +27,11 @@ describe("bcra-api-helper.ts", () => {
       const headers = options.headers as OutgoingHttpHeaders;
 
       expect(headers["Accept-Language"]).toBe("es-AR,es;q=0.9,en;q=0.8");
-      expect(headers["Connection"]).toBe("keep-alive");
+      expect(headers["Connection"]).toBe("close");
       expect(headers["Host"]).toBe("api.bcra.gob.ar");
       expect(headers["Content-Language"]).toBe("es-AR");
-      expect(headers["Sec-Fetch-Dest"]).toBe("empty");
-      expect(headers["Sec-Fetch-Mode"]).toBe("cors");
-      expect(headers["Sec-Fetch-Site"]).toBe("cross-site");
+      expect(headers["Origin"]).toBeUndefined();
+      expect(headers["Referer"]).toBeUndefined();
     });
   });
 });

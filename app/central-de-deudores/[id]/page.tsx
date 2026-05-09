@@ -4,6 +4,7 @@ import DebtCheques from "@/components/debts/debt-cheques";
 import DebtMobile from "@/components/debts/debt-mobile";
 import DebtSection from "@/components/debts/debt-table";
 import { SearchForm } from "@/components/debts/search-form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -11,10 +12,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { fetchCheques, fetchDeudas, fetchHistorial } from "@/lib/debts";
-import { ChevronLeft } from "lucide-react";
+import {
+  DebtDataUnavailableError,
+  fetchCheques,
+  fetchDeudas,
+  fetchHistorial,
+} from "@/lib/debts";
+import { AlertTriangle, ChevronLeft } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
+
+type LookupResult<T> = {
+  data: T | null;
+  unavailable: boolean;
+};
+
+async function lookupBCRAData<T>(
+  fetchData: () => Promise<T | null>,
+): Promise<LookupResult<T>> {
+  try {
+    return {
+      data: await fetchData(),
+      unavailable: false,
+    };
+  } catch (error) {
+    if (error instanceof DebtDataUnavailableError) {
+      return {
+        data: null,
+        unavailable: true,
+      };
+    }
+
+    throw error;
+  }
+}
 
 export async function generateMetadata({
   params,
@@ -41,13 +72,20 @@ export default async function DebtorPage({
   const resolvedParams = await params;
   const id: string = resolvedParams.id;
 
-  const [deudaData, historialData, chequesData] = await Promise.all([
-    fetchDeudas(id),
-    fetchHistorial(id),
-    fetchCheques(id),
+  const [deudaResult, historialResult, chequesResult] = await Promise.all([
+    lookupBCRAData(() => fetchDeudas(id)),
+    lookupBCRAData(() => fetchHistorial(id)),
+    lookupBCRAData(() => fetchCheques(id)),
   ]);
 
+  const deudaData = deudaResult.data;
+  const historialData = historialResult.data;
+  const chequesData = chequesResult.data;
   const hasData = deudaData || historialData || chequesData;
+  const hasUnavailableData =
+    deudaResult.unavailable ||
+    historialResult.unavailable ||
+    chequesResult.unavailable;
 
   return (
     <main className="min-h-screen mx-auto p-6 sm:px-16">
@@ -90,7 +128,34 @@ export default async function DebtorPage({
         )}
       </div>
 
-      {!hasData ? (
+      {hasUnavailableData && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>El BCRA no respondió la consulta completa</AlertTitle>
+          <AlertDescription>
+            Algunos datos pueden no estar disponibles temporalmente. Probá de
+            nuevo en unos minutos.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {!hasData && hasUnavailableData ? (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-amber-600">
+              Consulta no disponible
+            </CardTitle>
+            <CardDescription>
+              No se pudo obtener la información desde el BCRA en este momento.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="max-w-md">
+              <SearchForm initialValue={id} />
+            </div>
+          </CardContent>
+        </Card>
+      ) : !hasData ? (
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-amber-600">
@@ -337,5 +402,6 @@ export default async function DebtorPage({
   );
 }
 
-export const dynamic = "force-static";
-export const revalidate = 86400;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const preferredRegion = "gru1";

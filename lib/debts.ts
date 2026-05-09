@@ -1,5 +1,23 @@
 import { makeBCRARequest } from "./bcra-api-helper";
 
+type DebtDataSource = "deudas" | "historial" | "cheques";
+
+export class DebtDataUnavailableError extends Error {
+  constructor(
+    public readonly source: DebtDataSource,
+    public readonly status?: number,
+    cause?: unknown,
+  ) {
+    super(
+      `BCRA ${source} data is temporarily unavailable${
+        status ? ` (${status})` : ""
+      }`,
+      { cause },
+    );
+    this.name = "DebtDataUnavailableError";
+  }
+}
+
 interface DeudaEntidad {
   entidad: string | null;
   situacion: number | null;
@@ -98,13 +116,16 @@ export async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
       if (response.status === 404) {
         return null;
       }
-      throw new Error(`Error fetching debt data: ${response.status}`);
+      throw new DebtDataUnavailableError("deudas", response.status);
     }
 
     return await response.json();
   } catch (error) {
     console.error("Error fetching debt data:", error);
-    return null;
+    if (error instanceof DebtDataUnavailableError) {
+      throw error;
+    }
+    throw new DebtDataUnavailableError("deudas", undefined, error);
   }
 }
 
@@ -120,32 +141,38 @@ export async function fetchHistorial(
       if (response.status === 404) {
         return null;
       }
-      throw new Error(`Error fetching historical data: ${response.status}`);
+      throw new DebtDataUnavailableError("historial", response.status);
     }
 
     return await response.json();
   } catch (error) {
     console.error("Error fetching historical data:", error);
-    return null;
+    if (error instanceof DebtDataUnavailableError) {
+      throw error;
+    }
+    throw new DebtDataUnavailableError("historial", undefined, error);
   }
 }
 
 export async function fetchCheques(id: string): Promise<ChequeResponse | null> {
   try {
     const response = await makeBCRARequest(
-      `/centraldedeudores/v1.0/Deudas/Historicas/${id}`,
+      `/centraldedeudores/v1.0/Deudas/ChequesRechazados/${id}`,
     );
 
     if (!response.ok) {
       if (response.status === 404) {
         return null;
       }
-      throw new Error(`Error fetching check data: ${response.status}`);
+      throw new DebtDataUnavailableError("cheques", response.status);
     }
 
     return await response.json();
   } catch (error) {
     console.error("Error fetching check data:", error);
-    return null;
+    if (error instanceof DebtDataUnavailableError) {
+      throw error;
+    }
+    throw new DebtDataUnavailableError("cheques", undefined, error);
   }
 }
