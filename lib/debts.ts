@@ -2,6 +2,10 @@ import { makeBCRARequest } from "./bcra-api-helper";
 
 type DebtDataSource = "deudas" | "historial" | "cheques";
 
+interface DebtFetchOptions {
+  logErrors?: boolean;
+}
+
 export class DebtDataUnavailableError extends Error {
   constructor(
     public readonly source: DebtDataSource,
@@ -106,7 +110,20 @@ export interface ChequeResponse {
   results: ChequeRechazado;
 }
 
-export async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
+function logDebtFetchError(
+  options: DebtFetchOptions,
+  message: string,
+  error: unknown,
+): void {
+  if (options.logErrors === false) return;
+
+  console.error(message, error);
+}
+
+export async function fetchDeudas(
+  id: string,
+  options: DebtFetchOptions = {},
+): Promise<DeudaResponse | null> {
   try {
     const response = await makeBCRARequest(
       `/centraldedeudores/v1.0/Deudas/${id}`,
@@ -121,7 +138,7 @@ export async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching debt data:", error);
+    logDebtFetchError(options, "Error fetching debt data:", error);
     if (error instanceof DebtDataUnavailableError) {
       throw error;
     }
@@ -131,6 +148,7 @@ export async function fetchDeudas(id: string): Promise<DeudaResponse | null> {
 
 export async function fetchHistorial(
   id: string,
+  options: DebtFetchOptions = {},
 ): Promise<HistorialResponse | null> {
   try {
     const response = await makeBCRARequest(
@@ -146,7 +164,7 @@ export async function fetchHistorial(
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching historical data:", error);
+    logDebtFetchError(options, "Error fetching historical data:", error);
     if (error instanceof DebtDataUnavailableError) {
       throw error;
     }
@@ -154,7 +172,10 @@ export async function fetchHistorial(
   }
 }
 
-export async function fetchCheques(id: string): Promise<ChequeResponse | null> {
+export async function fetchCheques(
+  id: string,
+  options: DebtFetchOptions = {},
+): Promise<ChequeResponse | null> {
   try {
     const response = await makeBCRARequest(
       `/centraldedeudores/v1.0/Deudas/ChequesRechazados/${id}`,
@@ -169,7 +190,7 @@ export async function fetchCheques(id: string): Promise<ChequeResponse | null> {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching check data:", error);
+    logDebtFetchError(options, "Error fetching check data:", error);
     if (error instanceof DebtDataUnavailableError) {
       throw error;
     }

@@ -301,7 +301,7 @@ export async function makeBCRARequest(path: string): Promise<Response> {
       }
 
       if (res.statusCode === 404) {
-        console.error("NOT FOUND: BCRA API returned 404");
+        console.warn("NOT FOUND: BCRA API returned 404");
         const response = NextResponse.json(
           {
             error: "BCRA API resource not found",

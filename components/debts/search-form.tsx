@@ -50,7 +50,6 @@ export function SearchForm({ initialValue = "" }: SearchFormProps) {
     router.push(`/central-de-deudores/${sanitizedValue}`);
   };
 
-  // Handle input change and enable prefetching on valid input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
     const formattedValue = formatCUIT(inputValue);
@@ -58,12 +57,6 @@ export function SearchForm({ initialValue = "" }: SearchFormProps) {
 
     // Clear previous error
     if (error) setError("");
-
-    // Prefetch if valid CUIT/CUIL (11 digits)
-    const sanitizedValue = getSanitizedValue(formattedValue);
-    if (sanitizedValue.length === 11) {
-      router.prefetch(`/central-de-deudores/${sanitizedValue}`);
-    }
   };
 
   return (
